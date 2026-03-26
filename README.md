@@ -33,13 +33,26 @@ The easiest way to run the entire stack (Database, Backend, and Frontend) connec
    ```
    *(Optional: Edit `.env` to customize your database credentials)*
 
-2. **Start the Services**:
-   From the root directory, run:
+2. **Start the Database**:
+   First, start the MySQL database container in the background:
    ```bash
-   docker-compose up --build
+   docker-compose up -d db
    ```
 
-3. **Access the Applications**:
+3. **Start the Web Application**:
+   Use the provided script to verify the database is running and start the web services (frontend + backend):
+   ```bash
+   ./start-web.sh
+   ```
+
+   **Troubleshooting Port 8080 Error**:
+   If you receive an error like `Bind for 0.0.0.0:8080 failed: port is already allocated`, it means another container or local process (like Tomcat) is already using port 8080. You can stop existing containers by running:
+   ```bash
+   docker-compose down
+   ```
+   Then try starting the database and web application again.
+
+4. **Access the Applications**:
    - **Frontend**: [http://localhost:8080](http://localhost:8080)
    - **Backend API**: [http://localhost:8080/api/api/data](http://localhost:8080/api/api/data)
      *(Note: The first `/api` is the context path from `api.war`, the second is the servlet mapping.)*
