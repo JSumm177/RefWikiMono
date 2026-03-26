@@ -1,55 +1,128 @@
-# Fullstack App: React TypeScript Frontend + Java Backend (Docker)
+# RefWikiMono
 
-This is a complete fullstack project featuring a React frontend written in TypeScript and a Java Servlet backend, built with Vite and Maven, and configured to run inside a single Docker container using Tomcat. Testing is configured for the frontend via Cypress.
+A fullstack monorepo featuring a React TypeScript frontend, a Java Servlet backend with MySQL, and a React Native mobile application.
+
+## Project Overview
+
+- **Frontend**: React (Vite, TypeScript, Cypress)
+- **Backend**: Java Servlet (Maven, Tomcat, MySQL)
+- **Mobile**: React Native (TypeScript, Jest)
+- **Database**: MySQL 8.0
+
+---
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/) installed and running.
-- Node.js (v22 or later) to run the Cypress tests locally.
-- npm (v10 or later)
+Ensure you have the following installed:
+- [Docker](https://docs.docker.com/get-docker/) & Docker Compose
+- [Node.js](https://nodejs.org/) (v22 or later)
+- [Java JDK 21](https://adoptium.net/temurin/releases/?version=21)
+- [Maven](https://maven.apache.org/download.cgi)
+- [Android Studio](https://developer.android.com/studio) / [Xcode](https://developer.apple.com/xcode/) (for mobile development)
 
-## Getting Started
+---
 
-### 1. Build and Run the Server using Docker
+## Getting Started (Docker Compose)
 
-To start the server, you will need to build the Docker image and run it. The `Dockerfile` uses a multi-stage build process to compile both the frontend and the backend and deploys them to Tomcat.
+The easiest way to run the entire stack (Database, Backend, and Frontend) connected is using Docker Compose.
 
-Open your terminal in the root directory of the project and run:
+1. **Setup Environment Variables**:
+   Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+   *(Optional: Edit `.env` to customize your database credentials)*
 
+2. **Start the Services**:
+   From the root directory, run:
+   ```bash
+   docker-compose up --build
+   ```
+
+3. **Access the Applications**:
+   - **Frontend**: [http://localhost:8080](http://localhost:8080)
+   - **Backend API**: [http://localhost:8080/api/api/data](http://localhost:8080/api/api/data)
+     *(Note: The first `/api` is the context path from `api.war`, the second is the servlet mapping.)*
+
+---
+
+## Local Development
+
+If you want to run the components separately for faster development iterations:
+
+### 1. Database
+You can start just the MySQL database using Docker:
 ```bash
-# Build the Docker image
-docker build -t fullstack-app .
-
-# Run the Docker container on port 8080
-docker run -d -p 8080:8080 fullstack-app
+docker-compose up -d db
 ```
 
-The app will now be available at `http://localhost:8080`.
-The Java Backend API is available under `http://localhost:8080/api/hello`.
+### 2. Backend (Java)
+1. Ensure the database is running and environment variables are set in your shell:
+   ```bash
+   export DB_HOST=localhost
+   export DB_PORT=3306
+   export DB_NAME=refwiki
+   export DB_USER=wiki_user
+   export DB_PASSWORD=wiki_password
+   ```
+2. Build the WAR file:
+   ```bash
+   cd backend
+   mvn clean package
+   ```
+3. Deploy the `target/api.war` to your local Tomcat instance (port 8080).
 
-### 2. Run the Cypress End-to-End Tests
+### 3. Frontend (React)
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+2. The frontend will be available at [http://localhost:5173](http://localhost:5173).
+   *Note: To connect to the backend, ensure your API calls are relative or configured via a proxy in `vite.config.ts`.*
 
-Once the server is running on port 8080, you can run the end-to-end Cypress tests. The tests are located in the `frontend` directory.
+### 4. Mobile (React Native)
+1. Navigate to the mobile directory:
+   ```bash
+   cd mobile
+   npm install
+   ```
+2. Start the Metro bundler:
+   ```bash
+   npm start
+   ```
+3. Run on Android or iOS:
+   ```bash
+   npm run android
+   # OR
+   npm run ios
+   ```
 
-In a new terminal, navigate to the `frontend` directory:
+---
 
+## Testing
+
+### Frontend End-to-End (Cypress)
+Ensure the application is running (via Docker or local dev) and run:
 ```bash
 cd frontend
-
-# Install the dependencies (if you haven't already)
-npm install
-
-# Run the Cypress tests in the terminal
 npm run test:e2e
 ```
 
-Alternatively, you can open the interactive Cypress Test Runner:
+### Mobile Tests (Jest)
 ```bash
-npx cypress open
+cd mobile
+npm test
 ```
+
+---
 
 ## Directory Structure
 
-- `frontend/`: The React TypeScript application (Vite).
-- `backend/`: The Java Maven project containing the servlet API.
-- `Dockerfile`: Multi-stage Docker setup.
+- `backend/`: Java Maven project (Servlets).
+- `frontend/`: React Vite project (TypeScript).
+- `mobile/`: React Native mobile app.
+- `db/`: SQL initialization scripts.
+- `docker-compose.yml`: Orchestrates DB and App services.
+- `Dockerfile`: Multi-stage build for the web stack.
