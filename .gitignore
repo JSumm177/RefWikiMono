@@ -1,5 +1,7 @@
 # Environment variables
 .env
+.env.*
+**/.env*
 
 # Mobile
 mobile/node_modules
