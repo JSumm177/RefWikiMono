@@ -36,3 +36,4 @@ backend/backend.iml
 # .idea/misc.xml - Not ignored to share project setup
 # .idea/vcs.xml - Not ignored to share vcs setup
 # RefWikiMono.iml, frontend/frontend.iml, and mobile/mobile.iml are tracked manually
+.idea/misc.xml
