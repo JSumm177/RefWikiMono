@@ -11,3 +11,10 @@ mobile/ios/build
 
 # Backend
 backend/target/
+.DS_Store
+# IntelliJ configuration
+.idea/workspace.xml
+.idea/dataSources.local.xml
+# .idea/dataSources.xml - No longer ignored to share DB config
+# .idea/modules.xml - Not ignored to share module setup
+# *.iml - Not ignored to share module setup
