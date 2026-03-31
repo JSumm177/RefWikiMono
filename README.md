@@ -36,7 +36,7 @@ The easiest way to run the entire stack (Database, Backend, and Frontend) connec
 2. **Start the Database**:
    First, start the MySQL database container in the background:
    ```bash
-   docker-compose up -d db
+   docker compose up -d db
    ```
 
 3. **Start the Web Application**:
@@ -48,7 +48,7 @@ The easiest way to run the entire stack (Database, Backend, and Frontend) connec
    **Troubleshooting Port 8080 Error**:
    If you receive an error like `Bind for 0.0.0.0:8080 failed: port is already allocated`, it means another container or local process (like Tomcat) is already using port 8080. You can stop existing containers by running:
    ```bash
-   docker-compose down
+   docker compose down
    ```
    Then try starting the database and web application again.
 
@@ -66,7 +66,7 @@ If you want to run the components separately for faster development iterations:
 ### 1. Database
 You can start just the MySQL database using Docker:
 ```bash
-docker-compose up -d db
+docker compose up -d db
 ```
 
 ### 2. Backend (Java)
