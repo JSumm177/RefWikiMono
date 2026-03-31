@@ -3,8 +3,11 @@
 .env.*
 **/.env*
 
+# Node modules
+node_modules/
+**/node_modules/
+
 # Mobile
-mobile/node_modules
 mobile/android/build
 mobile/android/app/build
 mobile/ios/build
@@ -12,9 +15,24 @@ mobile/ios/build
 # Backend
 backend/target/
 .DS_Store
+
 # IntelliJ configuration
 .idea/workspace.xml
 .idea/dataSources.local.xml
+.idea/dataSources/data_sources_history.xml
+.idea/dataSources/*.xml
+.idea/dataSources/*/
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/sqldialects.xml
+.idea/.name
+
+# Auto-generated iml files
+backend/backend.iml
+
+# Shared IntelliJ Config
 # .idea/dataSources.xml - No longer ignored to share DB config
 # .idea/modules.xml - Not ignored to share module setup
-# *.iml - Not ignored to share module setup
+# .idea/misc.xml - Not ignored to share project setup
+# .idea/vcs.xml - Not ignored to share vcs setup
+# RefWikiMono.iml, frontend/frontend.iml, and mobile/mobile.iml are tracked manually
