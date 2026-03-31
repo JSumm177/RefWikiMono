@@ -134,14 +134,17 @@ public class AuthServletTest {
         verify(response).setStatus(HttpServletResponse.SC_OK);
         assertTrue(w2.toString().contains("Login successful"));
 
-        ArgumentCaptor<Cookie> cookieCaptor = ArgumentCaptor.forClass(Cookie.class);
-        verify(response).addCookie(cookieCaptor.capture());
-        Cookie addedCookie = cookieCaptor.getValue();
+        ArgumentCaptor<String> headerNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> headerValueCaptor = ArgumentCaptor.forClass(String.class);
 
-        assertEquals("jwt", addedCookie.getName());
-        assertNotNull(addedCookie.getValue());
-        assertTrue(addedCookie.isHttpOnly());
-        assertEquals("/", addedCookie.getPath());
+        verify(response).addHeader(headerNameCaptor.capture(), headerValueCaptor.capture());
+
+        assertEquals("Set-Cookie", headerNameCaptor.getValue());
+        String cookieVal = headerValueCaptor.getValue();
+        assertTrue(cookieVal.startsWith("jwt="));
+        assertTrue(cookieVal.contains("HttpOnly"));
+        assertTrue(cookieVal.contains("Path=/"));
+        assertTrue(cookieVal.contains("SameSite=Lax"));
     }
 
     @Test
@@ -169,7 +172,7 @@ public class AuthServletTest {
         assertTrue(responseStr.contains("Login successful"));
         assertTrue(responseStr.contains("\"token\""));
         // Token should be returned in body, not cookie
-        verify(response, never()).addCookie(any(Cookie.class));
+        verify(response, never()).addHeader(eq("Set-Cookie"), anyString());
     }
 
     @Test

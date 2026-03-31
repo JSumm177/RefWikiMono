@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,10 +15,11 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-@WebServlet("/api/auth/*")
+@WebServlet("/auth/*")
 public class AuthServlet extends HttpServlet {
-
+    private static final Logger logger = Logger.getLogger(AuthServlet.class.getName());
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -38,16 +40,20 @@ public class AuthServlet extends HttpServlet {
         public String password;
     }
 
-    private void handleRegister(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void writeResponse(HttpServletResponse resp, int status, ObjectNode node) throws IOException {
+        resp.setStatus(status);
         resp.setContentType("application/json");
+        resp.getWriter().print(objectMapper.writeValueAsString(node));
+    }
+
+    private void handleRegister(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         ObjectNode responseJson = objectMapper.createObjectNode();
 
         try {
             AuthRequest authReq = objectMapper.readValue(req.getInputStream(), AuthRequest.class);
-            if (authReq.email == null || authReq.password == null) {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            if (authReq == null || authReq.email == null || authReq.password == null) {
                 responseJson.put("error", "Email and password are required");
-                resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                writeResponse(resp, HttpServletResponse.SC_BAD_REQUEST, responseJson);
                 return;
             }
 
@@ -57,9 +63,8 @@ public class AuthServlet extends HttpServlet {
                 checkStmt.setString(1, authReq.email);
                 try (ResultSet rs = checkStmt.executeQuery()) {
                     if (rs.next()) {
-                        resp.setStatus(HttpServletResponse.SC_CONFLICT);
                         responseJson.put("error", "User already exists");
-                        resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                        writeResponse(resp, HttpServletResponse.SC_CONFLICT, responseJson);
                         return;
                     }
                 }
@@ -72,28 +77,34 @@ public class AuthServlet extends HttpServlet {
                     insertStmt.executeUpdate();
                 }
 
-                resp.setStatus(HttpServletResponse.SC_CREATED);
                 responseJson.put("message", "User registered successfully");
-                resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                writeResponse(resp, HttpServletResponse.SC_CREATED, responseJson);
             }
 
+        } catch (SQLException e) {
+            if ("23000".equals(e.getSQLState())) {
+                responseJson.put("error", "User already exists");
+                writeResponse(resp, HttpServletResponse.SC_CONFLICT, responseJson);
+            } else {
+                logger.log(Level.SEVERE, "Database error during registration", e);
+                responseJson.put("error", "Registration failed due to a database error");
+                writeResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, responseJson);
+            }
         } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            logger.log(Level.SEVERE, "Registration action failed", e);
             responseJson.put("error", "Registration failed");
-            resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+            writeResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, responseJson);
         }
     }
 
     private void handleLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("application/json");
         ObjectNode responseJson = objectMapper.createObjectNode();
 
         try {
             AuthRequest authReq = objectMapper.readValue(req.getInputStream(), AuthRequest.class);
-            if (authReq.email == null || authReq.password == null) {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            if (authReq == null || authReq.email == null || authReq.password == null) {
                 responseJson.put("error", "Email and password are required");
-                resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                writeResponse(resp, HttpServletResponse.SC_BAD_REQUEST, responseJson);
                 return;
             }
 
@@ -110,11 +121,15 @@ public class AuthServlet extends HttpServlet {
                             // Check platform header
                             String platform = req.getHeader("X-Client-Platform");
                             if ("web".equalsIgnoreCase(platform)) {
-                                Cookie cookie = new Cookie("jwt", token);
-                                cookie.setHttpOnly(true);
-                                cookie.setPath("/");
-                                cookie.setMaxAge(24 * 60 * 60); // 24 hours
-                                resp.addCookie(cookie);
+                                // Manual Set-Cookie to include SameSite attribute (not in javax.servlet.http.Cookie)
+                                long maxAge = 24 * 60 * 60;
+                                String cookieHeader = String.format("jwt=%s; Path=/; Max-Age=%d; HttpOnly; SameSite=Lax", token, maxAge);
+                                // Enable Secure if request is secure or in production environment (behind proxy)
+                                String xForwardedProto = req.getHeader("X-Forwarded-Proto");
+                                if (req.isSecure() || "https".equalsIgnoreCase(xForwardedProto)) {
+                                    cookieHeader += "; Secure";
+                                }
+                                resp.addHeader("Set-Cookie", cookieHeader);
                                 responseJson.put("message", "Login successful");
                             } else {
                                 // Default to returning token in body for mobile or if not specified
@@ -122,8 +137,7 @@ public class AuthServlet extends HttpServlet {
                                 responseJson.put("token", token);
                             }
 
-                            resp.setStatus(HttpServletResponse.SC_OK);
-                            resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                            writeResponse(resp, HttpServletResponse.SC_OK, responseJson);
                             return;
                         }
                     }
@@ -131,14 +145,13 @@ public class AuthServlet extends HttpServlet {
             }
 
             // If we reach here, invalid credentials
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             responseJson.put("error", "Invalid credentials");
-            resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+            writeResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, responseJson);
 
         } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            logger.log(Level.SEVERE, "Login action failed", e);
             responseJson.put("error", "Login failed");
-            resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+            writeResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, responseJson);
         }
     }
 }
