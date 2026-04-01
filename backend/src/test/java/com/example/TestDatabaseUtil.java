@@ -6,6 +6,7 @@ import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import org.hibernate.Session;
 
 public class TestDatabaseUtil {
 
@@ -29,9 +30,9 @@ public class TestDatabaseUtil {
             System.setProperty("DB_PASSWORD", "");
 
             HikariDataSource ds = new HikariDataSource(config);
+            // This will also trigger Liquibase and Hibernate initialization
             DatabaseConfig.setDataSourceForTesting(ds);
 
-            initializeSchema();
             isInitialized = true;
         }
     }
@@ -40,38 +41,12 @@ public class TestDatabaseUtil {
         // H2 in-memory DB will close when the JVM shuts down.
     }
 
-    private static void initializeSchema() {
-        try (Connection conn = DatabaseConfig.getDataSource().getConnection();
-             Statement stmt = conn.createStatement()) {
-
-            stmt.execute("CREATE TABLE IF NOT EXISTS items (" +
-                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                    "name VARCHAR(255) NOT NULL, " +
-                    "description TEXT, " +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                    ")");
-
-            stmt.execute("CREATE TABLE IF NOT EXISTS users (" +
-                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
-                    "email VARCHAR(255) NOT NULL UNIQUE, " +
-                    "password_hash VARCHAR(255) NOT NULL, " +
-                    "role VARCHAR(20) DEFAULT 'USER', " +
-                    "is_active BOOLEAN DEFAULT TRUE, " +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                    "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, " +
-                    "last_login_at TIMESTAMP NULL" +
-                    ")");
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize test schema", e);
-        }
-    }
-
     public static void clearTables() {
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              Statement stmt = conn.createStatement()) {
-            stmt.execute("TRUNCATE TABLE users");
-            stmt.execute("TRUNCATE TABLE items");
+            // Delete instead of truncate because of foreign keys or Liquibase
+            stmt.execute("DELETE FROM users");
+            stmt.execute("DELETE FROM items");
         } catch (Exception e) {
             throw new RuntimeException("Failed to clear tables", e);
         }
