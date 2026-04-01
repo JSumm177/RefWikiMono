@@ -16,6 +16,9 @@ mobile/ios/build
 backend/target/
 .DS_Store
 
+# Documentation
+docs/_book
+
 # IntelliJ configuration
 .idea/workspace.xml
 .idea/dataSources.local.xml
