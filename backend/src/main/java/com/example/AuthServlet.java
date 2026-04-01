@@ -14,10 +14,13 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebServlet("/api/auth/*")
 public class AuthServlet extends HttpServlet {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthServlet.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -45,6 +48,7 @@ public class AuthServlet extends HttpServlet {
         try {
             AuthRequest authReq = objectMapper.readValue(req.getInputStream(), AuthRequest.class);
             if (authReq.email == null || authReq.password == null) {
+                logger.warn("Registration failed: Missing email or password");
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 responseJson.put("error", "Email and password are required");
                 resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
@@ -57,6 +61,7 @@ public class AuthServlet extends HttpServlet {
                 checkStmt.setString(1, authReq.email);
                 try (ResultSet rs = checkStmt.executeQuery()) {
                     if (rs.next()) {
+                        logger.warn("Registration failed: User already exists for email {}", authReq.email);
                         resp.setStatus(HttpServletResponse.SC_CONFLICT);
                         responseJson.put("error", "User already exists");
                         resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
@@ -72,12 +77,14 @@ public class AuthServlet extends HttpServlet {
                     insertStmt.executeUpdate();
                 }
 
+                logger.info("User registered successfully: {}", authReq.email);
                 resp.setStatus(HttpServletResponse.SC_CREATED);
                 responseJson.put("message", "User registered successfully");
                 resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
             }
 
         } catch (Exception e) {
+            logger.error("Registration failed with exception", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             responseJson.put("error", "Registration failed");
             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
@@ -91,6 +98,7 @@ public class AuthServlet extends HttpServlet {
         try {
             AuthRequest authReq = objectMapper.readValue(req.getInputStream(), AuthRequest.class);
             if (authReq.email == null || authReq.password == null) {
+                logger.warn("Login failed: Missing email or password");
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 responseJson.put("error", "Email and password are required");
                 resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
@@ -122,10 +130,15 @@ public class AuthServlet extends HttpServlet {
                                 responseJson.put("token", token);
                             }
 
+                            logger.info("Login successful: {}", authReq.email);
                             resp.setStatus(HttpServletResponse.SC_OK);
                             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
                             return;
+                        } else {
+                            logger.warn("Login failed: Invalid password for {}", authReq.email);
                         }
+                    } else {
+                        logger.warn("Login failed: User not found for {}", authReq.email);
                     }
                 }
             }
@@ -136,6 +149,7 @@ public class AuthServlet extends HttpServlet {
             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
 
         } catch (Exception e) {
+            logger.error("Login failed with exception", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             responseJson.put("error", "Login failed");
             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));

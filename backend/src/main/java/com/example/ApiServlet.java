@@ -2,8 +2,6 @@ package com.example;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,10 +13,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebServlet("/data")
 public class ApiServlet extends HttpServlet {
-    private static final Logger logger = Logger.getLogger(ApiServlet.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(ApiServlet.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -42,7 +42,7 @@ public class ApiServlet extends HttpServlet {
             out.print(objectMapper.writeValueAsString(responseJson));
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error fetching data", e);
+            logger.error("Error fetching data", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             responseJson.put("error", "An internal error occurred.");
             out.print(objectMapper.writeValueAsString(responseJson));

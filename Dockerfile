@@ -20,6 +20,12 @@ FROM tomcat:9.0-jdk21
 # Remove default webapps
 RUN rm -rf /usr/local/tomcat/webapps/*
 
+# Ensure access logs go to stdout so they can be collected by Docker
+RUN sed -i -e 's/directory="logs"/directory="\/dev"/' \
+           -e 's/prefix="localhost_access_log"/prefix="stdout"/' \
+           -e 's/suffix=".txt"/suffix="" rotatable="false"/' \
+           /usr/local/tomcat/conf/server.xml
+
 # Copy built frontend to Tomcat ROOT app
 COPY --from=frontend-builder /app/frontend/dist /usr/local/tomcat/webapps/ROOT
 
