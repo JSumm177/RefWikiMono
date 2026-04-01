@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,7 +25,8 @@ const LoginPage: React.FC = () => {
 
             if (response.ok) {
                 // For web, we rely on the HttpOnly cookie for subsequent requests
-                // We could set an isAuthenticated state in Context, but for MVP we navigate
+                // We set isAuthenticated state in Context
+                login();
                 navigate('/');
             } else {
                 const data = await response.json();
