@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthContextType {
     userToken: string | null;
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const bootstrapAsync = async () => {
             let token;
             try {
-                token = await SecureStore.getItemAsync('userToken');
+                token = await AsyncStorage.getItem('userToken');
             } catch (e) {
                 // Restoring token failed
                 console.error("Failed to restore token", e);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const signIn = async (token: string) => {
         try {
-            await SecureStore.setItemAsync('userToken', token);
+            await AsyncStorage.setItem('userToken', token);
             setUserToken(token);
         } catch (e) {
             console.error("Failed to save token", e);
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const signOut = async () => {
         try {
-            await SecureStore.deleteItemAsync('userToken');
+            await AsyncStorage.removeItem('userToken');
             setUserToken(null);
         } catch (e) {
             console.error("Failed to delete token", e);
