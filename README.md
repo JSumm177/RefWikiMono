@@ -116,6 +116,18 @@ docker compose up -d db
 
 ## Testing
 
+### Backend (Java)
+To run the backend tests, you must have a running Docker daemon. The testing suite relies on:
+- **JUnit 5**: Modern testing framework supporting features like `@Nested` and `@ParameterizedTest`.
+- **Mockito**: Used for mocking dependencies (e.g., mail services or external APIs).
+- **Testcontainers**: Requires Docker to spin up a temporary MySQL instance during test execution.
+
+To execute the tests:
+```bash
+cd backend
+mvn clean test
+```
+
 ### Frontend End-to-End (Cypress)
 Ensure the application is running (via Docker or local dev) and run:
 ```bash
