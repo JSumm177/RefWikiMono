@@ -24,7 +24,6 @@ backend/target/
 .idea/dataSources/*/
 .idea/compiler.xml
 .idea/jarRepositories.xml
-.idea/sqldialects.xml
 .idea/.name
 
 # Auto-generated iml files
