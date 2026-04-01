@@ -59,6 +59,20 @@ The easiest way to run the entire stack (Database, Backend, and Frontend) connec
 
 ---
 
+## Viewing Logs
+
+Both the Java backend application logs and the Tomcat server logs (Catalina and access logs) are unified and configured to stream directly to standard output (`stdout`) in plain text. This means you can easily view and manage all logs natively using Docker.
+
+To view the live stream of logs for the entire web stack:
+
+```bash
+docker logs -f refwiki-app
+```
+
+*Note: `refwiki-app` is the default container name for the web service. If you started it via docker-compose, you can also use `docker compose logs -f app`.*
+
+---
+
 ## Local Development
 
 If you want to run the components separately for faster development iterations:
