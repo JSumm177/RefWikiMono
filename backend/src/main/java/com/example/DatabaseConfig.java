@@ -2,10 +2,13 @@ package com.example;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 
 public class DatabaseConfig {
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
     private static HikariDataSource dataSource;
 
     static {
@@ -17,6 +20,7 @@ public class DatabaseConfig {
 
         // Allow bypassing strict env var check if we are in a test environment
         if (dbHost == null || dbPort == null || dbName == null || dbUser == null || dbPass == null) {
+            logger.warn("One or more database environment variables are missing.");
             if (System.getProperty("IS_TEST_ENV") != null) {
                 // Read from system properties instead, or use dummy if still missing
                 dbHost = System.getProperty("DB_HOST", "localhost");
@@ -30,9 +34,11 @@ public class DatabaseConfig {
         }
 
         if (System.getProperty("IS_TEST_ENV") != null && "localhost".equals(dbHost)) {
+            logger.info("Test environment detected. Delaying database initialization.");
             // Delay initialization for tests since testcontainers hasn't started yet.
             // The TestDatabaseUtil will call setDataSourceForTesting.
         } else {
+            logger.info("Initializing database connection pool to jdbc:mysql://{}:{}/{}", dbHost, dbPort, dbName);
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl("jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName + "?allowPublicKeyRetrieval=true&useSSL=false");
             config.setUsername(dbUser);
