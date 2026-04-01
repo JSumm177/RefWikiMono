@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { AuthRequest, AuthResponse } from './api-types';
 
 const RegisterPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -13,16 +14,18 @@ const RegisterPage: React.FC = () => {
         setError('');
         setSuccess('');
 
+        const requestBody: AuthRequest = { email, password };
+
         try {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify(requestBody)
             });
 
-            const data = await response.json();
+            const data: AuthResponse = await response.json();
 
             if (response.ok) {
                 setSuccess('Registration successful. You can now login.');

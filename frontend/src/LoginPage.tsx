@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
+import type { AuthRequest, AuthResponse } from './api-types';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -13,6 +14,8 @@ const LoginPage: React.FC = () => {
         e.preventDefault();
         setError('');
 
+        const requestBody: AuthRequest = { email, password };
+
         try {
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
@@ -20,7 +23,7 @@ const LoginPage: React.FC = () => {
                     'Content-Type': 'application/json',
                     'X-Client-Platform': 'web' // web platform requests cookie
                 },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify(requestBody)
             });
 
             if (response.ok) {
@@ -29,7 +32,7 @@ const LoginPage: React.FC = () => {
                 login();
                 navigate('/');
             } else {
-                const data = await response.json();
+                const data: AuthResponse = await response.json();
                 setError(data.error || 'Login failed');
             }
         } catch (err) {

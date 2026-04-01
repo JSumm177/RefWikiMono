@@ -26,7 +26,7 @@ public class ApiServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         PrintWriter out = resp.getWriter();
-        ObjectNode responseJson = objectMapper.createObjectNode();
+        ApiResponse responseJson = new ApiResponse();
 
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT name FROM items LIMIT 1");
@@ -37,14 +37,14 @@ public class ApiServlet extends HttpServlet {
                 itemName = rs.getString("name");
             }
 
-            responseJson.put("message", "Connected to MySQL!");
-            responseJson.put("data", itemName);
+            responseJson.message = "Connected to MySQL!";
+            responseJson.data = itemName;
             out.print(objectMapper.writeValueAsString(responseJson));
 
         } catch (Exception e) {
             logger.error("Error fetching data", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            responseJson.put("error", "An internal error occurred.");
+            responseJson.error = "An internal error occurred.";
             out.print(objectMapper.writeValueAsString(responseJson));
         }
         out.flush();

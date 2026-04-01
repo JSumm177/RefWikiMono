@@ -36,21 +36,16 @@ public class AuthServlet extends HttpServlet {
         }
     }
 
-    private static class AuthRequest {
-        public String email;
-        public String password;
-    }
-
     private void handleRegister(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
-        ObjectNode responseJson = objectMapper.createObjectNode();
+        AuthResponse responseJson = new AuthResponse();
 
         try {
             AuthRequest authReq = objectMapper.readValue(req.getInputStream(), AuthRequest.class);
             if (authReq.email == null || authReq.password == null) {
                 logger.warn("Registration failed: Missing email or password");
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                responseJson.put("error", "Email and password are required");
+                responseJson.error = "Email and password are required";
                 resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
                 return;
             }
@@ -63,7 +58,7 @@ public class AuthServlet extends HttpServlet {
                     if (rs.next()) {
                         logger.warn("Registration failed: User already exists for email {}", authReq.email);
                         resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                        responseJson.put("error", "User already exists");
+                        responseJson.error = "User already exists";
                         resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
                         return;
                     }
@@ -79,28 +74,28 @@ public class AuthServlet extends HttpServlet {
 
                 logger.info("User registered successfully: {}", authReq.email);
                 resp.setStatus(HttpServletResponse.SC_CREATED);
-                responseJson.put("message", "User registered successfully");
+                responseJson.message = "User registered successfully";
                 resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
             }
 
         } catch (Exception e) {
             logger.error("Registration failed with exception", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            responseJson.put("error", "Registration failed");
+            responseJson.error = "Registration failed";
             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
         }
     }
 
     private void handleLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
-        ObjectNode responseJson = objectMapper.createObjectNode();
+        AuthResponse responseJson = new AuthResponse();
 
         try {
             AuthRequest authReq = objectMapper.readValue(req.getInputStream(), AuthRequest.class);
             if (authReq.email == null || authReq.password == null) {
                 logger.warn("Login failed: Missing email or password");
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                responseJson.put("error", "Email and password are required");
+                responseJson.error = "Email and password are required";
                 resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
                 return;
             }
@@ -123,11 +118,11 @@ public class AuthServlet extends HttpServlet {
                                 cookie.setPath("/");
                                 cookie.setMaxAge(24 * 60 * 60); // 24 hours
                                 resp.addCookie(cookie);
-                                responseJson.put("message", "Login successful");
+                                responseJson.message = "Login successful";
                             } else {
                                 // Default to returning token in body for mobile or if not specified
-                                responseJson.put("message", "Login successful");
-                                responseJson.put("token", token);
+                                responseJson.message = "Login successful";
+                                responseJson.token = token;
                             }
 
                             logger.info("Login successful: {}", authReq.email);
@@ -145,13 +140,13 @@ public class AuthServlet extends HttpServlet {
 
             // If we reach here, invalid credentials
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            responseJson.put("error", "Invalid credentials");
+            responseJson.error = "Invalid credentials";
             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
 
         } catch (Exception e) {
             logger.error("Login failed with exception", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            responseJson.put("error", "Login failed");
+            responseJson.error = "Login failed";
             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
         }
     }
