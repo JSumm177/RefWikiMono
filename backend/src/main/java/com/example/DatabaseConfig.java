@@ -6,10 +6,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.ClassLoaderResourceAccessor;
+import java.sql.Connection;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+import java.util.Properties;
 
 public class DatabaseConfig {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
     private static HikariDataSource dataSource;
+    private static SessionFactory sessionFactory;
 
     static {
         String dbHost = System.getenv("DB_HOST");
@@ -49,6 +60,53 @@ public class DatabaseConfig {
             config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
             dataSource = new HikariDataSource(config);
+            runLiquibaseMigrations(dataSource);
+            initHibernateSessionFactory(dataSource);
+        }
+    }
+
+    private static void initHibernateSessionFactory(DataSource ds) {
+        try {
+            Configuration configuration = new Configuration();
+
+            Properties settings = new Properties();
+            settings.put(Environment.JAKARTA_JDBC_URL, dataSource.getJdbcUrl());
+            settings.put(Environment.JAKARTA_JDBC_USER, dataSource.getUsername());
+            settings.put(Environment.JAKARTA_JDBC_PASSWORD, dataSource.getPassword());
+            settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
+            settings.put(Environment.SHOW_SQL, "false");
+            settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+            // Important: tell hibernate not to create the schema, liquibase does it
+            settings.put(Environment.HBM2DDL_AUTO, "none");
+
+            configuration.setProperties(settings);
+
+            // Add annotated classes
+            configuration.addAnnotatedClass(com.example.User.class);
+
+            // We supply a custom connection provider to use the Hikari datasource
+            // OR simply let Hibernate use its default mechanism with the JDBC properties provided above
+            // Using properties above for simplicity as it creates its own pool if not provided a provider,
+            // but sharing the Hikari pool is better:
+            configuration.getProperties().put(Environment.DATASOURCE, ds);
+
+            sessionFactory = configuration.buildSessionFactory();
+            logger.info("Hibernate SessionFactory initialized successfully.");
+        } catch (Exception e) {
+            logger.error("Failed to initialize Hibernate SessionFactory", e);
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    private static void runLiquibaseMigrations(DataSource ds) {
+        try (Connection connection = ds.getConnection()) {
+            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+            Liquibase liquibase = new Liquibase("db/changelog/db.changelog-master.xml", new ClassLoaderResourceAccessor(), database);
+            liquibase.update("");
+            logger.info("Liquibase migrations ran successfully.");
+        } catch (Exception e) {
+            logger.error("Failed to run Liquibase migrations", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -56,11 +114,20 @@ public class DatabaseConfig {
         return dataSource;
     }
 
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
     // Visible for testing
     public static void setDataSourceForTesting(HikariDataSource testDataSource) {
         if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
         }
+        if (sessionFactory != null && !sessionFactory.isClosed()) {
+            sessionFactory.close();
+        }
         dataSource = testDataSource;
+        runLiquibaseMigrations(dataSource);
+        initHibernateSessionFactory(dataSource);
     }
 }
