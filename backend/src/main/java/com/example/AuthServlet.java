@@ -126,6 +126,7 @@ public class AuthServlet extends HttpServlet {
                         if ("web".equalsIgnoreCase(platform)) {
                             Cookie cookie = new Cookie("jwt", token);
                             cookie.setHttpOnly(true);
+                            cookie.setSecure(true);
                             cookie.setPath("/");
                             cookie.setMaxAge(24 * 60 * 60); // 24 hours
                             resp.addCookie(cookie);
