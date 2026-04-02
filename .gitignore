@@ -39,3 +39,4 @@ backend/backend.iml
 # .idea/vcs.xml - Not ignored to share vcs setup
 # RefWikiMono.iml, frontend/frontend.iml, and mobile/mobile.iml are tracked manually
 .idea/misc.xml
+bundle.js
