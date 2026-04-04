@@ -129,5 +129,6 @@ public class DatabaseConfig {
         dataSource = testDataSource;
         runLiquibaseMigrations(dataSource);
         initHibernateSessionFactory(dataSource);
+        dataSource = testDataSource;
     }
 }
