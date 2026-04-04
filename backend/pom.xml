@@ -54,6 +54,7 @@
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
+
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -64,6 +65,8 @@
             <artifactId>liquibase-core</artifactId>
             <version>4.23.0</version>
         </dependency>
+
+
 
         <!-- Logging dependencies -->
         <dependency>
