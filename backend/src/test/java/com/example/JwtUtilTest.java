@@ -26,4 +26,11 @@ public class JwtUtilTest {
 
         assertNull(subject);
     }
+
+    @Test
+    public void testValidateMissingToken() {
+        assertNull(JwtUtil.validateTokenAndGetSubject(null));
+        assertNull(JwtUtil.validateTokenAndGetSubject(""));
+        assertNull(JwtUtil.validateTokenAndGetSubject("   "));
+    }
 }
