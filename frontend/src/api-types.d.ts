@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2026-04-04 05:04:30.
+// Generated using typescript-generator version 3.2.1263 on 2026-04-04 05:40:10.
 
 export interface AuthRequest {
     email: string;
@@ -10,11 +10,5 @@ export interface AuthRequest {
 export interface AuthResponse {
     message: string;
     token: string;
-    error: string;
-}
-
-export interface ApiResponse {
-    message: string;
-    data: string;
     error: string;
 }

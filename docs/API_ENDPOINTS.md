@@ -2,32 +2,11 @@
 
 This document describes the existing API endpoints available in the backend application.
 
-## 1. Data Endpoint
-
-*   **URL:** `/data`
-*   **Method:** `GET`
-*   **Description:** Fetches a sample item from the database.
-*   **Response:**
-    *   **Content-Type:** `application/json`
-    *   **Success (200 OK):**
-        ```json
-        {
-          "message": "Connected to MySQL!",
-          "data": "item_name"
-        }
-        ```
-    *   **Error (500 Internal Server Error):**
-        ```json
-        {
-          "error": "An internal error occurred."
-        }
-        ```
-
-## 2. Authentication Endpoints
+## Authentication Endpoints
 
 The application uses JSON Web Tokens (JWT) for authentication.
 
-### 2.1. Register
+### Register
 
 *   **URL:** `/api/auth/register`
 *   **Method:** `POST`
@@ -62,7 +41,7 @@ The application uses JSON Web Tokens (JWT) for authentication.
         ```
     *   **Error (500 Internal Server Error):** Registration failed due to a server error.
 
-### 2.2. Login
+### Login
 
 *   **URL:** `/api/auth/login`
 *   **Method:** `POST`
