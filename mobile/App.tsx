@@ -2,21 +2,51 @@ import React, { useContext } from 'react';
 import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext, AuthProvider } from './AuthContext';
 import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 const HomeScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to RefWiki!</Text>
+      <Text style={styles.subtitle}>This is the Home tab.</Text>
+    </View>
+  );
+};
+
+const SearchScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Search</Text>
+      <Text style={styles.subtitle}>Find what you're looking for here.</Text>
+    </View>
+  );
+};
+
+const SettingsScreen = () => {
   const { signOut } = useContext(AuthContext);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to RefWiki!</Text>
-      <Text style={styles.subtitle}>You are successfully logged in.</Text>
+      <Text style={styles.title}>Settings</Text>
+      <Text style={styles.subtitle}>Manage your preferences.</Text>
       <Button title="Logout" onPress={signOut} />
     </View>
+  );
+};
+
+const MainTabNavigator = () => {
+  return (
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Search" component={SearchScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
+    </Tab.Navigator>
   );
 };
 
@@ -50,7 +80,11 @@ const Navigation = () => {
           </>
         ) : (
           // User is signed in
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen
+            name="Main"
+            component={MainTabNavigator}
+            options={{ title: 'RefWiki' }} // or headerShown: false if preferred
+          />
         )}
       </Stack.Navigator>
     </NavigationContainer>
