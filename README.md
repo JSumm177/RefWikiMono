@@ -40,7 +40,7 @@ The easiest way to run the entire stack (Database, Backend, and Frontend) connec
    ```
 
 3. **Start the Web Application**:
-   Use the provided script to verify the database is running and start the web services (frontend + backend):
+   Use the provided script to verify the database is running and start the web services (frontend and backend):
    ```bash
    ./start-web.sh
    ```
@@ -61,7 +61,7 @@ The easiest way to run the entire stack (Database, Backend, and Frontend) connec
 
 ## Viewing Logs
 
-Both the Java backend application logs and the Tomcat server logs (Catalina and access logs) are unified and configured to stream directly to standard output (`stdout`) in plain text. This means you can easily view and manage all logs natively using Docker.
+Both the Java backend application logs and the Tomcat server logs (Catalina and access logs) are unified and configured to stream directly to standard output (`stdout`) in plain text. This means you can view and manage all logs natively using Docker.
 
 To view the live stream of logs for the entire web stack:
 
