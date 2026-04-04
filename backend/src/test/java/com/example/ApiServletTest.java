@@ -55,7 +55,6 @@ public class ApiServletTest {
     @Test
     public void testDoGetWithData() throws ServletException, IOException, Exception {
         // Insert dummy data (Liquibase adds 1 item on init, but we truncate/delete before each test)
-        // Insert dummy data
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("INSERT INTO items (name, description) VALUES ('Test Item', 'Desc')");
@@ -76,7 +75,6 @@ public class ApiServletTest {
     @Test
     public void testDoGetWithoutData() throws ServletException, IOException {
         // No data inserted (TestDatabaseUtil.clearTables() has cleared them)
-        // No data inserted
         apiServlet.doGet(request, response);
 
         String jsonResponse = responseWriter.toString();
