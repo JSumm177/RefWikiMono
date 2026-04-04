@@ -141,6 +141,7 @@ public class AuthServletTest {
         assertEquals("jwt", addedCookie.getName());
         assertNotNull(addedCookie.getValue());
         assertTrue(addedCookie.isHttpOnly());
+        assertTrue(addedCookie.getSecure());
         assertEquals("/", addedCookie.getPath());
     }
 
