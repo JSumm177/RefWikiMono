@@ -92,12 +92,11 @@ docker compose up -d db
    export DB_USER=wiki_user
    export DB_PASSWORD=wiki_password
    ```
-2. Build the WAR file:
+2. Run the application using the Jetty Maven plugin:
    ```bash
    cd backend
-   mvn clean package
+   mvn jetty:run
    ```
-3. Deploy the `target/api.war` to your local Tomcat instance (port 8080).
 
 ### 3. Frontend (React)
 1. Navigate to the frontend directory:
