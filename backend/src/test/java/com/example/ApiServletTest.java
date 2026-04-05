@@ -38,6 +38,7 @@ public class ApiServletTest {
 
     @BeforeEach
     public void setup() throws IOException {
+        TestDatabaseUtil.clearTables();
         MockitoAnnotations.openMocks(this);
         apiServlet = new ApiServlet();
 
@@ -53,7 +54,7 @@ public class ApiServletTest {
 
     @Test
     public void testDoGetWithData() throws ServletException, IOException, Exception {
-        // Insert dummy data
+        // Insert dummy data (Liquibase adds 1 item on init, but we truncate/delete before each test)
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("INSERT INTO items (name, description) VALUES ('Test Item', 'Desc')");
@@ -63,6 +64,9 @@ public class ApiServletTest {
 
         String jsonResponse = responseWriter.toString();
         assertTrue(jsonResponse.contains("\"message\":\"Connected to MySQL!\""));
+        // The API servlet uses SELECT name FROM items LIMIT 1
+        // Liquibase initializes one item, but tearDown() calls TestDatabaseUtil.clearTables() which DELETES ALL items.
+        // Then this test inserts 'Test Item' so 'Test Item' should be returned.
         assertTrue(jsonResponse.contains("\"data\":\"Test Item\""));
         verify(response).setContentType("application/json");
         verify(response).setCharacterEncoding("UTF-8");
@@ -70,7 +74,7 @@ public class ApiServletTest {
 
     @Test
     public void testDoGetWithoutData() throws ServletException, IOException {
-        // No data inserted
+        // No data inserted (TestDatabaseUtil.clearTables() has cleared them)
         apiServlet.doGet(request, response);
 
         String jsonResponse = responseWriter.toString();

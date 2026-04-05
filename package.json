@@ -1,0 +1,32 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "A fullstack monorepo featuring a React TypeScript frontend, a Java Servlet backend with MySQL, and a React Native mobile application.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:build": "honkit build docs && touch docs/_book/.nojekyll",
+    "docs:serve": "honkit serve docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JSumm177/RefWikiMono.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/JSumm177/RefWikiMono/issues"
+  },
+  "homepage": "https://github.com/JSumm177/RefWikiMono#readme",
+  "devDependencies": {
+    "honkit": "^6.1.7"
+  },
+  "dependencies": {
+    "expo": "^55.0.11"
+  }
+}

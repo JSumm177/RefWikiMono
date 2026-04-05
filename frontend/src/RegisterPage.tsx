@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { AuthRequest, AuthResponse } from './api-types';
 
 const RegisterPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -13,16 +14,18 @@ const RegisterPage: React.FC = () => {
         setError('');
         setSuccess('');
 
+        const requestBody: AuthRequest = { email, password };
+
         try {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify(requestBody)
             });
 
-            const data = await response.json();
+            const data: AuthResponse = await response.json();
 
             if (response.ok) {
                 setSuccess('Registration successful. You can now login.');
@@ -31,7 +34,7 @@ const RegisterPage: React.FC = () => {
                 setError(data.error || 'Registration failed');
             }
         } catch (err) {
-            setError('Network error');
+            setError('An error occurred. Please try again.');
         }
     };
 
@@ -42,8 +45,9 @@ const RegisterPage: React.FC = () => {
             {success && <div style={{ color: 'green', marginBottom: '10px' }}>{success}</div>}
             <form onSubmit={handleRegister}>
                 <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px' }}>Email</label>
+                    <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>Email</label>
                     <input
+                        id="email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -52,8 +56,9 @@ const RegisterPage: React.FC = () => {
                     />
                 </div>
                 <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px' }}>Password</label>
+                    <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>Password</label>
                     <input
+                        id="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}

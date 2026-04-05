@@ -55,6 +55,19 @@
             <version>0.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.2.7.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.23.0</version>
+        </dependency>
+
+
+
         <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -143,6 +156,30 @@
                         <IS_TEST_ENV>true</IS_TEST_ENV>
                         <JWT_SECRET_TEST>supersecretkey123456789012345678901234567890</JWT_SECRET_TEST>
                     </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>cz.habarta.typescript-generator</groupId>
+                <artifactId>typescript-generator-maven-plugin</artifactId>
+                <version>3.2.1263</version>
+                <executions>
+                    <execution>
+                        <id>generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jsonLibrary>jackson2</jsonLibrary>
+                    <classes>
+                        <class>com.example.AuthRequest</class>
+                        <class>com.example.AuthResponse</class>
+                        <class>com.example.ApiResponse</class>
+                    </classes>
+                    <outputKind>module</outputKind>
+                    <outputFile>../frontend/src/api-types.d.ts</outputFile>
                 </configuration>
             </plugin>
         </plugins>

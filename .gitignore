@@ -16,6 +16,12 @@ mobile/ios/build
 backend/target/
 .DS_Store
 
+
+# Documentation
+docs/_book
+
+
+
 # IntelliJ configuration
 .idea/workspace.xml
 .idea/dataSources.local.xml
@@ -36,3 +42,5 @@ backend/backend.iml
 # .idea/vcs.xml - Not ignored to share vcs setup
 # RefWikiMono.iml, frontend/frontend.iml, and mobile/mobile.iml are tracked manually
 .idea/misc.xml
+
+bundle.js

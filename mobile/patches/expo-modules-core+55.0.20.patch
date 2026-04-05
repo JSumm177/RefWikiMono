@@ -1,0 +1,164 @@
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/apploader/AppLoaderProvider.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/apploader/AppLoaderProvider.kt
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/apploader/AppLoaderProvider.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/apploader/AppLoaderProvider.kt
+@@ -31,6 +31,7 @@
+         "org.unimodules.core.AppLoader#$name"
+       ) ?: throw IllegalStateException("Unable to instantiate AppLoader!")
+
++      @Suppress("UNCHECKED_CAST")
+       loaderClass = Class.forName(loaderClassName) as Class<out HeadlessAppLoader>
+       loaders[name] = loaderClass
+         .getDeclaredConstructor()
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt
+@@ -10,7 +10,6 @@
+ import androidx.appcompat.app.AppCompatActivity
+ import com.facebook.react.bridge.ReactApplicationContext
+ import com.facebook.react.uimanager.UIManagerHelper
+-import com.facebook.react.uimanager.UIManagerModule
+ import com.facebook.react.uimanager.common.UIManagerType
+ import expo.modules.adapters.react.NativeModulesProxy
+ import expo.modules.core.errors.ContextDestroyedException
+@@ -18,7 +17,6 @@
+ import expo.modules.interfaces.permissions.Permissions
+ import expo.modules.kotlin.activityresult.ActivityResultsManager
+ import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
+-import expo.modules.kotlin.defaultmodules.ErrorManagerModule
+ import expo.modules.kotlin.defaultmodules.JSLoggerModule
+ import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
+ import expo.modules.kotlin.events.EventEmitter
+@@ -50,11 +48,11 @@
+ ) : CurrentActivityProvider {
+   // The main context used in the app.
+   // Modules attached to this context will be available on the main js context.
+-  @Deprecated("Use AppContext.runtimeContext instead", ReplaceWith("runtime"))
+-  val hostingRuntimeContext = MainRuntime(this, reactContextHolder)
++  val runtime: MainRuntime = MainRuntime(this, reactContextHolder)
+
+-  val runtime: MainRuntime
+-    get() = hostingRuntimeContext
++  @Deprecated("Use AppContext.runtimeContext instead", ReplaceWith("runtime"))
++  val hostingRuntimeContext: MainRuntime
++    get() = runtime
+
+   private val uiRuntimeHolder = lazy { WorkletRuntime(this, reactContextHolder) }
+   val uiRuntime
+@@ -252,7 +250,7 @@
+     }
+
+   @Deprecated("Use AppContext.jsLogger instead")
+-  val errorManager: ErrorManagerModule? by lazy {
++  val errorManager: JSLoggerModule? by lazy {
+     registry.getModule()
+   }
+
+@@ -357,12 +355,13 @@
+       ?.resolveView(viewTag) as? T
+   }
+
++  @Suppress("DEPRECATION")
+   internal fun dispatchOnMainUsingUIManager(block: () -> Unit) {
+     val reactContext = runtime.reactContext ?: throw Exceptions.ReactContextLost()
+     val uiManager = UIManagerHelper.getUIManagerForReactTag(
+       reactContext,
+-      UIManagerType.DEFAULT
+-    ) as UIManagerModule
++      UIManagerType.LEGACY
++    ) as com.facebook.react.uimanager.UIManagerModule
+
+     uiManager.addUIBlock {
+       block()
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt
+@@ -45,16 +45,16 @@
+       resolveMethod(value)
+     }
+
+-    override fun reject(code: String, message: String?) {
+-      expoPromise.reject(code, message, null)
++    override fun reject(code: String?, message: String?) {
++      expoPromise.reject(code ?: unknownCode, message, null)
+     }
+
+-    override fun reject(code: String, throwable: Throwable?) {
+-      expoPromise.reject(code, null, throwable)
++    override fun reject(code: String?, throwable: Throwable?) {
++      expoPromise.reject(code ?: unknownCode, null, throwable)
+     }
+
+-    override fun reject(code: String, message: String?, throwable: Throwable?) {
+-      expoPromise.reject(code, message, throwable)
++    override fun reject(code: String?, message: String?, throwable: Throwable?) {
++      expoPromise.reject(code ?: unknownCode, message, throwable)
+     }
+
+     override fun reject(throwable: Throwable) {
+@@ -65,16 +65,16 @@
+       expoPromise.reject(unknownCode, null, throwable)
+     }
+
+-    override fun reject(code: String, userInfo: WritableMap) {
+-      expoPromise.reject(code, null, null)
++    override fun reject(code: String?, userInfo: WritableMap) {
++      expoPromise.reject(code ?: unknownCode, null, null)
+     }
+
+-    override fun reject(code: String, throwable: Throwable?, userInfo: WritableMap) {
+-      expoPromise.reject(code, null, throwable)
++    override fun reject(code: String?, throwable: Throwable?, userInfo: WritableMap) {
++      expoPromise.reject(code ?: unknownCode, null, throwable)
+     }
+
+-    override fun reject(code: String, message: String?, userInfo: WritableMap) {
+-      expoPromise.reject(code, message, null)
++    override fun reject(code: String?, message: String?, userInfo: WritableMap) {
++      expoPromise.reject(code ?: unknownCode, message, null)
+     }
+
+     override fun reject(code: String?, message: String?, throwable: Throwable?, userInfo: WritableMap?) {
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/defaultmodules/NativeModulesProxyModule.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/defaultmodules/NativeModulesProxyModule.kt
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/defaultmodules/NativeModulesProxyModule.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/defaultmodules/NativeModulesProxyModule.kt
+@@ -13,6 +13,7 @@
+   override fun definition() = ModuleDefinition {
+     Name(NativeModulesProxyModuleName)
+
++    @Suppress("DEPRECATION")
+     Constants {
+       appContext.legacyModulesProxyHolder?.get()?.constants ?: emptyMap()
+     }
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewDefinitionBuilder.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewDefinitionBuilder.kt
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewDefinitionBuilder.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewDefinitionBuilder.kt
+@@ -461,6 +461,7 @@
+   private fun handleFailureDuringViewCreation(context: Context, appContext: AppContext, error: Throwable): View {
+     Log.e("ExpoModulesCore", "Couldn't create view of type $viewClass", error)
+
++    @Suppress("DEPRECATION")
+     appContext.errorManager?.reportExceptionToLogBox(
+       error as? CodedException ?: UnexpectedException(error)
+     )
+diff --git a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewManagerDefinition.kt b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewManagerDefinition.kt
+--- a/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewManagerDefinition.kt
++++ b/node_modules/expo-modules-core/android/src/main/java/expo/modules/kotlin/views/ViewManagerDefinition.kt
+@@ -38,6 +38,7 @@
+     val nativeModulesProxy = reactContext.getUnimoduleProxy() ?: return
+     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext
+
++    @Suppress("DEPRECATION")
+     appContext.errorManager?.reportExceptionToLogBox(exception)
+   }
+ }
+diff --git a/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/AndroidLibraryExtension.kt b/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/AndroidLibraryExtension.kt
+--- a/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/AndroidLibraryExtension.kt
++++ b/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/android/AndroidLibraryExtension.kt
+@@ -2,6 +2,7 @@
+
+ import com.android.build.gradle.LibraryExtension
+
++@Suppress("DEPRECATION")
+ internal fun LibraryExtension.applySDKVersions(compileSdk: Int, minSdk: Int, targetSdk: Int) {
+   this.compileSdk = compileSdk
+   defaultConfig {
