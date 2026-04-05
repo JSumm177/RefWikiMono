@@ -176,7 +176,6 @@
                     <classes>
                         <class>com.example.AuthRequest</class>
                         <class>com.example.AuthResponse</class>
-                        <class>com.example.ApiResponse</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../frontend/src/api-types.d.ts</outputFile>

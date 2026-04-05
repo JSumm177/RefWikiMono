@@ -12,9 +12,3 @@ export interface AuthResponse {
     token: string;
     error: string;
 }
-
-export interface ApiResponse {
-    message: string;
-    data: string;
-    error: string;
-}

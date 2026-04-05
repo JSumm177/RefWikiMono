@@ -54,8 +54,8 @@ The easiest way to run the entire stack (Database, Backend, and Frontend) connec
 
 4. **Access the Applications**:
    - **Frontend**: [http://localhost:8080](http://localhost:8080)
-   - **Backend API**: [http://localhost:8080/api/api/data](http://localhost:8080/api/api/data)
-     *(Note: The first `/api` is the context path from `api.war`, the second is the servlet mapping.)*
+   - **Backend API**: [http://localhost:8080/api/](http://localhost:8080/api/)
+     *(Note: The `/api` is the context path from `api.war`.)*
 
 ---
 
