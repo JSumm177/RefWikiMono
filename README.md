@@ -11,6 +11,13 @@ A fullstack monorepo featuring a React TypeScript frontend, a Java Servlet backe
 
 ---
 
+## Documentation
+
+Detailed documentation and testing guides can be found hosted on GitHub Pages:
+[https://jsumm177.github.io/RefWikiMono/](https://jsumm177.github.io/RefWikiMono/)
+
+---
+
 ## Prerequisites
 
 Ensure you have the following installed:
