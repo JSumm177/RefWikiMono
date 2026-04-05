@@ -34,7 +34,7 @@ const RegisterPage: React.FC = () => {
                 setError(data.error || 'Registration failed');
             }
         } catch (err) {
-            setError('Network error');
+            setError('An error occurred. Please try again.');
         }
     };
 
@@ -45,8 +45,9 @@ const RegisterPage: React.FC = () => {
             {success && <div style={{ color: 'green', marginBottom: '10px' }}>{success}</div>}
             <form onSubmit={handleRegister}>
                 <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px' }}>Email</label>
+                    <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>Email</label>
                     <input
+                        id="email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -55,8 +56,9 @@ const RegisterPage: React.FC = () => {
                     />
                 </div>
                 <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '5px' }}>Password</label>
+                    <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>Password</label>
                     <input
+                        id="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
