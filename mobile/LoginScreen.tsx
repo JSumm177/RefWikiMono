@@ -11,7 +11,7 @@ const LoginScreen = ({ navigation }: any) => {
         try {
             // Adjust the URL to match your backend (e.g. your local IP if running on physical device)
             // Use 10.0.2.2 for Android Emulator, localhost for iOS simulator
-            const API_URL = 'http://10.0.2.2:8080/api/auth/login';
+            const API_URL = 'http://localhost:8080/api/auth/login';
 
             const response = await fetch(API_URL, {
                 method: 'POST',
