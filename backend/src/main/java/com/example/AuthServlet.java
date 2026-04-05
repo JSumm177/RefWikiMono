@@ -29,9 +29,31 @@ public class AuthServlet extends HttpServlet {
             handleRegister(req, resp);
         } else if ("/login".equals(pathInfo)) {
             handleLogin(req, resp);
+        } else if ("/logout".equals(pathInfo)) {
+            handleLogout(req, resp);
         } else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
+    }
+
+    private void handleLogout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json");
+        AuthResponse responseJson = new AuthResponse();
+
+        String platform = req.getHeader("X-Client-Platform");
+        if ("web".equalsIgnoreCase(platform)) {
+            Cookie cookie = new Cookie("jwt", "");
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(0); // 0 means delete cookie
+            resp.addCookie(cookie);
+        }
+
+        logger.info("Logout successful");
+        resp.setStatus(HttpServletResponse.SC_OK);
+        responseJson.message = "Logout successful";
+        resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
     }
 
     private void handleRegister(HttpServletRequest req, HttpServletResponse resp) throws IOException {

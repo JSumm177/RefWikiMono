@@ -24,9 +24,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(true);
     };
 
-    const logout = () => {
-        localStorage.removeItem('isAuthenticated');
-        setIsAuthenticated(false);
+    const logout = async () => {
+        try {
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Client-Platform': 'web'
+                }
+            });
+        } catch (error) {
+            console.error("Logout request failed:", error);
+        } finally {
+            localStorage.removeItem('isAuthenticated');
+            setIsAuthenticated(false);
+        }
     };
 
     return (
