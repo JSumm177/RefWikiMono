@@ -197,6 +197,40 @@ public class AuthServletTest {
         verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
 
+    @Test
+    public void testLogoutWeb() throws Exception {
+        when(request.getPathInfo()).thenReturn("/logout");
+        when(request.getHeader("X-Client-Platform")).thenReturn("web");
+
+        authServlet.doPost(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+        assertTrue(responseWriter.toString().contains("Logout successful"));
+
+        ArgumentCaptor<Cookie> cookieCaptor = ArgumentCaptor.forClass(Cookie.class);
+        verify(response).addCookie(cookieCaptor.capture());
+        Cookie addedCookie = cookieCaptor.getValue();
+
+        assertEquals("jwt", addedCookie.getName());
+        assertEquals("", addedCookie.getValue());
+        assertEquals(0, addedCookie.getMaxAge());
+        assertTrue(addedCookie.isHttpOnly());
+        assertTrue(addedCookie.getSecure());
+        assertEquals("/", addedCookie.getPath());
+    }
+
+    @Test
+    public void testLogoutMobile() throws Exception {
+        when(request.getPathInfo()).thenReturn("/logout");
+        when(request.getHeader("X-Client-Platform")).thenReturn("mobile");
+
+        authServlet.doPost(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+        assertTrue(responseWriter.toString().contains("Logout successful"));
+        verify(response, never()).addCookie(any(Cookie.class));
+    }
+
     // Helper class for mock body
     private static class AuthRequest {
         public String email;
