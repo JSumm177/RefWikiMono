@@ -29,6 +29,27 @@ Ensure you have the following installed:
 
 ---
 
+## NFL Rulebook PDF-to-JSON Pipeline
+
+The project includes a Node.js script located in the `scripts/` directory that downloads the latest NFL Rulebook PDF, extracts its raw text using `pdf-parse`, and utilizes a hybrid LLM process to clean and structure the output into JSON for the mobile application.
+
+To use this script:
+1. Navigate to the `scripts/` directory:
+   ```bash
+   cd scripts
+   ```
+2. Install the necessary Node.js dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the script:
+   ```bash
+   node nfl-rule-parser.mjs
+   ```
+4. The output will be saved as `rulebook.json` in the `mobile/assets/` directory.
+
+---
+
 ## Getting Started (Docker Compose)
 
 The easiest way to run the entire stack (Database, Backend, and Frontend) connected is using Docker Compose.
