@@ -44,7 +44,7 @@ async function extractTextFromPDF(pdfPath) {
   return data.text;
 }
 
-function chunkText(rawText) {
+export function chunkText(rawText) {
   console.log('Chunking text into rules...');
   // A naive chunking approach just splitting by "Rule X"
   // The actual text extraction might vary wildly. This is a basic Regex to split rules.
@@ -57,7 +57,7 @@ function chunkText(rawText) {
   return ruleChunks;
 }
 
-async function cleanWithAI(rawChunk, index) {
+export async function cleanWithAI(rawChunk, index) {
   if (!process.env.GEMINI_API_KEY && !process.env.OPENAI_API_KEY) {
     // console.warn("No API key found. Using mock parser.");
     return mockCleanup(rawChunk, index);
@@ -92,7 +92,7 @@ function mockCleanup(rawChunk, index) {
   };
 }
 
-async function main() {
+export async function main() {
   try {
     await downloadPDF(PDF_URL, PDF_OUTPUT_PATH);
     const rawText = await extractTextFromPDF(PDF_OUTPUT_PATH);
@@ -122,4 +122,8 @@ async function main() {
   }
 }
 
-main();
+// Only run main if executed directly (not imported as a module)
+import url from 'url';
+if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
+  main();
+}
