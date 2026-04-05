@@ -8,6 +8,7 @@
     "lint": "eslint .",
     "postinstall": "patch-package && cd ios && pod install || true",
     "start": "react-native start",
+    "start:reset": "react-native start --reset-cache",
     "test": "jest"
   },
   "dependencies": {
