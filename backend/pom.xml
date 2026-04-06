@@ -179,6 +179,7 @@
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../frontend/src/api-types.d.ts</outputFile>
+                    <noFileComment>true</noFileComment>
                 </configuration>
             </plugin>
         </plugins>
