@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "docs:build": "honkit build docs && touch docs/_book/.nojekyll",
-    "docs:serve": "honkit serve docs"
+    "docs:serve": "honkit serve docs",
+    "dev": "./start-dev.sh"
   },
   "repository": {
     "type": "git",
