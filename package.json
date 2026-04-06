@@ -25,7 +25,8 @@
   },
   "homepage": "https://github.com/JSumm177/RefWikiMono#readme",
   "devDependencies": {
-    "honkit": "^6.1.7"
+    "honkit": "^6.1.7",
+    "wait-on": "^9.0.4"
   },
   "dependencies": {
     "expo": "^55.0.11"
