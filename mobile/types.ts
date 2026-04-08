@@ -32,6 +32,7 @@ export type MainTabParamList = {
   RulebookTab: undefined;
   PenaltyLookup: undefined;
   Search: undefined;
+  "Log Call": undefined;
   Settings: undefined;
 };
 
