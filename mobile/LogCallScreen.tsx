@@ -1,6 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { CallHistoryContext } from './CallHistoryContext';
+import { searchRules } from './utils/search';
+import type { SearchableRule } from './utils/search';
 
 const CONTROVERSY_LEVELS = [
   { level: 1, label: 'Textbook', description: 'Clear-cut, no debate', color: '#4CAF50' },
@@ -17,6 +19,8 @@ const LogCallScreen = ({ navigation }: any) => {
   const [ruleReference, setRuleReference] = useState('');
   const [notes, setNotes] = useState('');
   const [controversyLevel, setControversyLevel] = useState(1);
+  const [searchResults, setSearchResults] = useState<SearchableRule[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleSubmit = async () => {
     if (!penaltyName || !ruleReference) {
@@ -54,12 +58,53 @@ const LogCallScreen = ({ navigation }: any) => {
       />
 
       <Text style={styles.label}>Rule Reference</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="e.g. Rule 8, Section 5"
-        value={ruleReference}
-        onChangeText={setRuleReference}
-      />
+      <View style={{ zIndex: 10 }}>
+        <TextInput
+          style={[styles.input, showDropdown && searchResults.length > 0 && { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }]}
+          placeholder="e.g. Rule 8, Section 5"
+          value={ruleReference}
+          onChangeText={(val) => {
+            setRuleReference(val);
+            if (val.trim() !== '') {
+              setSearchResults(searchRules(val));
+              setShowDropdown(true);
+            } else {
+              setSearchResults([]);
+              setShowDropdown(false);
+            }
+          }}
+          onFocus={() => {
+            if (ruleReference.trim() !== '') {
+              setSearchResults(searchRules(ruleReference));
+              setShowDropdown(true);
+            }
+          }}
+        />
+        {showDropdown && searchResults.length > 0 && (
+          <ScrollView style={styles.dropdownContainer} nestedScrollEnabled={true}>
+            {searchResults.slice(0, 10).map((rule, idx) => (
+              <TouchableOpacity
+                key={`${rule.ruleId}-${rule.sectionId}-${rule.articleId}-${idx}`}
+                style={[
+                  styles.dropdownItem,
+                  idx === Math.min(searchResults.length, 10) - 1 && { borderBottomWidth: 0 }
+                ]}
+                onPress={() => {
+                  setRuleReference(rule.fullReference);
+                  setShowDropdown(false);
+                }}
+              >
+                <Text style={styles.dropdownItemTitle}>
+                  <Text style={{ fontWeight: 'bold' }}>{rule.fullReference}</Text>: {rule.ruleTitle} - {rule.sectionTitle}
+                </Text>
+                <Text style={styles.dropdownItemText} numberOfLines={1} ellipsizeMode="tail">
+                  {rule.articleText}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
+      </View>
 
       <Text style={styles.label}>Controversy Level</Text>
       <View style={styles.sliderContainer}>
@@ -131,6 +176,35 @@ const styles = StyleSheet.create({
   textArea: {
     height: 100,
     textAlignVertical: 'top',
+  },
+  dropdownContainer: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderTopWidth: 0,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    maxHeight: 200,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  dropdownItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  dropdownItemTitle: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 4,
+  },
+  dropdownItemText: {
+    fontSize: 12,
+    color: '#666',
   },
   sliderContainer: {
     marginVertical: 10,

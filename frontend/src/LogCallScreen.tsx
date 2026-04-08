@@ -1,6 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { CallHistoryContext } from './CallHistoryContext';
 import { useNavigate } from 'react-router-dom';
+import { searchRules } from './utils/search';
+import type { SearchableRule } from './utils/search';
 
 const CONTROVERSY_LEVELS = [
   { level: 1, label: 'Textbook', description: 'Clear-cut, no debate', color: '#4CAF50' },
@@ -18,6 +20,19 @@ const LogCallScreen: React.FC = () => {
   const [ruleReference, setRuleReference] = useState('');
   const [notes, setNotes] = useState('');
   const [controversyLevel, setControversyLevel] = useState(1);
+  const [searchResults, setSearchResults] = useState<SearchableRule[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,13 +82,76 @@ const LogCallScreen: React.FC = () => {
         />
 
         <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Rule Reference</label>
-        <input
-          type="text"
-          placeholder="e.g. Rule 8, Section 5"
-          value={ruleReference}
-          onChange={(e) => setRuleReference(e.target.value)}
-          style={inputStyle}
-        />
+        <div style={{ position: 'relative' }} ref={dropdownRef}>
+          <input
+            type="text"
+            placeholder="e.g. Rule 8, Section 5"
+            value={ruleReference}
+            onChange={(e) => {
+              const val = e.target.value;
+              setRuleReference(val);
+              if (val.trim() !== '') {
+                setSearchResults(searchRules(val));
+                setShowDropdown(true);
+              } else {
+                setSearchResults([]);
+                setShowDropdown(false);
+              }
+            }}
+            onFocus={() => {
+              if (ruleReference.trim() !== '') {
+                setSearchResults(searchRules(ruleReference));
+                setShowDropdown(true);
+              }
+            }}
+            style={{ ...inputStyle, marginBottom: showDropdown ? '0' : '15px' }}
+          />
+          {showDropdown && searchResults.length > 0 && (
+            <ul style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderTop: 'none',
+              borderBottomLeftRadius: '8px',
+              borderBottomRightRadius: '8px',
+              maxHeight: '200px',
+              overflowY: 'auto',
+              listStyle: 'none',
+              padding: 0,
+              margin: 0,
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              zIndex: 10
+            }}>
+              {searchResults.slice(0, 10).map((rule, idx) => (
+                <li
+                  key={`${rule.ruleId}-${rule.sectionId}-${rule.articleId}-${idx}`}
+                  style={{
+                    padding: '10px 12px',
+                    borderBottom: idx === Math.min(searchResults.length, 10) - 1 ? 'none' : '1px solid #eee',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                  onClick={() => {
+                    setRuleReference(rule.fullReference);
+                    setShowDropdown(false);
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                >
+                  <strong>{rule.fullReference}</strong>: {rule.ruleTitle} - {rule.sectionTitle}
+                  <div style={{ fontSize: '12px', color: '#666', marginTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {rule.articleText}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        {/* Spacer to maintain gap if dropdown is active but not pushing content down as it's absolute */}
+        {showDropdown && <div style={{ marginBottom: '15px' }}></div>}
 
         <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Controversy Level</label>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '15px' }}>
