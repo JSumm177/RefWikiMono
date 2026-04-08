@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Enforce required tools are installed
+if ! command -v docker &> /dev/null; then
+    echo "❌ Error: 'docker' is not installed or not in PATH."
+    exit 1
+fi
+
+if ! command -v npm &> /dev/null; then
+    echo "❌ Error: 'npm' is not installed or not in PATH."
+    exit 1
+fi
+
 # Enforce Java 21
 if ! java -version 2>&1 | grep -q "version \"21\."; then
   echo "❌ Error: Java 21 is required but not found."
