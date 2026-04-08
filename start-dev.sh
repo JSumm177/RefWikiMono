@@ -1,9 +1,22 @@
 #!/bin/bash
 
+# Enforce Java 21
+if ! java -version 2>&1 | grep -q "version \"21\."; then
+  echo "❌ Error: Java 21 is required but not found."
+  echo "Please install Java 21 or set your JAVA_HOME appropriately."
+  exit 1
+fi
+
 # Optional: Auto-sync pods if they are missing
 if [ ! -d "mobile/ios/Pods" ]; then
   echo "📦 Installing iOS dependencies..."
   (cd mobile/ios && pod install)
+fi
+
+# Android Prep: Auto-generate local.properties if missing
+if [ ! -f "mobile/android/local.properties" ] && [ -n "$ANDROID_HOME" ]; then
+  echo "🤖 Generating mobile/android/local.properties using ANDROID_HOME..."
+  echo "sdk.dir=$ANDROID_HOME" > mobile/android/local.properties
 fi
 
 # Start the database container
