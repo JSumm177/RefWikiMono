@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Optional: Auto-sync pods if they are missing
+if [ ! -d "mobile/ios/Pods" ]; then
+  echo "📦 Installing iOS dependencies..."
+  (cd mobile/ios && pod install)
+fi
+
 # Start the database container
 docker compose up -d db
 
