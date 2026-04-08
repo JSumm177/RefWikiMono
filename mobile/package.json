@@ -12,14 +12,19 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-picker/picker": "^2.11.4",
     "@react-native/new-app-screen": "0.84.1",
     "@react-navigation/bottom-tabs": "^7.15.9",
     "@react-navigation/native": "^7.2.2",
     "@react-navigation/native-stack": "^7.14.10",
+    "@shopify/flash-list": "^2.3.1",
+    "@types/react-native-highlight-words": "^1.0.6",
     "expo": "~55.0.11",
     "expo-secure-store": "~55.0.11",
+    "fuse.js": "^7.3.0",
     "react": "19.2.3",
     "react-native": "0.84.1",
+    "react-native-highlight-words": "^1.0.1",
     "react-native-safe-area-context": "^5.7.0",
     "react-native-screens": "^4.24.0"
   },

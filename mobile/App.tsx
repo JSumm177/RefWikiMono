@@ -7,26 +7,14 @@ import { AuthContext, AuthProvider } from './AuthContext';
 import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 
+// New Screens and Navigators
+import RulebookStack from './RulebookStack';
+import PenaltyLookupScreen from './PenaltyLookupScreen';
+import HomeScreen from './HomeScreen';
+import SearchScreenComponent from './SearchScreenComponent';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
-const HomeScreen = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to RefWiki!</Text>
-      <Text style={styles.subtitle}>This is the Home tab.</Text>
-    </View>
-  );
-};
-
-const SearchScreen = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Search</Text>
-      <Text style={styles.subtitle}>Find what you're looking for here.</Text>
-    </View>
-  );
-};
 
 const SettingsScreen = () => {
   const { signOut } = useContext(AuthContext);
@@ -42,9 +30,11 @@ const SettingsScreen = () => {
 
 const MainTabNavigator = () => {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Search" component={SearchScreen} />
+    <Tab.Navigator screenOptions={{ headerShown: true }}>
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'TV Mode' }} />
+      <Tab.Screen name="RulebookTab" component={RulebookStack} options={{ title: 'Rulebook', headerShown: false }} />
+      <Tab.Screen name="PenaltyLookup" component={PenaltyLookupScreen} options={{ title: 'Lookup' }} />
+      <Tab.Screen name="Search" component={SearchScreenComponent} options={{ title: 'Search' }} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
@@ -83,7 +73,7 @@ const Navigation = () => {
           <Stack.Screen
             name="Main"
             component={MainTabNavigator}
-            options={{ title: 'RefWiki' }} // or headerShown: false if preferred
+            options={{ headerShown: false }}
           />
         )}
       </Stack.Navigator>
