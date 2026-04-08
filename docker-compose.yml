@@ -28,5 +28,26 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
 
+  backend-dev:
+    image: maven:3.9-eclipse-temurin-21
+    container_name: refwiki-backend-dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ./backend:/app
+      - maven-repo:/root/.m2
+    working_dir: /app
+    command: mvn jetty:run
+
 volumes:
   db-data:
+  maven-repo:
