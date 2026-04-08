@@ -1,32 +1,22 @@
-import React, { useContext } from 'react';
-import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Text, Button, StyleSheet, ActivityIndicator, FlatList, TextInput } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext, AuthProvider } from './AuthContext';
+import { CallHistoryProvider, CallHistoryContext } from './CallHistoryContext';
 import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
+import LogCallScreen from './LogCallScreen';
+
+// New Screens and Navigators
+import RulebookStack from './RulebookStack';
+import PenaltyLookupScreen from './PenaltyLookupScreen';
+import HomeScreen from './HomeScreen';
+import SearchScreenComponent from './SearchScreenComponent';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
-const HomeScreen = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to RefWiki!</Text>
-      <Text style={styles.subtitle}>This is the Home tab.</Text>
-    </View>
-  );
-};
-
-const SearchScreen = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Search</Text>
-      <Text style={styles.subtitle}>Find what you're looking for here.</Text>
-    </View>
-  );
-};
 
 const SettingsScreen = () => {
   const { signOut } = useContext(AuthContext);
@@ -42,9 +32,12 @@ const SettingsScreen = () => {
 
 const MainTabNavigator = () => {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Search" component={SearchScreen} />
+    <Tab.Navigator screenOptions={{ headerShown: true }}>
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'TV Mode' }} />
+      <Tab.Screen name="RulebookTab" component={RulebookStack} options={{ title: 'Rulebook', headerShown: false }} />
+      <Tab.Screen name="PenaltyLookup" component={PenaltyLookupScreen} options={{ title: 'Lookup' }} />
+      <Tab.Screen name="Search" component={SearchScreenComponent} options={{ title: 'Search' }} />
+      <Tab.Screen name="Log Call" component={LogCallScreen} options={{ title: 'Log Call' }} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
@@ -83,7 +76,7 @@ const Navigation = () => {
           <Stack.Screen
             name="Main"
             component={MainTabNavigator}
-            options={{ title: 'RefWiki' }} // or headerShown: false if preferred
+            options={{ headerShown: false }}
           />
         )}
       </Stack.Navigator>
@@ -94,7 +87,9 @@ const Navigation = () => {
 function App(): React.JSX.Element {
   return (
     <AuthProvider>
-      <Navigation />
+      <CallHistoryProvider>
+        <Navigation />
+      </CallHistoryProvider>
     </AuthProvider>
   );
 }
@@ -102,9 +97,8 @@ function App(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 20,
+    backgroundColor: '#fff',
   },
   horizontal: {
     flexDirection: 'row',
@@ -115,11 +109,55 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    marginTop: 20,
   },
   subtitle: {
     fontSize: 16,
     marginBottom: 20,
     color: '#666',
+  },
+  list: {
+    width: '100%',
+  },
+  card: {
+    backgroundColor: '#f9f9f9',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#eee',
+    width: '100%',
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  cardSubtitle: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 5,
+  },
+  cardNotes: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 10,
+  },
+  cardTime: {
+    fontSize: 12,
+    color: '#999',
+    textAlign: 'right',
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: '#f9f9f9',
+    width: '100%',
+    marginBottom: 15,
+    marginTop: 20,
   },
 });
 

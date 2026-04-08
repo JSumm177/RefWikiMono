@@ -109,7 +109,24 @@ docker logs -f refwiki-app
 
 ## Local Development
 
-If you want to run the components separately for faster development iterations:
+The fastest way to run all development environments simultaneously (Database, Backend, Frontend, and Mobile) is to use the provided single-command dev script.
+
+Ensure you have run `npm install` in the root repository. Then start the development environment:
+
+```bash
+npm run dev
+```
+
+This command executes the `start-dev.sh` script, which:
+1. Starts the MySQL database via Docker Compose (`docker compose up -d db`).
+2. Loads environment variables from a `.env` file if it exists.
+3. Concurrently runs:
+   - The Java backend (`mvn jetty:run` on port 8080).
+   - The React frontend (`npm run dev` on port 5173).
+   - The React Native mobile bundler (`npm start`).
+   - The React Native Android and iOS runtimes once the bundler is ready.
+
+If you prefer to run the components separately for finer control, follow these steps:
 
 ### 1. Database
 You can start just the MySQL database using Docker:
