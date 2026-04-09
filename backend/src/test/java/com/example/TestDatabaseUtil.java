@@ -2,11 +2,9 @@ package com.example;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.testcontainers.containers.MySQLContainer;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import org.hibernate.Session;
 
 public class TestDatabaseUtil {
 
