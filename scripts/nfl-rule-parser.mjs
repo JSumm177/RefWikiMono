@@ -99,11 +99,9 @@ export async function main() {
     const chunks = chunkText(rawText);
 
     console.log('Refining chunks with AI...');
-    const structuredRules = [];
-    for (let i = 0; i < chunks.length; i++) {
-        const cleaned = await cleanWithAI(chunks[i], i);
-        structuredRules.push(cleaned);
-    }
+    const structuredRules = await Promise.all(
+      chunks.map((chunk, index) => cleanWithAI(chunk, index))
+    );
 
     const finalJSON = {
       title: "2025 NFL Rulebook",
