@@ -70,6 +70,14 @@ public class AuthServlet extends HttpServlet {
                 return;
             }
 
+            if (!isValidEmail(authReq.email)) {
+                logger.warn("Registration failed: Invalid email format {}", authReq.email);
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                responseJson.error = "Invalid email format";
+                resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                return;
+            }
+
             // Check if user exists
             try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
                 Transaction transaction = session.beginTransaction();
@@ -176,5 +184,10 @@ public class AuthServlet extends HttpServlet {
             responseJson.error = "Login failed";
             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
         }
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        return email != null && email.matches(emailRegex);
     }
 }
