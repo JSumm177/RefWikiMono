@@ -1,6 +1,12 @@
 {
-  "name": "app",
+  "name": "refwiki-mono",
   "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "mobile"
+  ],
   "description": "A fullstack monorepo featuring a React TypeScript frontend, a Java Servlet backend with MySQL, and a React Native mobile application.",
   "main": "index.js",
   "directories": {
