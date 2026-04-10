@@ -86,6 +86,17 @@ You've successfully run and modified your React Native App. :partying_face:
 
 If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
 
+## Monorepo Configuration
+
+Because this project is part of a monorepo, `node_modules` are hoisted to the root directory (`../../node_modules`).
+
+This setup requires modifying several React Native configuration files to ensure the Android and iOS builds can find the required dependencies (such as React Native CLI, CMake headers, and Expo plugins).
+
+Specifically, paths in the following files have been updated:
+- `mobile/android/settings.gradle`: Updated `includeBuild` paths to `../../node_modules`.
+- `mobile/android/app/build.gradle`: Explicitly defined `reactNativeDir`, `codegenDir`, and `cliFile` to `../../node_modules`.
+- `mobile/ios/Podfile`: Updated `require_relative` paths for `react_native_pods` to `../../node_modules`.
+
 # Learn More
 
 To learn more about React Native, take a look at the following resources:

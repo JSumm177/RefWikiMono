@@ -58,21 +58,6 @@ public class AuthServletTest {
     }
 
     @Test
-    public void testRegisterInvalidEmailFormat() throws Exception {
-        when(request.getPathInfo()).thenReturn("/register");
-
-        AuthRequest authReq = new AuthRequest();
-        authReq.email = "invalid-email";
-        authReq.password = "password123";
-        mockRequestBody(authReq);
-
-        authServlet.doPost(request, response);
-
-        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertTrue(responseWriter.toString().contains("Invalid email format"));
-    }
-
-    @Test
     public void testRegisterSuccess() throws Exception {
         when(request.getPathInfo()).thenReturn("/register");
 

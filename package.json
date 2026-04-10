@@ -1,6 +1,12 @@
 {
-  "name": "app",
+  "name": "refwiki-mono",
   "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "mobile"
+  ],
   "description": "A fullstack monorepo featuring a React TypeScript frontend, a Java Servlet backend with MySQL, and a React Native mobile application.",
   "main": "index.js",
   "directories": {
@@ -30,5 +36,17 @@
   },
   "dependencies": {
     "expo": "^55.0.11"
+  },
+  "overrides": {
+    "axios": "^1.15.0",
+    "http-proxy-agent": "^7.0.0",
+    "https-proxy-agent": "^7.0.0",
+    "jsdom": {
+      "http-proxy-agent": "^7.0.0",
+      "https-proxy-agent": "^7.0.0"
+    },
+    "http-proxy-agent": {
+      "@tootallnate/once": "^3.0.0"
+    }
   }
 }
