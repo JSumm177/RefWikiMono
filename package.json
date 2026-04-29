@@ -36,7 +36,7 @@
     "@react-native/metro-config": "0.83.4"
   },
   "dependencies": {
-    "react-dom": "^19.2.5"
+    "react-dom": "19.2.0"
   },
   "overrides": {
     "react-native": "0.83.4",
