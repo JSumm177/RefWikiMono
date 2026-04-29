@@ -1,0 +1,7 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -showdestinations -workspace mobile.xcworkspace -scheme mobile
+
+
+
+	Ineligible destinations for the "mobile" scheme:
+		{ platform:iOS, id:dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder, name:Any iOS Device, error:iOS 26.4 is not installed. Please download and install the platform from Xcode > Settings > Components. }
