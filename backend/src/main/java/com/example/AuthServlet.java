@@ -70,6 +70,16 @@ public class AuthServlet extends HttpServlet {
                 return;
             }
 
+            // Check password complexity
+            String passwordPattern = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,}$";
+            if (!authReq.password.matches(passwordPattern)) {
+                logger.warn("Registration failed: Password does not meet complexity requirements");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                responseJson.error = "Password must be at least 8 characters long and contain a number, a letter, and a special character";
+                resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                return;
+            }
+
             // Check if user exists
             try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
                 Transaction transaction = session.beginTransaction();

@@ -35,7 +35,9 @@
     "wait-on": "^9.0.4",
     "@react-native/metro-config": "0.83.4"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react-dom": "^19.2.5"
+  },
   "overrides": {
     "react-native": "0.83.4",
     "react": "19.2.0",
