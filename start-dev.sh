@@ -44,5 +44,5 @@ npx concurrently \
   "docker compose up backend-dev" \
   "cd frontend && npm run dev" \
   "cd mobile && npm start" \
-  "npx wait-on tcp:8081 && cd mobile && npm run android" \
-  "npx wait-on tcp:8081 && cd mobile && npm run ios"
+  "npx wait-on tcp:8081 && cd mobile && npm run android -- --no-packager" \
+  "npx wait-on tcp:8081 && cd mobile && npm run ios -- --no-packager"
