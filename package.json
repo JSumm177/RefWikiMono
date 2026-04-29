@@ -16,7 +16,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "docs:build": "honkit build docs && touch docs/_book/.nojekyll",
     "docs:serve": "honkit serve docs",
-    "dev": "./start-dev.sh"
+    "dev": "./start-dev.sh",
+    "fix:links": "cd mobile/node_modules && ln -sf ../../node_modules/react-native-screens react-native-screens && ln -sf ../../node_modules/react-native-safe-area-context react-native-safe-area-context && ln -sf ../../node_modules/react-native react-native && ln -sf ../../node_modules/expo expo && ln -sf ../../node_modules/@react-native-async-storage @react-native-async-storage",
+    "postinstall": "npm run fix:links"
   },
   "repository": {
     "type": "git",
@@ -36,11 +38,13 @@
     "@react-native/metro-config": "0.83.4"
   },
   "dependencies": {
-    "react-dom": "^19.2.5"
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   },
   "overrides": {
     "react-native": "0.83.4",
     "react": "19.2.0",
+    "react-dom": "19.2.0",
     "react-native-screens": "4.23.0",
     "react-native-safe-area-context": "5.6.2",
     "@react-native/assets-registry": "0.83.4",
