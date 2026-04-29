@@ -9,7 +9,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,13 +62,28 @@ public class AuthServletTest {
 
         AuthRequest authReq = new AuthRequest();
         authReq.email = "test@example.com";
-        authReq.password = "password123";
+        authReq.password = "P@ssw0rd123!";
         mockRequestBody(authReq);
 
         authServlet.doPost(request, response);
 
         verify(response).setStatus(HttpServletResponse.SC_CREATED);
         assertTrue(responseWriter.toString().contains("User registered successfully"));
+    }
+
+    @Test
+    public void testRegisterWeakPassword() throws Exception {
+        when(request.getPathInfo()).thenReturn("/register");
+
+        AuthRequest authReq = new AuthRequest();
+        authReq.email = "weak@example.com";
+        authReq.password = "weakpassword";
+        mockRequestBody(authReq);
+
+        authServlet.doPost(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertTrue(responseWriter.toString().contains("Password must be at least 8 characters long"));
     }
 
     @Test
@@ -94,7 +108,7 @@ public class AuthServletTest {
         // First registration
         AuthRequest authReq = new AuthRequest();
         authReq.email = "duplicate@example.com";
-        authReq.password = "pass";
+        authReq.password = "P@ssw0rd123!";
         mockRequestBody(authReq);
         authServlet.doPost(request, response);
 
@@ -117,7 +131,7 @@ public class AuthServletTest {
         when(request.getPathInfo()).thenReturn("/register");
         AuthRequest authReq = new AuthRequest();
         authReq.email = "login@example.com";
-        authReq.password = "securepass";
+        authReq.password = "S3cur3p@ss!";
         mockRequestBody(authReq);
         authServlet.doPost(request, response);
 
@@ -151,7 +165,7 @@ public class AuthServletTest {
         when(request.getPathInfo()).thenReturn("/register");
         AuthRequest authReq = new AuthRequest();
         authReq.email = "mobile@example.com";
-        authReq.password = "securepass";
+        authReq.password = "S3cur3p@ss!";
         mockRequestBody(authReq);
         authServlet.doPost(request, response);
 
@@ -179,7 +193,7 @@ public class AuthServletTest {
 
         AuthRequest authReq = new AuthRequest();
         authReq.email = "nonexistent@example.com";
-        authReq.password = "wrongpass";
+        authReq.password = "Wr0ngp@ss!";
         mockRequestBody(authReq);
 
         authServlet.doPost(request, response);
