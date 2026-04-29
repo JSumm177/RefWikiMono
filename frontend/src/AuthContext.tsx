@@ -15,8 +15,16 @@ export const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-        // Synchronously initialize state from localStorage to prevent flash of unauthenticated state
-        return localStorage.getItem('isAuthenticated') === 'true';
+        try {
+            // Synchronously initialize state from localStorage to prevent flash of unauthenticated state
+            const token = localStorage.getItem('isAuthenticated') === 'true';
+            if (token) {
+                return true;
+            }
+        } catch (error) {
+            console.error('Failed to load token:', error);
+        }
+        return false;
     });
 
     const login = () => {
