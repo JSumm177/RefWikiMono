@@ -35,18 +35,18 @@
     "wait-on": "^9.0.4"
   },
   "dependencies": {
-    "expo": "^55.0.11"
+    "expo": "^55.0.11",
+    "react-dom": "^19.2.5"
   },
   "overrides": {
     "axios": "^1.15.0",
-    "http-proxy-agent": "^7.0.0",
+    "http-proxy-agent": {
+      "@tootallnate/once": "^3.0.0"
+    },
     "https-proxy-agent": "^7.0.0",
     "jsdom": {
       "http-proxy-agent": "^7.0.0",
       "https-proxy-agent": "^7.0.0"
-    },
-    "http-proxy-agent": {
-      "@tootallnate/once": "^3.0.0"
     }
   }
 }
