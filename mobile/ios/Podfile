@@ -1,6 +1,10 @@
 # Resolve react_native_pods.rb with node to allow for hoisting
-require_relative '../../node_modules/react-native/scripts/react_native_pods'
-require_relative '../../node_modules/@react-native-community/cli-platform-ios/native_modules'
+def node_require(package_name, file_path)
+  package_path = `node --print "require.resolve('#{package_name}/package.json', { paths: ['#{__dir__}'] })"`.strip
+  require File.join(File.dirname(package_path), file_path)
+end
+
+node_require('react-native', 'scripts/react_native_pods')
 
 # Load Expo autolinking helpers (provides use_expo_modules!)
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json', { paths: ['#{__dir__}'] })"`), "scripts/autolinking")

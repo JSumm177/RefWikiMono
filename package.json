@@ -32,21 +32,33 @@
   "homepage": "https://github.com/JSumm177/RefWikiMono#readme",
   "devDependencies": {
     "honkit": "^6.1.7",
-    "wait-on": "^9.0.4"
+    "wait-on": "^9.0.4",
+    "@react-native/metro-config": "0.83.4"
   },
-  "dependencies": {
-    "expo": "^55.0.11"
-  },
+  "dependencies": {},
   "overrides": {
+    "react-native": "0.83.4",
+    "react": "19.2.0",
+    "react-native-screens": "4.23.0",
+    "react-native-safe-area-context": "5.6.2",
+    "@react-native/assets-registry": "0.83.4",
+    "@react-native/codegen": "0.83.4",
+    "@react-native/community-cli-plugin": "0.83.4",
+    "@react-native/gradle-plugin": "0.83.4",
+    "@react-native/js-polyfills": "0.83.4",
+    "@react-native/normalize-colors": "0.83.4",
+    "@react-native/virtualized-lists": "0.83.4",
+    "@react-native/metro-config": "0.83.4",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/cli": "15.1.3",
+    "@react-native-community/cli-platform-android": "15.1.3",
+    "@react-native-community/cli-platform-ios": "15.1.3",
     "axios": "^1.15.0",
     "http-proxy-agent": "^7.0.0",
     "https-proxy-agent": "^7.0.0",
     "jsdom": {
       "http-proxy-agent": "^7.0.0",
       "https-proxy-agent": "^7.0.0"
-    },
-    "http-proxy-agent": {
-      "@tootallnate/once": "^3.0.0"
     }
   }
 }
