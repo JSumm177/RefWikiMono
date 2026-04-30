@@ -33,12 +33,16 @@ public class DatabaseConfig {
         if (dbHost == null || dbPort == null || dbName == null || dbUser == null || dbPass == null) {
             logger.warn("One or more database environment variables are missing.");
             if (System.getProperty("IS_TEST_ENV") != null) {
-                // Read from system properties instead, or use dummy if still missing
-                dbHost = System.getProperty("DB_HOST", "localhost");
-                dbPort = System.getProperty("DB_PORT", "3306");
-                dbName = System.getProperty("DB_NAME", "testdb");
-                dbUser = System.getProperty("DB_USER", "test");
-                dbPass = System.getProperty("DB_PASSWORD", "test");
+                // Read from system properties instead
+                dbHost = System.getProperty("DB_HOST");
+                dbPort = System.getProperty("DB_PORT");
+                dbName = System.getProperty("DB_NAME");
+                dbUser = System.getProperty("DB_USER");
+                dbPass = System.getProperty("DB_PASSWORD");
+
+                if (dbHost == null || dbPort == null || dbName == null || dbUser == null || dbPass == null) {
+                    throw new RuntimeException("Database environment variables or system properties (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD) must be set.");
+                }
             } else {
                 throw new RuntimeException("Database environment variables (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD) must be set.");
             }
