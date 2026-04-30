@@ -18,10 +18,12 @@ if ! java -version 2>&1 | grep -q "version \"21\."; then
   exit 1
 fi
 
-# Optional: Auto-sync pods if they are missing
-if [ ! -d "mobile/ios/Pods" ]; then
-  echo "📦 Installing iOS dependencies..."
-  (cd mobile/ios && pod install)
+# Optional: Auto-sync pods if they are missing (macOS only)
+if [ "$(uname -s)" == "Darwin" ]; then
+  if [ ! -d "mobile/ios/Pods" ]; then
+    echo "📦 Installing iOS dependencies..."
+    (cd mobile/ios && command -v pod &> /dev/null && pod install || echo "⚠️ Warning: 'pod' command not found, skipping pod install.")
+  fi
 fi
 
 # Android Prep: Auto-generate local.properties if missing
@@ -33,16 +35,26 @@ fi
 # Start the database container
 docker compose up -d db
 
-# Load .env file if it exists
+# Load .env file if it exists safely
 if [ -f .env ]; then
-  export $(grep -v '^#' .env | xargs)
+  set -a
+  source .env
+  set +a
 fi
 
-# Run the three environments concurrently.
+# Prepare commands for concurrent execution
+COMMANDS=(
+  "docker compose up backend-dev"
+  "cd frontend && npm run dev"
+  "cd mobile && npm start"
+  "npx wait-on tcp:8081 && cd mobile && npm run android -- --no-packager"
+)
+
+# Run the iOS build only if on macOS
+if [ "$(uname -s)" == "Darwin" ]; then
+  COMMANDS+=("npx wait-on tcp:8081 && cd mobile && npm run ios -- --no-packager")
+fi
+
+# Run the environments concurrently.
 # We use wait-on to wait for the Metro bundler (port 8081) to be ready before kicking off the Android and iOS builds/simulators.
-npx concurrently \
-  "docker compose up backend-dev" \
-  "cd frontend && npm run dev" \
-  "cd mobile && npm start" \
-  "npx wait-on tcp:8081 && cd mobile && npm run android -- --no-packager" \
-  "npx wait-on tcp:8081 && cd mobile && npm run ios -- --no-packager"
+npx --yes concurrently "${COMMANDS[@]}"
