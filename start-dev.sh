@@ -40,6 +40,23 @@ fi
 
 export REACT_TERMINAL=Terminal
 
+# Check for port 8080 conflicts from production container
+if docker ps --format '{{.Names}}' | grep -q "^refwiki-app$"; then
+  echo "⚠️ Warning: Production container 'refwiki-app' is running on port 8080."
+  echo "🛑 Stopping it to prevent dev environment conflicts..."
+  docker stop refwiki-app
+fi
+
+# Print clear dev environment summary
+echo ""
+echo "🚀 Starting Full Stack Development Environment"
+echo "---------------------------------------------------"
+echo "🖥️  Frontend (React):   http://localhost:5173"
+echo "⚙️  Backend (Java API): http://localhost:8080"
+echo "---------------------------------------------------"
+echo "⚠️  Note: If port 8080 still 404s, try Incognito."
+echo ""
+
 # Run the three environments concurrently.
 # We use wait-on to wait for the Metro bundler (port 8081) to be ready before kicking off the Android and iOS builds/simulators.
 npx concurrently \
