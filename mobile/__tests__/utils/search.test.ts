@@ -29,4 +29,11 @@ describe('searchRules', () => {
     const results = searchRules('zzxyxzyx');
     expect(results).toEqual([]);
   });
+
+  it('correctly formats the fullReference property', () => {
+    const results = searchRules('Mock Structured');
+    expect(results.length).toBeGreaterThan(0);
+    // We know Rule 1, Section 1, Article 1 exists from rulebook.json
+    expect(results[0].fullReference).toMatch(/^Rule \d+, Section \d+, Article \d+$/);
+  });
 });
