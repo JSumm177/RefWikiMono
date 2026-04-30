@@ -245,6 +245,59 @@ public class AuthServletTest {
         verify(response, never()).addCookie(any(Cookie.class));
     }
 
+    @Test
+    public void testCheckWebSuccess() throws Exception {
+        when(request.getPathInfo()).thenReturn("/check");
+        when(request.getHeader("X-Client-Platform")).thenReturn("web");
+
+        // Use JwtUtil to generate a valid token
+        String token = JwtUtil.generateToken("testuser@example.com");
+        Cookie cookie = new Cookie("jwt", token);
+        when(request.getCookies()).thenReturn(new Cookie[]{cookie});
+
+        authServlet.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+        assertTrue(responseWriter.toString().contains("Authenticated"));
+    }
+
+    @Test
+    public void testCheckWebMissingToken() throws Exception {
+        when(request.getPathInfo()).thenReturn("/check");
+        when(request.getHeader("X-Client-Platform")).thenReturn("web");
+        when(request.getCookies()).thenReturn(new Cookie[]{});
+
+        authServlet.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertTrue(responseWriter.toString().contains("No token provided"));
+    }
+
+    @Test
+    public void testCheckWebInvalidToken() throws Exception {
+        when(request.getPathInfo()).thenReturn("/check");
+        when(request.getHeader("X-Client-Platform")).thenReturn("web");
+
+        Cookie cookie = new Cookie("jwt", "invalid_token_string");
+        when(request.getCookies()).thenReturn(new Cookie[]{cookie});
+
+        authServlet.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertTrue(responseWriter.toString().contains("Invalid token"));
+    }
+
+    @Test
+    public void testCheckMobileUnsupported() throws Exception {
+        when(request.getPathInfo()).thenReturn("/check");
+        when(request.getHeader("X-Client-Platform")).thenReturn("mobile");
+
+        authServlet.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertTrue(responseWriter.toString().contains("Check endpoint only supports web platform"));
+    }
+
     // Helper class for mock body
     private static class AuthRequest {
         public String email;

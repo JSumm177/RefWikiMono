@@ -22,6 +22,58 @@ public class AuthServlet extends HttpServlet {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if ("/check".equals(req.getPathInfo())) {
+            handleCheck(req, resp);
+        } else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void handleCheck(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json");
+        AuthResponse responseJson = new AuthResponse();
+
+        String platform = req.getHeader("X-Client-Platform");
+        if (!"web".equalsIgnoreCase(platform)) {
+            // Mobile handles its own token storage/checking
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            responseJson.error = "Check endpoint only supports web platform";
+            resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+            return;
+        }
+
+        String token = null;
+        if (req.getCookies() != null) {
+            for (Cookie cookie : req.getCookies()) {
+                if ("jwt".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (token == null || token.isEmpty()) {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            responseJson.error = "No token provided";
+            resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+            return;
+        }
+
+        String email = JwtUtil.validateTokenAndGetSubject(token);
+        if (email == null) {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            responseJson.error = "Invalid token";
+            resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+            return;
+        }
+
+        resp.setStatus(HttpServletResponse.SC_OK);
+        responseJson.message = "Authenticated";
+        resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
 
