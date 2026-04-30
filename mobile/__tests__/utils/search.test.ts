@@ -29,4 +29,10 @@ describe('searchRules', () => {
     const results = searchRules('zzxyxzyx');
     expect(results).toEqual([]);
   });
+
+  it('correctly maps fullReference in results', () => {
+    const results = searchRules('Mock Structured');
+    expect(results.length).toBeGreaterThan(0);
+    expect(results[0].fullReference).toMatch(/^Rule \d+, Section \d+, Article \d+$/);
+  });
 });
