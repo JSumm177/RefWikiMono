@@ -1,7 +1,21 @@
 {
-  "name": "mobile",
-  "displayName": "mobile",
-  "plugins": [
-    "expo-secure-store"
-  ]
+  "expo": {
+    "name": "mobile",
+    "slug": "mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.refwiki.mobile"
+    },
+    "android": {
+      "package": "com.refwiki.mobile"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "./plugins/withStabilization"
+    ]
+  }
 }

@@ -17,7 +17,7 @@
     "docs:build": "honkit build docs && touch docs/_book/.nojekyll",
     "docs:serve": "honkit serve docs",
     "dev": "./start-dev.sh",
-    "fix:links": "cd mobile/node_modules && ln -sf ../../node_modules/react-native-screens react-native-screens && ln -sf ../../node_modules/react-native-safe-area-context react-native-safe-area-context && ln -sf ../../node_modules/react-native react-native && ln -sf ../../node_modules/expo expo && ln -sf ../../node_modules/@react-native-async-storage @react-native-async-storage",
+    "fix:links": "cd mobile && npx react-native-monorepo-tools-fix-links || true",
     "postinstall": "npm run fix:links"
   },
   "repository": {
