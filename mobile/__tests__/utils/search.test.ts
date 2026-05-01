@@ -33,6 +33,8 @@ describe('searchRules', () => {
   it('correctly maps fullReference in results', () => {
     const results = searchRules('Mock Structured');
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].fullReference).toMatch(/^Rule \d+, Section \d+, Article \d+$/);
+    // Based on the mock structure, the first result should match Rule 1 or 2, Section 1, Article 1
+    const ref = results[0].fullReference;
+    expect(ref).toMatch(/^Rule \d+, Section \d+, Article \d+$/);
   });
 });
