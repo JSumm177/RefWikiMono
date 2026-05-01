@@ -54,7 +54,7 @@ export REACT_TERMINAL=Terminal
 npx concurrently \
   "docker compose up backend-dev" \
   "cd frontend && npm run dev" \
-  "cd mobile && npx expo start" \
+  "cd mobile && npx expo start --clear" \
   "npx wait-on tcp:8081 && cd mobile && npx expo run:android --no-bundler" \
   "npx wait-on tcp:8081 && cd mobile && npx expo run:ios --no-bundler"
 
