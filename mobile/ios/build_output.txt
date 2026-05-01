@@ -1,5 +1,0 @@
-Command line invocation:
-    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -workspace mobile.xcworkspace -scheme mobile
-
-2026-04-28 23:07:42.162 xcodebuild[74517:1995519] Writing error result bundle to /var/folders/38/4663r53d7tsg5s5qwlnbbbdw0000gn/T/ResultBundle_2026-28-04_23-07-0042.xcresult
-xcodebuild: error: Found no destinations for the scheme 'mobile' and action build.
