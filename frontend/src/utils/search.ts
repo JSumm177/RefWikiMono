@@ -33,31 +33,40 @@ const flattenRulebook = (): SearchableRule[] => {
   return flattened;
 };
 
-const searchableItems = flattenRulebook();
+let _searchableItems: SearchableRule[] | null = null;
+let _fuseInstance: Fuse<SearchableRule> | null = null;
 
-const fuseOptions = {
-  includeScore: true,
-  keys: [
-    {
-      name: 'ruleTitle',
-      weight: 3
-    },
-    {
-      name: 'sectionTitle',
-      weight: 2
-    },
-    {
-      name: 'articleText',
-      weight: 1
+const getFuseInstance = () => {
+  if (!_fuseInstance) {
+    if (!_searchableItems) {
+      _searchableItems = flattenRulebook();
     }
-  ],
-  threshold: 0.4,
+    const fuseOptions = {
+      includeScore: true,
+      keys: [
+        {
+          name: 'ruleTitle',
+          weight: 3
+        },
+        {
+          name: 'sectionTitle',
+          weight: 2
+        },
+        {
+          name: 'articleText',
+          weight: 1
+        }
+      ],
+      threshold: 0.4,
+    };
+    _fuseInstance = new Fuse(_searchableItems, fuseOptions);
+  }
+  return _fuseInstance;
 };
-
-const fuse = new Fuse(searchableItems, fuseOptions);
 
 export const searchRules = (query: string): SearchableRule[] => {
   if (!query) return [];
+  const fuse = getFuseInstance();
   const results = fuse.search(query);
   return results.map(result => result.item);
 };
