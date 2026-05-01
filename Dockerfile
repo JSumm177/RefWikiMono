@@ -26,12 +26,12 @@ RUN sed -i -e 's/directory="logs"/directory="\/dev"/' \
            -e 's/suffix=".txt"/suffix="" rotatable="false"/' \
            /usr/local/tomcat/conf/server.xml
 
-# Copy built frontend to Tomcat ROOT app
-COPY --from=frontend-builder /app/frontend/dist /usr/local/tomcat/webapps/ROOT
-
-# Copy built backend WAR and unpack it into Tomcat ROOT app so they share the same context
+# Copy built backend WAR and unpack it into Tomcat ROOT app
 COPY --from=backend-builder /app/backend/target/api.war /tmp/api.war
 RUN cd /usr/local/tomcat/webapps/ROOT && jar xf /tmp/api.war && rm /tmp/api.war
+
+# Copy built frontend to Tomcat ROOT app, overlaying it on the backend files
+COPY --from=frontend-builder /app/frontend/dist /usr/local/tomcat/webapps/ROOT
 
 EXPOSE 8080
 CMD ["catalina.sh", "run"]

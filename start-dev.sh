@@ -33,6 +33,13 @@ fi
 # Start the database container
 docker compose up -d db
 
+# Check if production container is running on 8080
+if [ "$(docker ps -q -f name=refwiki-app)" ]; then
+  echo "⚠️ Warning: 'refwiki-app' (production) is running on port 8080."
+  echo "This will conflict with 'backend-dev'. Stopping it..."
+  docker stop refwiki-app
+fi
+
 # Load .env file if it exists
 if [ -f .env ]; then
   export $(grep -v '^#' .env | xargs)
@@ -48,3 +55,11 @@ npx concurrently \
   "cd mobile && npm start" \
   "npx wait-on tcp:8081 && cd mobile && npm run android -- --no-packager --terminal Terminal" \
   "npx wait-on tcp:8081 && cd mobile && npm run ios -- --no-packager --terminal Terminal"
+
+echo ""
+echo "🚀 Development environment started!"
+echo "-----------------------------------"
+echo "Frontend: http://localhost:5173"
+echo "Backend:  http://localhost:8080"
+echo "Mobile:   Metro on 8081"
+echo "-----------------------------------"

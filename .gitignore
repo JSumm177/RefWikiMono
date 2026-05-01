@@ -44,3 +44,4 @@ backend/backend.iml
 .idea/misc.xml
 
 bundle.js
+.idea/deviceManager.xml
