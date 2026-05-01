@@ -33,6 +33,16 @@ fi
 # Start the database container
 docker compose up -d db
 
+# Clean up port 8081 to prevent Metro conflicts
+lsof -ti:8081 | xargs kill -9 || true
+
+# Check if production container is running on 8080
+if [ "$(docker ps -q -f name=refwiki-app)" ]; then
+  echo "⚠️ Warning: 'refwiki-app' (production) is running on port 8080."
+  echo "This will conflict with 'backend-dev'. Stopping it..."
+  docker stop refwiki-app
+fi
+
 # Load .env file if it exists
 if [ -f .env ]; then
   export $(grep -v '^#' .env | xargs)
@@ -41,10 +51,17 @@ fi
 export REACT_TERMINAL=Terminal
 
 # Run the three environments concurrently.
-# We use wait-on to wait for the Metro bundler (port 8081) to be ready before kicking off the Android and iOS builds/simulators.
 npx concurrently \
   "docker compose up backend-dev" \
   "cd frontend && npm run dev" \
-  "cd mobile && npm start" \
-  "npx wait-on tcp:8081 && cd mobile && npm run android -- --no-packager --terminal Terminal" \
-  "npx wait-on tcp:8081 && cd mobile && npm run ios -- --no-packager --terminal Terminal"
+  "cd mobile && npx expo start --clear" \
+  "npx wait-on tcp:8081 && cd mobile && npx expo run:android --no-bundler" \
+  "npx wait-on tcp:8081 && cd mobile && npx expo run:ios --no-bundler"
+
+echo ""
+echo "🚀 Development environment started!"
+echo "-----------------------------------"
+echo "Frontend: http://localhost:5173"
+echo "Backend:  http://localhost:8080"
+echo "Mobile:   Metro on 8081"
+echo "-----------------------------------"
