@@ -10,30 +10,37 @@ The entire development environment (Database, API, Web UI, and Mobile Metro) can
 ./start-dev.sh
 ```
 
-This command orchestrates:
-- **Database**: MySQL 8.0 in Docker.
-- **Backend API**: Java Servlet app running in a Maven container (Port 8080).
-- **Frontend UI**: React Vite app running in a Node container (Port 5173).
-- **Mobile Metro**: React Native bundler running on your host (Port 8081).
+### 📍 Service Endpoints
+Once running, you can access the following services:
+
+| Service | URL | Description |
+| :--- | :--- | :--- |
+| **Frontend UI** | [http://localhost:5173](http://localhost:5173) | React (Vite) dev server with HMR |
+| **Backend API** | [http://localhost:8080](http://localhost:8080) | Java Servlet API (Jetty) |
+| **Database Viewer** | [http://localhost:8082](http://localhost:8082) | Adminer (Web UI for MySQL) |
+| **Mobile Metro** | [http://localhost:8081](http://localhost:8081) | Expo/React Native Bundler |
+| **Unified Web** | [http://localhost:8080](http://localhost:8080) | Production build (via `./start-web.sh`) |
 
 ---
 
 ## 🏗 Project Architecture
 
 - **Workspaces**: Managed by Turborepo for efficient building and caching.
-- **Frontend**: React (Vite, TypeScript, Vitest). Now fully containerized.
+- **Frontend**: React (Vite, TypeScript, Vitest). Fully containerized.
 - **Backend**: Java Servlet (Maven, Jetty). Runs in Docker with explicit DNS for dependency resolution.
 - **Mobile**: React Native (Expo CNG). Native folders are automatically generated from `app.json`.
-- **Infrastructure**: Docker Compose for unified networking between all web components.
+- **Adminer**: Lightweight database management tool included for easy data inspection.
+- **Infrastructure**: Docker Compose for unified networking between all components.
 
 ---
 
 ## 🛠 Prerequisites
 
 Ensure you have the following installed and running:
-- **Docker Desktop**: Mandatory for the Web Stack (DB, API, Frontend).
-- **Node.js**: v22 or later.
+- **Docker Desktop**: Mandatory for the Web Stack (DB, API, Frontend, Adminer).
+- **Node.js**: v22 or later (LTS).
 - **Java JDK 21**: Required for Maven and Android builds.
+- **Android SDK & NDK**: Version 27.x required for New Architecture builds.
 - **Xcode / Android Studio**: For mobile simulation.
 
 ---
