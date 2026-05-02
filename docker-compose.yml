@@ -51,6 +51,20 @@ services:
     working_dir: /app
     command: mvn jetty:run
 
+  frontend-dev:
+    image: node:22-alpine
+    container_name: refwiki-frontend-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      # Anonymous volume for node_modules to avoid host conflicts
+      - /app/node_modules
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+
 volumes:
   db-data:
   maven-repo:

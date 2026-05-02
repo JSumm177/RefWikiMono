@@ -14,6 +14,13 @@ I have resolved the "Unable to resolve module ./.expo/.virtual-metro-entry" erro
 ### 3. Entry Point Alignment
 *   **Fix**: Updated `mobile/index.js` to use `registerRootComponent` from the `expo` package, which is the standard for modern Expo apps.
 
+### 4. Unified Containerization (Frontend in Docker)
+*   **Fix**: Added `frontend-dev` service to `docker-compose.yml` and updated `frontend/package.json` to run within that container.
+*   **Result**: The Entire Web Stack (DB, Backend, Frontend) now runs in Docker. This eliminates environment mismatches between developers.
+*   **Ports**:
+    *   Frontend: http://localhost:5173 (Served from Docker)
+    *   Backend: http://localhost:8080 (Served from Docker)
+
 ---
 
 ## Recovery Steps
