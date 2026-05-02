@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "expo run:android",
-    "ios": "expo run:ios",
+    "dev": "npx expo start --clear",
+    "android": "expo run:android --no-bundler",
+    "ios": "expo run:ios --no-bundler",
     "lint": "eslint .",
     "postinstall": "patch-package && cd ios && pod install || true",
     "start": "react-native start",

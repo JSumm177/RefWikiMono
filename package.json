@@ -2,6 +2,7 @@
   "name": "refwiki-mono",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "npm@10.2.4",
   "workspaces": [
     "backend",
     "frontend",
@@ -13,10 +14,15 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "android": "turbo android",
+    "ios": "turbo ios",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "clean": "turbo clean",
     "docs:build": "honkit build docs && touch docs/_book/.nojekyll",
     "docs:serve": "honkit serve docs",
-    "dev": "./start-dev.sh",
     "fix:links": "cd mobile && npx react-native-monorepo-tools-fix-links || true",
     "postinstall": "npm run fix:links"
   },
@@ -33,10 +39,11 @@
   },
   "homepage": "https://github.com/JSumm177/RefWikiMono#readme",
   "devDependencies": {
-    "honkit": "^6.1.7",
-    "wait-on": "^9.0.4",
+    "@react-native-community/cli": "15.1.3",
     "@react-native/metro-config": "0.83.4",
-    "@react-native-community/cli": "15.1.3"
+    "honkit": "^6.1.7",
+    "turbo": "^2.9.7",
+    "wait-on": "^9.0.4"
   },
   "dependencies": {
     "react": "19.2.0",

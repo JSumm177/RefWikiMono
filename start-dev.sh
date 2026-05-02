@@ -50,18 +50,9 @@ fi
 
 export REACT_TERMINAL=Terminal
 
-# Run the three environments concurrently.
-npx concurrently \
-  "docker compose up backend-dev" \
-  "cd frontend && npm run dev" \
-  "cd mobile && npx expo start --clear" \
-  "npx wait-on tcp:8081 && cd mobile && npx expo run:android --no-bundler" \
-  "npx wait-on tcp:8081 && cd mobile && npx expo run:ios --no-bundler"
-
-echo ""
-echo "🚀 Development environment started!"
-echo "-----------------------------------"
-echo "Frontend: http://localhost:5173"
-echo "Backend:  http://localhost:8080"
-echo "Mobile:   Metro on 8081"
-echo "-----------------------------------"
+# Run the full stack dev environment using Turborepo
+# This will concurrently run:
+# - backend: docker compose up backend-dev
+# - frontend: vite
+# - mobile: npx expo start --clear
+npm run dev
