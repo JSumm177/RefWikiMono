@@ -1,217 +1,85 @@
 # RefWikiMono
 
-A fullstack monorepo featuring a React TypeScript frontend, a Java Servlet backend with MySQL, and a React Native mobile application.
+A hardened, fullstack monorepo managed with **Turborepo**, featuring a React TypeScript frontend, a Java Servlet backend, and a React Native application with Expo CNG.
 
-## Project Overview
+## 🚀 Quick Start (Local Development)
 
-- **Frontend**: React (Vite, TypeScript, Cypress)
-- **Backend**: Java Servlet (Maven, Tomcat, MySQL)
-- **Mobile**: React Native (TypeScript, Jest)
-- **Database**: MySQL 8.0
-
----
-
-## Documentation
-
-Detailed documentation and testing guides can be found hosted on GitHub Pages:
-[https://jsumm177.github.io/RefWikiMono/](https://jsumm177.github.io/RefWikiMono/)
-
----
-
-## Prerequisites
-
-Ensure you have the following installed:
-- [Docker](https://docs.docker.com/get-docker/) & Docker Compose
-- [Node.js](https://nodejs.org/) (v22 or later)
-- [Java JDK 21](https://adoptium.net/temurin/releases/?version=21)
-- [Maven](https://maven.apache.org/download.cgi)
-- [Android Studio](https://developer.android.com/studio) / [Xcode](https://developer.apple.com/xcode/) (for mobile development)
-
----
-
-## NFL Rulebook PDF-to-JSON Pipeline
-
-The project includes a Node.js script located in the `scripts/` directory that downloads the latest NFL Rulebook PDF, extracts its raw text using `pdf-parse`, and utilizes a hybrid LLM process to clean and structure the output into JSON for the mobile application.
-
-### How it works:
-1. **Download:** It fetches the official NFL rulebook PDF using the native Node.js `fetch` API.
-2. **Extract:** It reads the PDF buffer and converts it into a large raw text string using `pdf-parse`.
-3. **Chunk:** It uses simple regex matching to split the raw text into distinct "Rule" sections.
-4. **Structure (LLM):** It processes each rule chunk. If an API key (`GEMINI_API_KEY` or `OPENAI_API_KEY`) is present, it uses an AI to intelligently structure the text. Otherwise, it falls back to a mock cleanup function to output formatted JSON locally.
-
-To use this script:
-1. Navigate to the `scripts/` directory:
-   ```bash
-   cd scripts
-   ```
-2. Install the necessary Node.js dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the script:
-   ```bash
-   node nfl-rule-parser.mjs
-   ```
-4. The output will be saved as `rulebook.json` in the `mobile/assets/` directory.
-
----
-
-## Getting Started (Docker Compose)
-
-The easiest way to run the entire stack (Database, Backend, and Frontend) connected is using Docker Compose.
-
-1. **Setup Environment Variables**:
-   Copy the example environment file:
-   ```bash
-   cp .env.example .env
-   ```
-   *(Optional: Edit `.env` to customize your database credentials)*
-
-2. **Start the Database**:
-   First, start the MySQL database container in the background:
-   ```bash
-   docker compose up -d db
-   ```
-
-3. **Start the Web Application**:
-   Use the provided script to verify the database is running and start the web services (frontend and backend):
-   ```bash
-   ./start-web.sh
-   ```
-
-   **Troubleshooting Port 8080 Error**:
-   If you receive an error like `Bind for 0.0.0.0:8080 failed: port is already allocated`, it means another container or local process (like Tomcat) is already using port 8080. You can stop existing containers by running:
-   ```bash
-   docker compose down
-   ```
-   Then try starting the database and web application again.
-
-4. **Access the Applications**:
-   - **Frontend**: [http://localhost:8080](http://localhost:8080)
-   - **Backend API**: [http://localhost:8080/api/](http://localhost:8080/api/)
-     *(Note: The `/api` is the context path from `api.war`.)*
-
----
-
-## Viewing Logs
-
-Both the Java backend application logs and the Tomcat server logs (Catalina and access logs) are unified and configured to stream directly to standard output (`stdout`) in plain text. This means you can view and manage all logs natively using Docker.
-
-To view the live stream of logs for the entire web stack:
+The entire development environment (Database, API, Web UI, and Mobile Metro) can be launched with a single command:
 
 ```bash
-docker logs -f refwiki-app
+./start-dev.sh
 ```
 
-*Note: `refwiki-app` is the default container name for the web service. If you started it via docker-compose, you can also use `docker compose logs -f app`.*
+This command orchestrates:
+- **Database**: MySQL 8.0 in Docker.
+- **Backend API**: Java Servlet app running in a Maven container (Port 8080).
+- **Frontend UI**: React Vite app running in a Node container (Port 5173).
+- **Mobile Metro**: React Native bundler running on your host (Port 8081).
 
 ---
 
-## Local Development
+## 🏗 Project Architecture
 
-The fastest way to run all development environments simultaneously (Database, Backend, Frontend, and Mobile) is to use the provided single-command dev script.
-
-Ensure you have run `npm install` in the root repository. Then start the development environment:
-
-```bash
-npm run dev
-```
-
-This command executes the `start-dev.sh` script, which:
-1. Starts the MySQL database via Docker Compose (`docker compose up -d db`).
-2. Loads environment variables from a `.env` file if it exists.
-3. Concurrently runs:
-   - The Java backend (`mvn jetty:run` on port 8080).
-   - The React frontend (`npm run dev` on port 5173).
-   - The React Native mobile bundler (`npm start`).
-   - The React Native Android and iOS runtimes once the bundler is ready.
-
-If you prefer to run the components separately for finer control, follow these steps:
-
-### 1. Database
-You can start just the MySQL database using Docker:
-```bash
-docker compose up -d db
-```
-
-### 2. Backend (Java)
-1. Ensure the database is running and environment variables are set in your shell:
-   ```bash
-   export DB_HOST=localhost
-   export DB_PORT=3306
-   export DB_NAME=refwiki
-   export DB_USER=wiki_user
-   export DB_PASSWORD=wiki_password
-   ```
-2. Run the application using the Jetty Maven plugin:
-   ```bash
-   cd backend
-   mvn jetty:run
-   ```
-
-### 3. Frontend (React)
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-2. The frontend will be available at [http://localhost:5173](http://localhost:5173).
-   *Note: To connect to the backend, ensure your API calls are relative or configured via a proxy in `vite.config.ts`.*
-
-### 4. Mobile (React Native)
-1. Navigate to the mobile directory:
-   ```bash
-   cd mobile
-   npm install
-   ```
-2. Start the Metro bundler:
-   ```bash
-   npm start
-   ```
-3. Run on Android or iOS:
-   ```bash
-   npm run android
-   # OR
-   npm run ios
-   ```
+- **Workspaces**: Managed by Turborepo for efficient building and caching.
+- **Frontend**: React (Vite, TypeScript, Vitest). Now fully containerized.
+- **Backend**: Java Servlet (Maven, Jetty). Runs in Docker with explicit DNS for dependency resolution.
+- **Mobile**: React Native (Expo CNG). Native folders are automatically generated from `app.json`.
+- **Infrastructure**: Docker Compose for unified networking between all web components.
 
 ---
 
-## Testing
+## 🛠 Prerequisites
 
-### Backend (Java)
-To run the backend tests, you must have a running Docker daemon. The testing suite relies on:
-- **JUnit 5**: Modern testing framework supporting features like `@Nested` and `@ParameterizedTest`.
-- **Mockito**: Used for mocking dependencies (e.g., mail services or external APIs).
-- **Testcontainers**: Requires Docker to spin up a temporary MySQL instance during test execution.
+Ensure you have the following installed and running:
+- **Docker Desktop**: Mandatory for the Web Stack (DB, API, Frontend).
+- **Node.js**: v22 or later.
+- **Java JDK 21**: Required for Maven and Android builds.
+- **Xcode / Android Studio**: For mobile simulation.
 
-To execute the tests:
-```bash
-cd backend
-mvn clean test
-```
+---
 
-### Frontend End-to-End (Cypress)
-Ensure the application is running (via Docker or local dev) and run:
-```bash
-cd frontend
-npm run test:e2e
-```
+## 📦 Monorepo Commands (Turborepo)
 
-### Mobile Tests (Jest)
+Run these from the **root** directory:
+
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Launch DB, Backend, Frontend, and Metro concurrently. |
+| `npm run build` | Build all workspaces (Vite build + Maven package). |
+| `npm run test` | Run all test suites (Vitest + JUnit + Jest). |
+| `npm run clean` | Wipe all build artifacts and caches. |
+| `npm run android` | Launch the mobile app on the Android emulator. |
+| `npm run ios` | Launch the mobile app on the iOS simulator. |
+
+---
+
+## 📱 Mobile Development (Expo CNG)
+
+The mobile project uses **Continuous Native Generation**. You should generally not edit the `ios` or `android` folders directly.
+
+### 🔄 Resetting Native Folders
+If the native build becomes corrupted or you change native configuration in `app.json`, reset them:
 ```bash
 cd mobile
-npm test
+npx expo prebuild --clean
 ```
+
+### 🌍 Network Discovery
+The project includes a custom stabilization plugin (`mobile/plugins/withStabilization.js`) that automatically detects your machine's local IP address and injects it into the mobile builds, ensuring they can always find the Metro bundler.
 
 ---
 
-## Directory Structure
+## 🐳 Production Build
 
-- `backend/`: Java Maven project (Servlets).
-- `frontend/`: React Vite project (TypeScript).
-- `mobile/`: React Native mobile app.
-- `db/`: SQL initialization scripts.
-- `docker-compose.yml`: Orchestrates DB and App services.
-- `Dockerfile`: Multi-stage build for the web stack.
+To build and run the production-ready unified container (Tomcat serving both API and Frontend):
+
+1. **Start the DB**: `docker compose up -d db`
+2. **Build and Run**: `./start-web.sh`
+3. **Access**: [http://localhost:8080](http://localhost:8080)
+
+---
+
+## 📝 Documentation
+
+Detailed documentation and testing guides:
+[https://jsumm177.github.io/RefWikiMono/](https://jsumm177.github.io/RefWikiMono/)
