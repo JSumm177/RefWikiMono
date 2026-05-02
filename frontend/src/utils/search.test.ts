@@ -41,6 +41,22 @@ vi.mock('../assets/rulebook.json', () => {
               ]
             }
           ]
+        },
+        {
+          rule_id: 8,
+          title: "Pass Interference",
+          sections: [
+            {
+              section_id: 5,
+              title: "Pass Interference Penalty",
+              articles: [
+                {
+                  article_id: 1,
+                  text: "Penalty for pass interference."
+                }
+              ]
+            }
+          ]
         }
       ]
     }
@@ -88,5 +104,20 @@ describe('searchRules utility', () => {
     expect(results.length).toBeGreaterThanOrEqual(2);
     const ruleTitles = results.map(r => r.ruleTitle);
     expect(ruleTitles).toContain('The Forward Pass');
+  });
+
+  it('should correctly translate TV terms like PI to Pass Interference', () => {
+    const results = searchRules('PI');
+    expect(results.length).toBeGreaterThan(0);
+    expect(results[0].ruleTitle).toBe('Pass Interference');
+  });
+
+  it('should respect the limit parameter', () => {
+    // Both pass rules have 'pass' in them
+    const allResults = searchRules('pass');
+    expect(allResults.length).toBeGreaterThan(1);
+
+    const limitedResults = searchRules('pass', 1);
+    expect(limitedResults.length).toBe(1);
   });
 });

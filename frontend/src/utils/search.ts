@@ -1,5 +1,6 @@
 import Fuse from 'fuse.js';
 import rulebook from '../assets/rulebook.json';
+import { translateQuery } from './refTranslator';
 
 export interface SearchableRule {
   ruleId: number;
@@ -35,7 +36,7 @@ const flattenRulebook = (): SearchableRule[] => {
 
 let fuseInstance: Fuse<SearchableRule> | null = null;
 
-export const searchRules = (query: string): SearchableRule[] => {
+export const searchRules = (query: string, limit?: number): SearchableRule[] => {
   if (!query) return [];
 
   if (!fuseInstance) {
@@ -61,6 +62,10 @@ export const searchRules = (query: string): SearchableRule[] => {
     fuseInstance = new Fuse(searchableItems, fuseOptions);
   }
 
-  const results = fuseInstance.search(query);
+  const processedQuery = translateQuery(query);
+
+  const searchOptions = limit ? { limit } : undefined;
+  const results = fuseInstance.search(processedQuery, searchOptions);
+
   return results.map(result => result.item);
 };
