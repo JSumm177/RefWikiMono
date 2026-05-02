@@ -63,7 +63,7 @@ services:
     working_dir: /app
     command: sh -c "npm install && npm start -- --host"
     environment:
-      - VITE_API_URL=http://localhost:8080
+      - VITE_API_URL=http://backend-dev:8080
 
   adminer:
     image: adminer

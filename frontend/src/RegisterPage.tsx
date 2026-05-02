@@ -65,6 +65,9 @@ const RegisterPage: React.FC = () => {
                         required
                         style={{ width: '100%', padding: '8px' }}
                     />
+                    <small style={{ color: '#666', fontSize: '0.8rem' }}>
+                        Must be 8+ characters with a letter, number, and special character (e.g. !@#).
+                    </small>
                 </div>
                 <button type="submit" style={{ padding: '10px 15px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>
                     Register
