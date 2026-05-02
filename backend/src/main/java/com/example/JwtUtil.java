@@ -14,17 +14,13 @@ public class JwtUtil {
 
     private static Key getSigningKey() {
         if (SECRET_KEY_ENV == null || SECRET_KEY_ENV.isEmpty()) {
-            if (System.getProperty("JWT_SECRET_TEST") != null) {
-                SECRET_KEY_ENV = System.getProperty("JWT_SECRET_TEST");
-            } else {
-                throw new RuntimeException("JWT_SECRET environment variable is not set.");
-            }
+            throw new RuntimeException("JWT_SECRET environment variable is not set.");
         }
         return Keys.hmacShaKeyFor(SECRET_KEY_ENV.getBytes(StandardCharsets.UTF_8));
     }
 
     // Visible for testing
-    public static void setSecretForTesting(String secret) {
+    static void setSecretForTesting(String secret) {
         SECRET_KEY_ENV = secret;
     }
 
