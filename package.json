@@ -22,9 +22,7 @@
     "lint": "turbo lint",
     "clean": "turbo clean",
     "docs:build": "honkit build docs && touch docs/_book/.nojekyll",
-    "docs:serve": "honkit serve docs",
-    "fix:links": "cd mobile && npx react-native-monorepo-tools-fix-links || true",
-    "postinstall": "npm run fix:links"
+    "docs:serve": "honkit serve docs"
   },
   "repository": {
     "type": "git",

@@ -43,6 +43,9 @@ if [ "$(docker ps -q -f name=refwiki-app)" ]; then
   docker stop refwiki-app
 fi
 
+# Detect and update local IP for mobile apps
+./scripts/get-ip.sh
+
 # Load .env file if it exists
 if [ -f .env ]; then
   export $(grep -v '^#' .env | xargs)

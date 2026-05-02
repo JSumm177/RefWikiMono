@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "docker compose up frontend-dev",
-    "dev:host": "vite",
+    "start": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
