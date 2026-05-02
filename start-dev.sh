@@ -24,10 +24,22 @@ if [ ! -d "mobile/ios/Pods" ]; then
   (cd mobile/ios && pod install)
 fi
 
-# Android Prep: Auto-generate local.properties if missing
-if [ ! -f "mobile/android/local.properties" ] && [ -n "$ANDROID_HOME" ]; then
-  echo "🤖 Generating mobile/android/local.properties using ANDROID_HOME..."
+# Android Prep: Ensure environment and local.properties are correct
+if [ -n "$ANDROID_HOME" ]; then
+  echo "🤖 Configuring Android environment..."
+  # Use macOS tool to set JAVA_HOME for Java 21 if on Darwin
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    JAVA_HOME_TEMP=$(/usr/libexec/java_home -v 21 2>/dev/null || echo "$JAVA_HOME")
+    export JAVA_HOME="$JAVA_HOME_TEMP"
+  fi
+
+  # Ensure local.properties has both SDK and NDK paths
   echo "sdk.dir=$ANDROID_HOME" > mobile/android/local.properties
+  NDK_PATH=$(ls -d $ANDROID_HOME/ndk/* 2>/dev/null | sort -V | tail -1)
+  if [ -n "$NDK_PATH" ]; then
+    echo "ndk.dir=$NDK_PATH" >> mobile/android/local.properties
+    export ANDROID_NDK_HOME=$NDK_PATH
+  fi
 fi
 
 # Start the database container
