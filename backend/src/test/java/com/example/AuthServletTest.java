@@ -34,6 +34,7 @@ public class AuthServletTest {
     @BeforeAll
     public static void setupDb() {
         TestDatabaseUtil.startDatabase();
+        JwtUtil.setSecretForTesting("supersecretkey123456789012345678901234567890");
     }
 
     @BeforeEach

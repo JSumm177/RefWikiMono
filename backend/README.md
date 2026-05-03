@@ -43,4 +43,4 @@ mvn clean test
 
 ## Troubleshooting
 - **Docker Connection Refused**: If you see errors indicating that Testcontainers cannot connect to Docker or the Docker daemon is not running, ensure that Docker Desktop (or your Docker engine) is started and accessible by your user.
-- **Missing Environment Variables**: While the `maven-surefire-plugin` is configured to inject system property variables (like `IS_TEST_ENV` and `JWT_SECRET_TEST`) to bypass strict production checks, ensure you are running tests using Maven (`mvn clean test`) rather than running individual test classes directly through an IDE without setting these properties.
+- **Missing Environment Variables**: While the `maven-surefire-plugin` is configured to inject system property variables (like `IS_TEST_ENV`) to bypass strict production checks, ensure you are running tests using Maven (`mvn clean test`) rather than running individual test classes directly through an IDE without setting these properties.

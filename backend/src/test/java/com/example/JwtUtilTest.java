@@ -1,14 +1,19 @@
 package com.example;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JwtUtilTest {
 
+    @BeforeAll
+    public static void setup() {
+        JwtUtil.setSecretForTesting("supersecretkey123456789012345678901234567890");
+    }
+
     @Test
     public void testGenerateAndValidateToken() {
-        // Pom.xml SUREFIRE plugin already injects JWT_SECRET_TEST as property which is set
         String email = "test@example.com";
         String token = JwtUtil.generateToken(email);
 
