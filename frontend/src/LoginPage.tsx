@@ -41,7 +41,7 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: '40px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
+        <div style={{ maxWidth: '400px', margin: '40px auto', padding: '20px', border: '1px solid var(--border)', borderRadius: '5px' }}>
             <h2>Login</h2>
             {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
             <form onSubmit={handleLogin}>
@@ -52,7 +52,7 @@ const LoginPage: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        style={{ width: '100%', padding: '8px' }}
+                        style={{ width: '100%', padding: '8px', backgroundColor: 'var(--bg)', color: 'var(--text-h)', border: '1px solid var(--border)', borderRadius: '4px' }}
                     />
                 </div>
                 <div style={{ marginBottom: '15px' }}>
@@ -62,7 +62,7 @@ const LoginPage: React.FC = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        style={{ width: '100%', padding: '8px' }}
+                        style={{ width: '100%', padding: '8px', backgroundColor: 'var(--bg)', color: 'var(--text-h)', border: '1px solid var(--border)', borderRadius: '4px' }}
                     />
                 </div>
                 <button type="submit" style={{ padding: '10px 15px', background: '#007BFF', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>

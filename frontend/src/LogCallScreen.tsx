@@ -60,10 +60,11 @@ const LogCallScreen: React.FC = () => {
   const inputStyle = {
     width: '100%',
     padding: '12px',
-    border: '1px solid #ccc',
+    border: '1px solid var(--border)',
     borderRadius: '8px',
     fontSize: '16px',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: 'var(--bg)',
+    color: 'var(--text-h)',
     marginBottom: '15px',
     boxSizing: 'border-box' as const
   };
@@ -112,8 +113,8 @@ const LogCallScreen: React.FC = () => {
               top: '100%',
               left: 0,
               right: 0,
-              backgroundColor: 'white',
-              border: '1px solid #ccc',
+              backgroundColor: 'var(--bg)',
+              border: '1px solid var(--border)',
               borderTop: 'none',
               borderBottomLeftRadius: '8px',
               borderBottomRightRadius: '8px',
@@ -138,11 +139,11 @@ const LogCallScreen: React.FC = () => {
                     setRuleReference(rule.fullReference);
                     setShowDropdown(false);
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--border)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
                   <strong>{rule.fullReference}</strong>: {rule.ruleTitle} - {rule.sectionTitle}
-                  <div style={{ fontSize: '12px', color: '#666', marginTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text)', marginTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {rule.articleText}
                   </div>
                 </li>
@@ -162,10 +163,10 @@ const LogCallScreen: React.FC = () => {
               onClick={() => setControversyLevel(item.level)}
               style={{
                 padding: '12px',
-                border: `1px solid ${controversyLevel === item.level ? item.color : '#ddd'}`,
+                border: `1px solid ${controversyLevel === item.level ? item.color : 'var(--border)'}`,
                 borderRadius: '8px',
-                backgroundColor: controversyLevel === item.level ? item.color : '#f9f9f9',
-                color: controversyLevel === item.level ? '#fff' : '#333',
+                backgroundColor: controversyLevel === item.level ? item.color : 'var(--bg)',
+                color: controversyLevel === item.level ? '#fff' : 'var(--text-h)',
                 cursor: 'pointer',
                 textAlign: 'left'
               }}

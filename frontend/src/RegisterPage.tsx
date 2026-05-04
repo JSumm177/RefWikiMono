@@ -39,7 +39,7 @@ const RegisterPage: React.FC = () => {
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: '40px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
+        <div style={{ maxWidth: '400px', margin: '40px auto', padding: '20px', border: '1px solid var(--border)', borderRadius: '5px' }}>
             <h2>Register</h2>
             {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
             {success && <div style={{ color: 'green', marginBottom: '10px' }}>{success}</div>}
@@ -52,7 +52,7 @@ const RegisterPage: React.FC = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        style={{ width: '100%', padding: '8px' }}
+                        style={{ width: '100%', padding: '8px', backgroundColor: 'var(--bg)', color: 'var(--text-h)', border: '1px solid var(--border)', borderRadius: '4px' }}
                     />
                 </div>
                 <div style={{ marginBottom: '15px' }}>
@@ -63,7 +63,7 @@ const RegisterPage: React.FC = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        style={{ width: '100%', padding: '8px' }}
+                        style={{ width: '100%', padding: '8px', backgroundColor: 'var(--bg)', color: 'var(--text-h)', border: '1px solid var(--border)', borderRadius: '4px' }}
                     />
                     <small style={{ color: '#666', fontSize: '0.8rem' }}>
                         Must be 8+ characters with a letter, number, and special character (e.g. !@#).
