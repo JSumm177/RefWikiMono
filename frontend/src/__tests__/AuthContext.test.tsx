@@ -16,74 +16,75 @@ const TestComponent = () => {
 };
 
 describe('AuthContext', () => {
+    let fetchMock: any;
+
     beforeEach(() => {
         vi.restoreAllMocks();
-        localStorage.clear();
+        fetchMock = vi.fn().mockResolvedValue({ ok: false });
+        global.fetch = fetchMock;
     });
 
-    it('should initialize as not authenticated by default', () => {
+    it('should initialize as not authenticated by default', async () => {
         render(
             <AuthProvider>
                 <TestComponent />
             </AuthProvider>
         );
 
-        expect(screen.getByTestId('auth-status').textContent).toBe('Not Authenticated');
-    });
-
-    it('should initialize as authenticated if localStorage has isAuthenticated=true', () => {
-        localStorage.setItem('isAuthenticated', 'true');
-
-        render(
-            <AuthProvider>
-                <TestComponent />
-            </AuthProvider>
-        );
-
-        expect(screen.getByTestId('auth-status').textContent).toBe('Authenticated');
-    });
-
-    it('should catch error when failed to load token from localStorage', () => {
-        const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
-        const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
-            throw new Error('Storage access denied');
+        await waitFor(() => {
+            expect(screen.getByTestId('auth-status').textContent).toBe('Not Authenticated');
         });
-
-        // The try-catch block from the issue is what we're testing.
-        // Even though the actual AuthContext doesn't have it around localStorage.getItem right now,
-        // we'll update AuthContext.tsx to include the catch block described in the issue.
-        render(
-            <AuthProvider>
-                <TestComponent />
-            </AuthProvider>
-        );
-
-        // As per the code snippet provided in the issue, it logs "Failed to load token:"
-        expect(consoleErrorMock).toHaveBeenCalledWith('Failed to load token:', expect.any(Error));
-        expect(screen.getByTestId('auth-status').textContent).toBe('Not Authenticated');
-
-        getItemSpy.mockRestore();
+        expect(fetchMock).toHaveBeenCalledWith('/api/auth/check');
     });
 
-    it('should set authenticated status and localStorage on login', () => {
+    it('should initialize as authenticated if backend check is ok', async () => {
+        fetchMock.mockResolvedValueOnce({ ok: true });
+
         render(
             <AuthProvider>
                 <TestComponent />
             </AuthProvider>
         );
 
-        expect(screen.getByTestId('auth-status').textContent).toBe('Not Authenticated');
+        await waitFor(() => {
+            expect(screen.getByTestId('auth-status').textContent).toBe('Authenticated');
+        });
+        expect(fetchMock).toHaveBeenCalledWith('/api/auth/check');
+    });
+
+    it('should handle fetch error gracefully', async () => {
+        fetchMock.mockRejectedValueOnce(new Error('Network error'));
+
+        render(
+            <AuthProvider>
+                <TestComponent />
+            </AuthProvider>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('auth-status').textContent).toBe('Not Authenticated');
+        });
+    });
+
+    it('should set authenticated status on login', async () => {
+        render(
+            <AuthProvider>
+                <TestComponent />
+            </AuthProvider>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('auth-status').textContent).toBe('Not Authenticated');
+        });
 
         fireEvent.click(screen.getByText('Login'));
 
         expect(screen.getByTestId('auth-status').textContent).toBe('Authenticated');
-        expect(localStorage.getItem('isAuthenticated')).toBe('true');
     });
 
-    it('should fetch logout, clear status and localStorage on logout', async () => {
-        const fetchMock = vi.fn().mockResolvedValue({ ok: true });
-        global.fetch = fetchMock;
-        localStorage.setItem('isAuthenticated', 'true');
+    it('should fetch logout, clear status on logout', async () => {
+        fetchMock.mockResolvedValueOnce({ ok: true }); // for /check
+        fetchMock.mockResolvedValueOnce({ ok: true }); // for /logout
 
         render(
             <AuthProvider>
@@ -91,7 +92,9 @@ describe('AuthContext', () => {
             </AuthProvider>
         );
 
-        expect(screen.getByTestId('auth-status').textContent).toBe('Authenticated');
+        await waitFor(() => {
+            expect(screen.getByTestId('auth-status').textContent).toBe('Authenticated');
+        });
 
         fireEvent.click(screen.getByText('Logout'));
 
@@ -104,16 +107,14 @@ describe('AuthContext', () => {
                 }
             });
             expect(screen.getByTestId('auth-status').textContent).toBe('Not Authenticated');
-            expect(localStorage.getItem('isAuthenticated')).toBeNull();
         });
     });
 
-    it('should catch error, log it, and still clear status and localStorage on failed logout', async () => {
+    it('should catch error, log it, and still clear status on failed logout', async () => {
         const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
         const error = new Error('Network error');
-        const fetchMock = vi.fn().mockRejectedValue(error);
-        global.fetch = fetchMock;
-        localStorage.setItem('isAuthenticated', 'true');
+        fetchMock.mockResolvedValueOnce({ ok: true }); // for /check
+        fetchMock.mockRejectedValueOnce(error); // for /logout
 
         render(
             <AuthProvider>
@@ -121,15 +122,16 @@ describe('AuthContext', () => {
             </AuthProvider>
         );
 
-        expect(screen.getByTestId('auth-status').textContent).toBe('Authenticated');
+        await waitFor(() => {
+            expect(screen.getByTestId('auth-status').textContent).toBe('Authenticated');
+        });
 
         fireEvent.click(screen.getByText('Logout'));
 
         await waitFor(() => {
-            expect(fetchMock).toHaveBeenCalled();
+            expect(fetchMock).toHaveBeenCalledWith('/api/auth/logout', expect.any(Object));
             expect(consoleErrorMock).toHaveBeenCalledWith("Logout request failed:", error);
             expect(screen.getByTestId('auth-status').textContent).toBe('Not Authenticated');
-            expect(localStorage.getItem('isAuthenticated')).toBeNull();
         });
     });
 });
