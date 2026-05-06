@@ -36,6 +36,37 @@ public class AuthServlet extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String pathInfo = req.getPathInfo();
+
+        if ("/check".equals(pathInfo)) {
+            handleCheck(req, resp);
+        } else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void handleCheck(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("jwt".equals(cookie.getName())) {
+                    String token = cookie.getValue();
+                    String subject = JwtUtil.validateTokenAndGetSubject(token);
+                    if (subject != null) {
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                        resp.setContentType("application/json");
+                        resp.getWriter().print("{\"message\": \"Authenticated\"}");
+                        return;
+                    }
+                }
+            }
+        }
+
+        resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
     private void handleLogout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         AuthResponse responseJson = new AuthResponse();

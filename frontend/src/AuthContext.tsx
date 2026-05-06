@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
 interface AuthContextType {
@@ -14,21 +14,24 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-        try {
-            // Synchronously initialize state from localStorage to prevent flash of unauthenticated state
-            const token = localStorage.getItem('isAuthenticated') === 'true';
-            if (token) {
-                return true;
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const response = await fetch('/api/auth/check');
+                setIsAuthenticated(response.ok);
+            } catch (error) {
+                setIsAuthenticated(false);
+            } finally {
+                setIsLoading(false);
             }
-        } catch (error) {
-            console.error('Failed to load token:', error);
-        }
-        return false;
-    });
+        };
+        checkAuth();
+    }, []);
 
     const login = () => {
-        localStorage.setItem('isAuthenticated', 'true');
         setIsAuthenticated(true);
     };
 
@@ -44,10 +47,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } catch (error) {
             console.error("Logout request failed:", error);
         } finally {
-            localStorage.removeItem('isAuthenticated');
             setIsAuthenticated(false);
         }
     };
+
+    if (isLoading) {
+        return null; // Or a loading spinner
+    }
 
     return (
         <AuthContext.Provider value={{ isAuthenticated, login, logout }}>

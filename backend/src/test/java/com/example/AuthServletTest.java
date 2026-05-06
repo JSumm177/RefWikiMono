@@ -246,6 +246,47 @@ public class AuthServletTest {
         verify(response, never()).addCookie(any(Cookie.class));
     }
 
+    @Test
+    public void testCheckSuccess() throws Exception {
+        when(request.getPathInfo()).thenReturn("/check");
+        String token = JwtUtil.generateToken("test@example.com");
+        Cookie cookie = new Cookie("jwt", token);
+        when(request.getCookies()).thenReturn(new Cookie[]{cookie});
+
+        authServlet.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+        assertTrue(responseWriter.toString().contains("Authenticated"));
+    }
+
+    @Test
+    public void testCheckNoCookies() throws Exception {
+        when(request.getPathInfo()).thenReturn("/check");
+        when(request.getCookies()).thenReturn(null);
+
+        authServlet.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    @Test
+    public void testCheckInvalidToken() throws Exception {
+        when(request.getPathInfo()).thenReturn("/check");
+        Cookie cookie = new Cookie("jwt", "invalid-token");
+        when(request.getCookies()).thenReturn(new Cookie[]{cookie});
+
+        authServlet.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    @Test
+    public void testGetInvalidPath() throws Exception {
+        when(request.getPathInfo()).thenReturn("/invalid");
+        authServlet.doGet(request, response);
+        verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
     // Helper class for mock body
     private static class AuthRequest {
         public String email;
