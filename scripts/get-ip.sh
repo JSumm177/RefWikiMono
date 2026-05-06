@@ -21,3 +21,9 @@ if [ -f .env ]; then
 else
   echo "LOCAL_IP=$IP" > .env
 fi
+
+# Ensure directories exist
+mkdir -p mobile/utils
+
+# Write to a JS file for easy importing
+echo "export const LOCAL_IP = '$IP';" > mobile/utils/ip.js

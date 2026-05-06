@@ -83,6 +83,7 @@ public class DatabaseConfig {
 
             // Add annotated classes
             configuration.addAnnotatedClass(com.example.User.class);
+            configuration.addAnnotatedClass(com.example.Bookmark.class);
 
             // We supply a custom connection provider to use the Hikari datasource
             // OR simply let Hibernate use its default mechanism with the JDBC properties provided above

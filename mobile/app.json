@@ -15,6 +15,18 @@
     },
     "plugins": [
       "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "ndkVersion": "27.1.12297006",
+            "kotlinVersion": "2.1.10"
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ],
       "./plugins/withStabilization"
     ]
   }

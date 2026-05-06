@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { API_BASE_URL } from './utils/api';
 
 const RegisterScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
@@ -7,8 +8,7 @@ const RegisterScreen = ({ navigation }: any) => {
 
     const handleRegister = async () => {
         try {
-            const baseUrl = Platform.OS === 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-            const API_URL = `${baseUrl}/api/auth/register`;
+            const API_URL = `${API_BASE_URL}/api/auth/register`;
 
             const response = await fetch(API_URL, {
                 method: 'POST',

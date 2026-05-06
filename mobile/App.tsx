@@ -1,10 +1,11 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, Button, StyleSheet, ActivityIndicator, FlatList, TextInput } from 'react-native';
+import { View, Text, Button, StyleSheet, ActivityIndicator, FlatList, TextInput, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext, AuthProvider } from './AuthContext';
 import { CallHistoryProvider, CallHistoryContext } from './CallHistoryContext';
+import { BookmarkProvider, BookmarkContext } from './BookmarkContext';
 import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 import LogCallScreen from './LogCallScreen';
@@ -26,27 +27,53 @@ const getControversyColor = (level: number) => {
 
 const HomeScreen = () => {
   const { calls } = useContext(CallHistoryContext);
+  const { bookmarks, removeBookmark, isPending } = useContext(BookmarkContext);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Live Call Log</Text>
-      {calls.length === 0 ? (
-        <Text style={styles.subtitle}>No calls logged yet. Head to Log Call!</Text>
-      ) : (
-        <FlatList
-          data={calls}
-          keyExtractor={(item) => item.id}
-          style={styles.list}
-          renderItem={({ item }) => (
-            <View style={[styles.card, { borderLeftColor: getControversyColor(item.controversyLevel), borderLeftWidth: 6 }]}>
-              <Text style={styles.cardTitle}>{item.penaltyName}</Text>
-              <Text style={styles.cardSubtitle}>{item.ruleReference}</Text>
-              <Text style={styles.cardNotes}>{item.notes}</Text>
-              <Text style={styles.cardTime}>{new Date(item.timestamp).toLocaleTimeString()}</Text>
-            </View>
-          )}
-        />
-      )}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.title}>Starred Rules</Text>
+        {bookmarks.length === 0 ? (
+          <Text style={styles.subtitle}>You haven't starred any rules yet.</Text>
+        ) : (
+          <FlatList
+            data={bookmarks}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <View style={styles.starredRow}>
+                <Text style={{ flex: 1 }}>{item}</Text>
+                <TouchableOpacity onPress={() => removeBookmark(item)} disabled={isPending(item)}>
+                  {isPending(item) ? (
+                    <ActivityIndicator size="small" color="#FFC107" />
+                  ) : (
+                    <Text style={styles.bookmarkActive}>★</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        )}
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.title}>Live Call Log</Text>
+        {calls.length === 0 ? (
+          <Text style={styles.subtitle}>No calls logged yet. Head to Log Call!</Text>
+        ) : (
+          <FlatList
+            data={calls}
+            keyExtractor={(item) => item.id}
+            style={styles.list}
+            renderItem={({ item }) => (
+              <View style={[styles.card, { borderLeftColor: getControversyColor(item.controversyLevel), borderLeftWidth: 6 }]}>
+                <Text style={styles.cardTitle}>{item.penaltyName}</Text>
+                <Text style={styles.cardSubtitle}>{item.ruleReference}</Text>
+                <Text style={styles.cardNotes}>{item.notes}</Text>
+                <Text style={styles.cardTime}>{new Date(item.timestamp).toLocaleTimeString()}</Text>
+              </View>
+            )}
+          />
+        )}
+      </View>
     </View>
   );
 };
@@ -54,6 +81,7 @@ const HomeScreen = () => {
 const SearchScreen = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchableRule[]>([]);
+  const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
   const handleSearch = (text: string) => {
     setQuery(text);
@@ -61,6 +89,15 @@ const SearchScreen = () => {
       setResults(searchRules(text));
     } else {
       setResults([]);
+    }
+  };
+
+  const toggleBookmark = (fullReference: string) => {
+    if (isPending(fullReference)) return;
+    if (isBookmarked(fullReference)) {
+      removeBookmark(fullReference);
+    } else {
+      addBookmark(fullReference);
     }
   };
 
@@ -78,8 +115,21 @@ const SearchScreen = () => {
         style={styles.list}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>{item.ruleTitle} - {item.sectionTitle}</Text>
-            <Text style={styles.cardSubtitle}>{item.fullReference}</Text>
+            <View style={styles.cardHeader}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.cardTitle}>{item.ruleTitle} - {item.sectionTitle}</Text>
+                <Text style={styles.cardSubtitle}>{item.fullReference}</Text>
+              </View>
+              <TouchableOpacity onPress={() => toggleBookmark(item.fullReference)} disabled={isPending(item.fullReference)}>
+                {isPending(item.fullReference) ? (
+                    <ActivityIndicator size="small" color="#FFC107" style={{ padding: 5 }} />
+                ) : (
+                    <Text style={[styles.bookmarkIcon, isBookmarked(item.fullReference) && styles.bookmarkActive]}>
+                    {isBookmarked(item.fullReference) ? '★' : '☆'}
+                    </Text>
+                )}
+              </TouchableOpacity>
+            </View>
             <Text style={styles.cardNotes} numberOfLines={3}>{item.articleText}</Text>
           </View>
         )}
@@ -155,9 +205,11 @@ const Navigation = () => {
 function App(): React.JSX.Element {
   return (
     <AuthProvider>
-      <CallHistoryProvider>
-        <Navigation />
-      </CallHistoryProvider>
+      <BookmarkProvider>
+        <CallHistoryProvider>
+          <Navigation />
+        </CallHistoryProvider>
+      </BookmarkProvider>
     </AuthProvider>
   );
 }
@@ -196,6 +248,12 @@ const styles = StyleSheet.create({
     borderColor: '#eee',
     width: '100%',
   },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 5,
+  },
   cardTitle: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -227,6 +285,25 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginTop: 20,
   },
+  bookmarkIcon: {
+    fontSize: 24,
+    color: '#ccc',
+    padding: 5,
+  },
+  bookmarkActive: {
+    color: '#FFC107',
+    fontSize: 24,
+  },
+  starredRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#fff8e1',
+    borderRadius: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#ffe082',
+  }
 });
 
 export default App;

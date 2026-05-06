@@ -10,6 +10,7 @@ import LogCallScreen from './LogCallScreen.tsx'
 import Header from './Header.tsx'
 import { AuthProvider, AuthContext } from './AuthContext.tsx'
 import { CallHistoryProvider } from './CallHistoryContext.tsx'
+import { BookmarkProvider } from './BookmarkContext.tsx'
 
 // A wrapper component to protect routes that require authentication
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -27,22 +28,24 @@ const Layout = () => (
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <CallHistoryProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+      <BookmarkProvider>
+        <CallHistoryProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
 
-            <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-              <Route index element={<Dashboard />} />
-              <Route path="search" element={<SearchScreen />} />
-              <Route path="log-call" element={<LogCallScreen />} />
-            </Route>
+              <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                <Route index element={<Dashboard />} />
+                <Route path="search" element={<SearchScreen />} />
+                <Route path="log-call" element={<LogCallScreen />} />
+              </Route>
 
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </BrowserRouter>
-      </CallHistoryProvider>
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </BrowserRouter>
+        </CallHistoryProvider>
+      </BookmarkProvider>
     </AuthProvider>
   </StrictMode>,
 )

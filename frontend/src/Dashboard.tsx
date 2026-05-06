@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { CallHistoryContext } from './CallHistoryContext';
+import { BookmarkContext } from './BookmarkContext';
 
 const getControversyColor = (level: number) => {
     switch (level) {
@@ -14,9 +15,66 @@ const getControversyColor = (level: number) => {
 
 const Dashboard: React.FC = () => {
     const { calls } = useContext(CallHistoryContext);
+    const { bookmarks, removeBookmark, isPending } = useContext(BookmarkContext);
 
     return (
         <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+            <div style={{ marginBottom: '40px' }}>
+                <h2>Starred Rules</h2>
+                {bookmarks.length === 0 ? (
+                    <p style={{ color: '#666' }}>You haven't starred any rules yet. Search and click the ★ icon to save them here!</p>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {bookmarks.map(ref => {
+                            const pending = isPending(ref);
+                            return (
+                                <div key={ref} style={{
+                                    backgroundColor: '#fff8e1',
+                                    padding: '12px 15px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ffe082',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <span>{ref}</span>
+                                    <button
+                                        onClick={() => removeBookmark(ref)}
+                                        disabled={pending}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: pending ? 'not-allowed' : 'pointer',
+                                            fontSize: '24px',
+                                            color: '#FFC107',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            minWidth: '40px'
+                                        }}
+                                    >
+                                        {pending ? (
+                                            <div className="spinner-small" style={{
+                                                width: '18px',
+                                                height: '18px',
+                                                border: '2px solid #ccc',
+                                                borderTop: '2px solid #FFC107',
+                                                borderRadius: '50%',
+                                                animation: 'spin 1s linear infinite'
+                                            }} />
+                                        ) : (
+                                            '★'
+                                        )}
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+
+            <hr style={{ border: '0', borderTop: '1px solid #eee', marginBottom: '30px' }} />
+
             <h2>Live Call Log</h2>
             {calls.length === 0 ? (
                 <p>No calls logged yet. Head to Log Call!</p>
@@ -43,6 +101,12 @@ const Dashboard: React.FC = () => {
                     ))}
                 </div>
             )}
+            <style>{`
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
         </div>
     );
 };

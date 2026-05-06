@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, Platform } from 'react-native';
 import { AuthContext } from './AuthContext';
+import { API_BASE_URL } from './utils/api';
 
 const LoginScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
@@ -9,9 +10,8 @@ const LoginScreen = ({ navigation }: any) => {
 
     const handleLogin = async () => {
         try {
-            // Adjust the URL to match your backend (e.g. your local IP if running on physical device)
-            const baseUrl = Platform.OS === 'android' ? 'http://10.0.2.2:8080' : 'http://localhost:8080';
-            const API_URL = `${baseUrl}/api/auth/login`;
+            const API_URL = `${API_BASE_URL}/api/auth/login`;
+            console.log('Attempting login to:', API_URL);
 
             const response = await fetch(API_URL, {
                 method: 'POST',
