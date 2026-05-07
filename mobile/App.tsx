@@ -9,7 +9,8 @@ import { BookmarkProvider, BookmarkContext } from './BookmarkContext';
 import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 import LogCallScreen from './LogCallScreen';
-import { searchRules, SearchableRule } from './utils/search';
+import RuleDetailScreen from './RuleDetailScreen';
+import { searchRules, SearchableRule, getRuleByFullReference } from './utils/search';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,9 +26,20 @@ const getControversyColor = (level: number) => {
   }
 };
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }: any) => {
   const { calls } = useContext(CallHistoryContext);
   const { bookmarks, removeBookmark, isPending } = useContext(BookmarkContext);
+
+  const handleNavigateToRule = (ref: string) => {
+    const rule = getRuleByFullReference(ref);
+    if (rule) {
+      navigation.navigate('RuleDetail', {
+        ruleId: rule.ruleId,
+        sectionId: rule.sectionId,
+        articleId: rule.articleId
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -41,7 +53,12 @@ const HomeScreen = () => {
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
               <View style={styles.starredRow}>
-                <Text style={{ flex: 1 }}>{item}</Text>
+                <TouchableOpacity
+                    style={{ flex: 1 }}
+                    onPress={() => handleNavigateToRule(item)}
+                >
+                    <Text>{item}</Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={() => removeBookmark(item)} disabled={isPending(item)}>
                   {isPending(item) ? (
                     <ActivityIndicator size="small" color="#FFC107" />
@@ -78,7 +95,7 @@ const HomeScreen = () => {
   );
 };
 
-const SearchScreen = () => {
+const SearchScreen = ({ navigation }: any) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchableRule[]>([]);
   const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
@@ -116,10 +133,17 @@ const SearchScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={styles.cardHeader}>
-              <View style={{ flex: 1 }}>
+              <TouchableOpacity
+                style={{ flex: 1 }}
+                onPress={() => navigation.navigate('RuleDetail', {
+                    ruleId: item.ruleId,
+                    sectionId: item.sectionId,
+                    articleId: item.articleId
+                })}
+              >
                 <Text style={styles.cardTitle}>{item.ruleTitle} - {item.sectionTitle}</Text>
                 <Text style={styles.cardSubtitle}>{item.fullReference}</Text>
-              </View>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => toggleBookmark(item.fullReference)} disabled={isPending(item.fullReference)}>
                 {isPending(item.fullReference) ? (
                     <ActivityIndicator size="small" color="#FFC107" style={{ padding: 5 }} />
@@ -191,11 +215,18 @@ const Navigation = () => {
           </>
         ) : (
           // User is signed in
-          <Stack.Screen
-            name="Main"
-            component={MainTabNavigator}
-            options={{ title: 'RefWiki' }} // or headerShown: false if preferred
-          />
+          <>
+            <Stack.Screen
+              name="Main"
+              component={MainTabNavigator}
+              options={{ title: 'RefWiki' }}
+            />
+            <Stack.Screen
+              name="RuleDetail"
+              component={RuleDetailScreen}
+              options={{ title: 'Rule Details' }}
+            />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

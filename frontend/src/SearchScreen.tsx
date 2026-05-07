@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { searchRules } from './utils/search';
 import type { SearchableRule } from './utils/search';
 import { BookmarkContext } from './BookmarkContext';
@@ -6,6 +7,7 @@ import { BookmarkContext } from './BookmarkContext';
 const SearchScreen: React.FC = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchableRule[]>([]);
+    const navigate = useNavigate();
     const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +66,10 @@ const SearchScreen: React.FC = () => {
                             textAlign: 'left'
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div style={{ flex: 1 }}>
+                                <div
+                                    style={{ flex: 1, cursor: 'pointer' }}
+                                    onClick={() => navigate(`/rule/${item.ruleId}/${item.sectionId}/${item.articleId}`)}
+                                >
                                     <h3 style={{ margin: '0 0 5px 0' }}>{item.ruleTitle} - {item.sectionTitle}</h3>
                                     <div style={{ color: 'var(--text)', marginBottom: '5px' }}>{item.fullReference}</div>
                                 </div>

@@ -34,13 +34,30 @@ const flattenRulebook = (): SearchableRule[] => {
   return flattened;
 };
 
+let cachedFlattened: SearchableRule[] | null = null;
+
+export const getRuleByReference = (ruleId: number, sectionId: number, articleId: number): SearchableRule | undefined => {
+    if (!cachedFlattened) {
+        cachedFlattened = flattenRulebook();
+    }
+    return cachedFlattened.find(r => r.ruleId === ruleId && r.sectionId === sectionId && r.articleId === articleId);
+};
+
+export const getRuleByFullReference = (fullReference: string): SearchableRule | undefined => {
+    if (!cachedFlattened) {
+        cachedFlattened = flattenRulebook();
+    }
+    return cachedFlattened.find(r => r.fullReference === fullReference);
+};
+
 let fuseInstance: Fuse<SearchableRule> | null = null;
 
 export const searchRules = (query: string, limit?: number): SearchableRule[] => {
   if (!query) return [];
 
   if (!fuseInstance) {
-    const searchableItems = flattenRulebook();
+    if (!cachedFlattened) cachedFlattened = flattenRulebook();
+    const searchableItems = cachedFlattened;
     const fuseOptions = {
       includeScore: true,
       keys: [

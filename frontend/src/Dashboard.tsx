@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CallHistoryContext } from './CallHistoryContext';
 import { BookmarkContext } from './BookmarkContext';
+import { getRuleByFullReference } from './utils/search';
 
 const getControversyColor = (level: number) => {
     switch (level) {
@@ -16,6 +18,14 @@ const getControversyColor = (level: number) => {
 const Dashboard: React.FC = () => {
     const { calls } = useContext(CallHistoryContext);
     const { bookmarks, removeBookmark, isPending } = useContext(BookmarkContext);
+    const navigate = useNavigate();
+
+    const handleNavigateToRule = (ref: string) => {
+        const rule = getRuleByFullReference(ref);
+        if (rule) {
+            navigate(`/rule/${rule.ruleId}/${rule.sectionId}/${rule.articleId}`);
+        }
+    };
 
     return (
         <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
@@ -37,7 +47,12 @@ const Dashboard: React.FC = () => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center'
                                 }}>
-                                    <span>{ref}</span>
+                                    <span
+                                        style={{ flex: 1, cursor: 'pointer', textAlign: 'left' }}
+                                        onClick={() => handleNavigateToRule(ref)}
+                                    >
+                                        {ref}
+                                    </span>
                                     <button
                                         onClick={() => removeBookmark(ref)}
                                         disabled={pending}
