@@ -5,3 +5,4 @@
 * [Manual Test Steps](MANUAL_LOGIN_TEST_STEPS.md)
 * [Mobile Manual Test Steps](MOBILE_MANUAL_LOGIN_TEST_STEPS.md)
 * [Data Pipeline Test Steps](MANUAL_PIPELINE_TEST_STEPS.md)
+* [Local Development](LOCAL_DEVELOPMENT.md)
