@@ -11,6 +11,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "fuse.js": "^7.3.0",
     "node-fetch": "^3.3.2",
     "pdf-parse": "^1.1.1"
   }

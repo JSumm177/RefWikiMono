@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getRuleByReference } from './utils/search';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { getRuleByReference, getRuleByFullReference } from './utils/search';
 import type { SearchableRule } from './utils/search';
 import { BookmarkContext } from './BookmarkContext';
+import relations from './assets/rule_relations.json';
 
 const RuleDetailScreen: React.FC = () => {
     const { ruleId, sectionId, articleId } = useParams<{ ruleId: string; sectionId: string; articleId: string }>();
@@ -24,6 +25,9 @@ const RuleDetailScreen: React.FC = () => {
     if (!rule) {
         return <div style={{ padding: '20px', textAlign: 'center' }}>Rule not found.</div>;
     }
+
+    const key = `${rule.ruleId}-${rule.sectionId}-${rule.articleId}`;
+    const relatedRefs = (relations as any)[key] || [];
 
     const bookmarked = isBookmarked(rule.fullReference);
     const pending = isPending(rule.fullReference);
@@ -78,7 +82,25 @@ const RuleDetailScreen: React.FC = () => {
 
             <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
                 <h3>Related Rules</h3>
-                <p style={{ color: '#666', fontStyle: 'italic' }}>No related rules mapped yet.</p>
+                {relatedRefs.length === 0 ? (
+                    <p style={{ color: '#666', fontStyle: 'italic' }}>No related rules found.</p>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {relatedRefs.map((ref: string) => {
+                            const r = getRuleByFullReference(ref);
+                            if (!r) return null;
+                            return (
+                                <Link
+                                    key={ref}
+                                    to={`/rule/${r.ruleId}/${r.sectionId}/${r.articleId}`}
+                                    style={{ color: '#007BFF', textDecoration: 'none' }}
+                                >
+                                    • {ref}
+                                </Link>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { BookmarkContext } from './BookmarkContext';
-import { getRuleByReference } from './utils/search';
+import { getRuleByReference, getRuleByFullReference } from './utils/search';
+import relations from './assets/rule_relations.json';
 
 const RuleDetailScreen = ({ route, navigation }: any) => {
     const { ruleId, sectionId, articleId } = route.params;
@@ -15,6 +16,9 @@ const RuleDetailScreen = ({ route, navigation }: any) => {
             </View>
         );
     }
+
+    const key = `${rule.ruleId}-${rule.sectionId}-${rule.articleId}`;
+    const relatedRefs = (relations as any)[key] || [];
 
     const bookmarked = isBookmarked(rule.fullReference);
     const pending = isPending(rule.fullReference);
@@ -53,7 +57,27 @@ const RuleDetailScreen = ({ route, navigation }: any) => {
 
             <View style={styles.relatedSection}>
                 <Text style={styles.relatedTitle}>Related Rules</Text>
-                <Text style={styles.relatedEmpty}>No related rules mapped yet.</Text>
+                {relatedRefs.length === 0 ? (
+                    <Text style={styles.relatedEmpty}>No related rules found.</Text>
+                ) : (
+                    relatedRefs.map((ref: string) => {
+                        const r = getRuleByFullReference(ref);
+                        if (!r) return null;
+                        return (
+                            <TouchableOpacity
+                                key={ref}
+                                style={styles.relatedLink}
+                                onPress={() => navigation.push('RuleDetail', {
+                                    ruleId: r.ruleId,
+                                    sectionId: r.sectionId,
+                                    articleId: r.articleId
+                                })}
+                            >
+                                <Text style={styles.relatedLinkText}>• {ref}</Text>
+                            </TouchableOpacity>
+                        );
+                    })
+                )}
             </View>
         </ScrollView>
     );
@@ -121,6 +145,13 @@ const styles = StyleSheet.create({
     relatedEmpty: {
         color: '#999',
         fontStyle: 'italic',
+    },
+    relatedLink: {
+        paddingVertical: 8,
+    },
+    relatedLinkText: {
+        color: '#007BFF',
+        fontSize: 16,
     }
 });
 
