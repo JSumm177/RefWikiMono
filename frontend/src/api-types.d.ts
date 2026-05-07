@@ -11,3 +11,7 @@ export interface AuthResponse {
     token: string;
     error: string;
 }
+
+export interface BookmarkRequest {
+    fullReference: string;
+}
