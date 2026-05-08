@@ -1,68 +1,282 @@
 {
   "1-1-1": [],
-  "2-1-1": [],
-  "3-1-1": [],
-  "4-1-1": [],
-  "5-1-1": [],
-  "6-1-1": [],
-  "7-1-1": [],
-  "8-1-1": [],
-  "9-1-1": [],
-  "10-1-1": [],
-  "11-1-1": [],
-  "12-1-1": [],
-  "13-1-1": [],
-  "14-1-1": [],
-  "15-1-1": [],
-  "16-1-1": [],
-  "17-1-1": [],
-  "18-1-1": [],
-  "19-1-1": [],
-  "20-1-1": [],
-  "21-1-1": [],
-  "22-1-1": [],
-  "23-1-1": [],
-  "24-1-1": [],
-  "25-1-1": [],
-  "26-1-1": [],
-  "27-1-1": [],
-  "28-1-1": [],
-  "29-1-1": [],
-  "30-1-1": [],
-  "31-1-1": [],
-  "32-1-1": [],
-  "33-1-1": [],
-  "34-1-1": [],
-  "35-1-1": [],
-  "36-1-1": [],
-  "37-1-1": [],
-  "38-1-1": [],
-  "39-1-1": [],
-  "40-1-1": [
-    "Rule 8, Section 1, Article 1"
+  "2-1-1": [
+    "Rule 21, Section 1, Article 1",
+    "Rule 23, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 34, Section 1, Article 1"
   ],
-  "41-1-1": [],
-  "42-1-1": [],
-  "43-1-1": [],
-  "44-1-1": [],
-  "45-1-1": [],
-  "46-1-1": [],
-  "47-1-1": [],
-  "48-1-1": [],
-  "49-1-1": [],
-  "50-1-1": [],
-  "51-1-1": [],
-  "52-1-1": [],
-  "53-1-1": [],
-  "54-1-1": [],
-  "55-1-1": [],
-  "56-1-1": [],
-  "57-1-1": [],
-  "58-1-1": [],
-  "59-1-1": [],
-  "60-1-1": [],
-  "61-1-1": [],
-  "62-1-1": [],
-  "63-1-1": [],
-  "64-1-1": []
+  "3-1-1": [
+    "Rule 1, Section 1, Article 1"
+  ],
+  "4-1-1": [
+    "Rule 2, Section 1, Article 1"
+  ],
+  "5-1-1": [
+    "Rule 3, Section 1, Article 1"
+  ],
+  "6-1-1": [
+    "Rule 10, Section 1, Article 1",
+    "Rule 24, Section 1, Article 1",
+    "Rule 28, Section 1, Article 1",
+    "Rule 29, Section 1, Article 1"
+  ],
+  "7-1-1": [
+    "Rule 27, Section 1, Article 1",
+    "Rule 31, Section 1, Article 1",
+    "Rule 3, Section 1, Article 1"
+  ],
+  "8-1-1": [
+    "Rule 3, Section 1, Article 1"
+  ],
+  "9-1-1": [
+    "Rule 27, Section 1, Article 1",
+    "Rule 28, Section 1, Article 1",
+    "Rule 29, Section 1, Article 1",
+    "Rule 40, Section 1, Article 1"
+  ],
+  "10-1-1": [
+    "Rule 6, Section 1, Article 1",
+    "Rule 24, Section 1, Article 1",
+    "Rule 28, Section 1, Article 1",
+    "Rule 29, Section 1, Article 1"
+  ],
+  "11-1-1": [
+    "Rule 33, Section 1, Article 1",
+    "Rule 3, Section 1, Article 1"
+  ],
+  "12-1-1": [
+    "Rule 4, Section 1, Article 1"
+  ],
+  "13-1-1": [
+    "Rule 4, Section 1, Article 1"
+  ],
+  "14-1-1": [
+    "Rule 4, Section 1, Article 1"
+  ],
+  "15-1-1": [
+    "Rule 4, Section 1, Article 1"
+  ],
+  "16-1-1": [
+    "Rule 5, Section 1, Article 1"
+  ],
+  "17-1-1": [
+    "Rule 5, Section 1, Article 1"
+  ],
+  "18-1-1": [
+    "Rule 5, Section 1, Article 1"
+  ],
+  "19-1-1": [
+    "Rule 5, Section 1, Article 1"
+  ],
+  "20-1-1": [
+    "Rule 5, Section 1, Article 1"
+  ],
+  "21-1-1": [
+    "Rule 2, Section 1, Article 1",
+    "Rule 23, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 34, Section 1, Article 1"
+  ],
+  "22-1-1": [
+    "Rule 23, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 47, Section 1, Article 1",
+    "Rule 49, Section 1, Article 1"
+  ],
+  "23-1-1": [
+    "Rule 2, Section 1, Article 1",
+    "Rule 21, Section 1, Article 1",
+    "Rule 22, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1"
+  ],
+  "24-1-1": [
+    "Rule 6, Section 1, Article 1",
+    "Rule 10, Section 1, Article 1",
+    "Rule 28, Section 1, Article 1",
+    "Rule 29, Section 1, Article 1"
+  ],
+  "25-1-1": [
+    "Rule 7, Section 1, Article 1"
+  ],
+  "26-1-1": [
+    "Rule 7, Section 1, Article 1"
+  ],
+  "27-1-1": [
+    "Rule 7, Section 1, Article 1",
+    "Rule 9, Section 1, Article 1",
+    "Rule 28, Section 1, Article 1",
+    "Rule 29, Section 1, Article 1"
+  ],
+  "28-1-1": [
+    "Rule 6, Section 1, Article 1",
+    "Rule 9, Section 1, Article 1",
+    "Rule 10, Section 1, Article 1",
+    "Rule 24, Section 1, Article 1"
+  ],
+  "29-1-1": [
+    "Rule 6, Section 1, Article 1",
+    "Rule 9, Section 1, Article 1",
+    "Rule 10, Section 1, Article 1",
+    "Rule 24, Section 1, Article 1"
+  ],
+  "30-1-1": [
+    "Rule 2, Section 1, Article 1",
+    "Rule 21, Section 1, Article 1",
+    "Rule 22, Section 1, Article 1",
+    "Rule 23, Section 1, Article 1"
+  ],
+  "31-1-1": [
+    "Rule 6, Section 1, Article 1",
+    "Rule 7, Section 1, Article 1",
+    "Rule 10, Section 1, Article 1",
+    "Rule 24, Section 1, Article 1"
+  ],
+  "32-1-1": [
+    "Rule 6, Section 1, Article 1",
+    "Rule 10, Section 1, Article 1",
+    "Rule 24, Section 1, Article 1",
+    "Rule 28, Section 1, Article 1"
+  ],
+  "33-1-1": [
+    "Rule 6, Section 1, Article 1",
+    "Rule 10, Section 1, Article 1",
+    "Rule 11, Section 1, Article 1",
+    "Rule 24, Section 1, Article 1"
+  ],
+  "34-1-1": [
+    "Rule 2, Section 1, Article 1",
+    "Rule 21, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 37, Section 1, Article 1"
+  ],
+  "35-1-1": [
+    "Rule 29, Section 1, Article 1",
+    "Rule 36, Section 1, Article 1",
+    "Rule 40, Section 1, Article 1",
+    "Rule 9, Section 1, Article 1"
+  ],
+  "36-1-1": [
+    "Rule 6, Section 1, Article 1",
+    "Rule 10, Section 1, Article 1",
+    "Rule 24, Section 1, Article 1",
+    "Rule 28, Section 1, Article 1"
+  ],
+  "37-1-1": [
+    "Rule 2, Section 1, Article 1",
+    "Rule 21, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 34, Section 1, Article 1"
+  ],
+  "38-1-1": [
+    "Rule 11, Section 1, Article 1"
+  ],
+  "39-1-1": [
+    "Rule 11, Section 1, Article 1"
+  ],
+  "40-1-1": [
+    "Rule 9, Section 1, Article 1",
+    "Rule 27, Section 1, Article 1",
+    "Rule 28, Section 1, Article 1",
+    "Rule 29, Section 1, Article 1"
+  ],
+  "41-1-1": [
+    "Rule 12, Section 1, Article 1"
+  ],
+  "42-1-1": [
+    "Rule 6, Section 1, Article 1",
+    "Rule 10, Section 1, Article 1",
+    "Rule 24, Section 1, Article 1",
+    "Rule 28, Section 1, Article 1"
+  ],
+  "43-1-1": [
+    "Rule 12, Section 1, Article 1"
+  ],
+  "44-1-1": [
+    "Rule 12, Section 1, Article 1"
+  ],
+  "45-1-1": [
+    "Rule 12, Section 1, Article 1"
+  ],
+  "46-1-1": [
+    "Rule 12, Section 1, Article 1"
+  ],
+  "47-1-1": [
+    "Rule 22, Section 1, Article 1",
+    "Rule 23, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 49, Section 1, Article 1"
+  ],
+  "48-1-1": [
+    "Rule 13, Section 1, Article 1"
+  ],
+  "49-1-1": [
+    "Rule 22, Section 1, Article 1",
+    "Rule 23, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 47, Section 1, Article 1"
+  ],
+  "50-1-1": [
+    "Rule 6, Section 1, Article 1",
+    "Rule 10, Section 1, Article 1",
+    "Rule 24, Section 1, Article 1",
+    "Rule 28, Section 1, Article 1"
+  ],
+  "51-1-1": [
+    "Rule 14, Section 1, Article 1"
+  ],
+  "52-1-1": [
+    "Rule 22, Section 1, Article 1",
+    "Rule 23, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 47, Section 1, Article 1"
+  ],
+  "53-1-1": [
+    "Rule 22, Section 1, Article 1",
+    "Rule 23, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 47, Section 1, Article 1"
+  ],
+  "54-1-1": [
+    "Rule 14, Section 1, Article 1"
+  ],
+  "55-1-1": [
+    "Rule 15, Section 1, Article 1"
+  ],
+  "56-1-1": [
+    "Rule 15, Section 1, Article 1"
+  ],
+  "57-1-1": [
+    "Rule 15, Section 1, Article 1"
+  ],
+  "58-1-1": [
+    "Rule 4, Section 1, Article 1"
+  ],
+  "59-1-1": [
+    "Rule 22, Section 1, Article 1",
+    "Rule 23, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 47, Section 1, Article 1"
+  ],
+  "60-1-1": [
+    "Rule 2, Section 1, Article 1",
+    "Rule 21, Section 1, Article 1",
+    "Rule 30, Section 1, Article 1",
+    "Rule 34, Section 1, Article 1"
+  ],
+  "61-1-1": [
+    "Rule 16, Section 1, Article 1"
+  ],
+  "62-1-1": [
+    "Rule 17, Section 1, Article 1"
+  ],
+  "63-1-1": [
+    "Rule 2, Section 1, Article 1",
+    "Rule 21, Section 1, Article 1",
+    "Rule 23, Section 1, Article 1",
+    "Rule 18, Section 1, Article 1"
+  ],
+  "64-1-1": [
+    "Rule 19, Section 1, Article 1"
+  ]
 }

@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 const rulebookPath = path.join(__dirname, '..', 'mobile', 'assets', 'rulebook.json');
 const rulebook = JSON.parse(fs.readFileSync(rulebookPath, 'utf8'));
 
-console.log(`🔗 Generating relations...`);
+console.log(`🔗 Generating relations for better discovery...`);
 
 const flattened = [];
 rulebook.rules.forEach(rule => {
@@ -21,17 +21,11 @@ rulebook.rules.forEach(rule => {
                 articleId: article.article_id,
                 fullReference: `Rule ${rule.rule_id}, Section ${section.section_id}, Article ${article.article_id}`,
                 text: article.text || "",
-                title: `${rule.title} - ${section.title}`
+                // Extract common keywords from the text
+                keywords: (article.text || "").toLowerCase().match(/\b(holding|interference|fumble|touchback|kickoff|penalty|safety|pass|scrimmage)\b/g) || []
             });
         });
     });
-});
-
-// A slightly higher threshold to catch more results
-const fuse = new Fuse(flattened, {
-    keys: ['text'],
-    threshold: 0.6,
-    includeScore: true
 });
 
 const relations = {};
@@ -40,28 +34,32 @@ flattened.forEach(target => {
     const key = `${target.ruleId}-${target.sectionId}-${target.articleId}`;
     const related = new Set();
 
-    // 1. Semantic Search
-    // We take the first 200 characters to find topical overlap
-    const query = target.text.substring(0, 500);
-    const results = fuse.search(query);
+    // 1. Keyword Overlap (The most reliable way with current data)
+    if (target.keywords.length > 0) {
+        flattened.forEach(other => {
+            if (other.fullReference === target.fullReference) return;
 
-    results.forEach(res => {
-        // Exclude self and ensure it's "close enough"
-        if (res.item.fullReference !== target.fullReference && res.score < 0.5) {
-            related.add(res.item.fullReference);
-        }
-    });
+            // Check if they share at least 2 distinct keywords
+            const intersection = target.keywords.filter(k => other.keywords.includes(k));
+            const uniqueOverlap = new Set(intersection);
 
-    // 2. Explicit "See Rule" links
-    const seeRuleRegex = /see Rule (\d+)/gi;
-    let match;
-    while ((match = seeRuleRegex.exec(target.text)) !== null) {
-        const linkedRuleId = parseInt(match[1]);
-        const linkedRule = flattened.find(f => f.ruleId === linkedRuleId);
-        if (linkedRule) related.add(linkedRule.fullReference);
+            if (uniqueOverlap.size >= 1) {
+                related.add(other.fullReference);
+            }
+        });
     }
 
-    relations[key] = Array.from(related).slice(0, 5);
+    // 2. Explicit "Rule X" mentions in text
+    const ruleMentionRegex = /Rule (\d+)/gi;
+    let match;
+    while ((match = ruleMentionRegex.exec(target.text)) !== null) {
+        const mentionedId = parseInt(match[1]);
+        const matchRule = flattened.find(f => f.ruleId === mentionedId);
+        if (matchRule) related.add(matchRule.fullReference);
+    }
+
+    // Limit to 4 related rules for a cleaner UI
+    relations[key] = Array.from(related).slice(0, 4);
 });
 
 const mobileOutput = path.join(__dirname, '..', 'mobile', 'assets', 'rule_relations.json');
@@ -70,4 +68,4 @@ const webOutput = path.join(__dirname, '..', 'frontend', 'src', 'assets', 'rule_
 fs.writeFileSync(mobileOutput, JSON.stringify(relations, null, 2));
 fs.writeFileSync(webOutput, JSON.stringify(relations, null, 2));
 
-console.log(`✅ Mapping complete. Related rules saved.`);
+console.log(`✅ Success! Rule relations are now populated.`);
