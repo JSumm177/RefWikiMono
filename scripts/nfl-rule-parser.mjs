@@ -73,18 +73,18 @@ export async function cleanWithAI(rawChunk, index) {
 }
 
 function mockCleanup(rawChunk, index) {
-  // Mock structuring
+  // Mock structuring - now keeping full text
   return {
     rule_id: index + 1,
-    title: `Rule ${index + 1} (Mock Structured)`,
+    title: `Rule ${index + 1} (Basic Extracted)`,
     sections: [
       {
         section_id: 1,
-        title: "General Provisions",
+        title: "Rule Content",
         articles: [
           {
             article_id: 1,
-            text: rawChunk.substring(0, 200).trim() + "..."
+            text: rawChunk.trim()
           }
         ]
       }
