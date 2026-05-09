@@ -106,11 +106,22 @@ const Dashboard: React.FC = () => {
                             borderBottom: '1px solid #eee',
                             textAlign: 'left'
                         }}>
-                            <h3 style={{ margin: '0 0 5px 0' }}>{item.penaltyName}</h3>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                <h3 style={{ margin: 0 }}>{item.penaltyName}</h3>
+                                <span style={{
+                                    backgroundColor: '#eee',
+                                    padding: '2px 8px',
+                                    borderRadius: '4px',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold'
+                                }}>
+                                    {item.sport} {item.team ? `• ${item.team}` : ''}
+                                </span>
+                            </div>
                             <div style={{ color: '#555', marginBottom: '5px' }}>{item.ruleReference}</div>
                             <div style={{ color: '#333', marginBottom: '10px' }}>{item.notes}</div>
                             <div style={{ fontSize: '0.8em', color: '#999', textAlign: 'right' }}>
-                                {new Date(item.timestamp).toLocaleTimeString()}
+                                {new Date(item.timestamp).toLocaleString()}
                             </div>
                         </div>
                     ))}

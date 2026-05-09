@@ -18,6 +18,8 @@ const LogCallScreen = ({ navigation }: any) => {
   const [penaltyName, setPenaltyName] = useState('');
   const [ruleReference, setRuleReference] = useState('');
   const [notes, setNotes] = useState('');
+  const [sport, setSport] = useState('NFL');
+  const [team, setTeam] = useState('');
   const [controversyLevel, setControversyLevel] = useState(1);
   const [searchResults, setSearchResults] = useState<SearchableRule[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -33,11 +35,15 @@ const LogCallScreen = ({ navigation }: any) => {
       ruleReference,
       controversyLevel,
       notes,
+      sport,
+      team,
     });
 
     setPenaltyName('');
     setRuleReference('');
     setNotes('');
+    setSport('NFL');
+    setTeam('');
     setControversyLevel(1);
 
     Alert.alert('Success', 'Call logged to history!', [
@@ -48,6 +54,27 @@ const LogCallScreen = ({ navigation }: any) => {
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <Text style={styles.header}>Log a Recent Call</Text>
+
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        <View style={{ flex: 1 }}>
+            <Text style={styles.label}>Sport</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="e.g. NFL"
+                value={sport}
+                onChangeText={setSport}
+            />
+        </View>
+        <View style={{ flex: 2 }}>
+            <Text style={styles.label}>Team</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="e.g. Chiefs"
+                value={team}
+                onChangeText={setTeam}
+            />
+        </View>
+      </View>
 
       <Text style={styles.label}>Penalty Name</Text>
       <TextInput
@@ -81,28 +108,30 @@ const LogCallScreen = ({ navigation }: any) => {
           }}
         />
         {showDropdown && searchResults.length > 0 && (
-          <ScrollView style={styles.dropdownContainer} nestedScrollEnabled={true}>
-            {searchResults.slice(0, 10).map((rule, idx) => (
-              <TouchableOpacity
-                key={`${rule.ruleId}-${rule.sectionId}-${rule.articleId}-${idx}`}
-                style={[
-                  styles.dropdownItem,
-                  idx === Math.min(searchResults.length, 10) - 1 && { borderBottomWidth: 0 }
-                ]}
-                onPress={() => {
-                  setRuleReference(rule.fullReference);
-                  setShowDropdown(false);
-                }}
-              >
-                <Text style={styles.dropdownItemTitle}>
-                  <Text style={{ fontWeight: 'bold' }}>{rule.fullReference}</Text>: {rule.ruleTitle} - {rule.sectionTitle}
-                </Text>
-                <Text style={styles.dropdownItemText} numberOfLines={1} ellipsizeMode="tail">
-                  {rule.articleText}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <View style={styles.dropdownWrapper}>
+            <ScrollView style={styles.dropdownContainer} nestedScrollEnabled={true}>
+                {searchResults.slice(0, 10).map((rule, idx) => (
+                <TouchableOpacity
+                    key={`${rule.ruleId}-${rule.sectionId}-${rule.articleId}-${idx}`}
+                    style={[
+                    styles.dropdownItem,
+                    idx === Math.min(searchResults.length, 10) - 1 && { borderBottomWidth: 0 }
+                    ]}
+                    onPress={() => {
+                    setRuleReference(rule.fullReference);
+                    setShowDropdown(false);
+                    }}
+                >
+                    <Text style={styles.dropdownItemTitle}>
+                    <Text style={{ fontWeight: 'bold' }}>{rule.fullReference}</Text>: {rule.ruleTitle} - {rule.sectionTitle}
+                    </Text>
+                    <Text style={styles.dropdownItemText} numberOfLines={1} ellipsizeMode="tail">
+                    {rule.articleText}
+                    </Text>
+                </TouchableOpacity>
+                ))}
+            </ScrollView>
+          </View>
         )}
       </View>
 
@@ -177,7 +206,7 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
   },
-  dropdownContainer: {
+  dropdownWrapper: {
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ccc',
@@ -186,11 +215,10 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 8,
     maxHeight: 200,
     width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    zIndex: 20,
+  },
+  dropdownContainer: {
+    width: '100%',
   },
   dropdownItem: {
     padding: 12,

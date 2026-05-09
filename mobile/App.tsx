@@ -82,10 +82,13 @@ const HomeScreen = ({ navigation }: any) => {
             style={styles.list}
             renderItem={({ item }) => (
               <View style={[styles.card, { borderLeftColor: getControversyColor(item.controversyLevel), borderLeftWidth: 6 }]}>
-                <Text style={styles.cardTitle}>{item.penaltyName}</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+                    <Text style={styles.cardTitle}>{item.penaltyName}</Text>
+                    <Text style={styles.tag}>{item.sport} {item.team ? `• ${item.team}` : ''}</Text>
+                </View>
                 <Text style={styles.cardSubtitle}>{item.ruleReference}</Text>
                 <Text style={styles.cardNotes}>{item.notes}</Text>
-                <Text style={styles.cardTime}>{new Date(item.timestamp).toLocaleTimeString()}</Text>
+                <Text style={styles.cardTime}>{new Date(item.timestamp).toLocaleString()}</Text>
               </View>
             )}
           />
@@ -334,6 +337,15 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderWidth: 1,
     borderColor: '#ffe082',
+  },
+  tag: {
+    backgroundColor: '#eee',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#666',
   }
 });
 

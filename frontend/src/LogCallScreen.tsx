@@ -19,6 +19,8 @@ const LogCallScreen: React.FC = () => {
   const [penaltyName, setPenaltyName] = useState('');
   const [ruleReference, setRuleReference] = useState('');
   const [notes, setNotes] = useState('');
+  const [sport, setSport] = useState('NFL');
+  const [team, setTeam] = useState('');
   const [controversyLevel, setControversyLevel] = useState(1);
   const [searchResults, setSearchResults] = useState<SearchableRule[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -34,23 +36,27 @@ const LogCallScreen: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!penaltyName || !ruleReference) {
       alert('Please enter a penalty name and rule reference.');
       return;
     }
 
-    addCall({
+    await addCall({
       penaltyName,
       ruleReference,
       controversyLevel,
       notes,
+      sport,
+      team,
     });
 
     setPenaltyName('');
     setRuleReference('');
     setNotes('');
+    setSport('NFL');
+    setTeam('');
     setControversyLevel(1);
 
     alert('Call logged to history!');
@@ -73,6 +79,34 @@ const LogCallScreen: React.FC = () => {
     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', textAlign: 'left' }}>
       <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Log a Recent Call</h2>
       <form onSubmit={handleSubmit}>
+        <div style={{ display: 'flex', gap: '15px' }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Sport</label>
+            <select
+              value={sport}
+              onChange={(e) => setSport(e.target.value)}
+              style={inputStyle}
+            >
+              <option value="NFL">NFL</option>
+              <option value="NCAA">College Football</option>
+              <option value="NBA">NBA</option>
+              <option value="MLB">MLB</option>
+              <option value="NHL">NHL</option>
+              <option value="Soccer">Soccer</option>
+            </select>
+          </div>
+          <div style={{ flex: 2 }}>
+            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Team</label>
+            <input
+              type="text"
+              placeholder="e.g. Chiefs"
+              value={team}
+              onChange={(e) => setTeam(e.target.value)}
+              style={inputStyle}
+            />
+          </div>
+        </div>
+
         <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Penalty Name</label>
         <input
           type="text"

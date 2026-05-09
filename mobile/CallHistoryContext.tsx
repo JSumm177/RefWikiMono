@@ -1,5 +1,6 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import { AuthContext } from './AuthContext';
+import { API_BASE_URL } from './utils/api';
 
 export interface Call {
   id: string;
@@ -8,62 +9,80 @@ export interface Call {
   ruleReference: string;
   controversyLevel: number;
   notes: string;
+  sport: string;
+  team: string;
 }
 
 interface CallHistoryContextType {
   calls: Call[];
   addCall: (call: Omit<Call, 'id' | 'timestamp'>) => Promise<void>;
+  refreshCalls: () => Promise<void>;
   isLoading: boolean;
 }
 
 export const CallHistoryContext = createContext<CallHistoryContextType>({
   calls: [],
   addCall: async () => {},
+  refreshCalls: async () => {},
   isLoading: true,
 });
-
-const STORAGE_KEY = '@call_history';
 
 export const CallHistoryProvider = ({ children }: { children: ReactNode }) => {
   const [calls, setCalls] = useState<Call[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { userToken } = useContext(AuthContext);
 
-  useEffect(() => {
-    const loadHistory = async () => {
-      try {
-        const storedCalls = await AsyncStorage.getItem(STORAGE_KEY);
-        if (storedCalls) {
-          setCalls(JSON.parse(storedCalls));
-        }
-      } catch (e) {
-        console.error('Failed to load call history', e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadHistory();
-  }, []);
-
-  const addCall = async (newCallData: Omit<Call, 'id' | 'timestamp'>) => {
-    const newCall: Call = {
-      ...newCallData,
-      id: Math.random().toString(36).substring(2, 9),
-      timestamp: new Date().toISOString(),
-    };
-
-    const updatedCalls = [newCall, ...calls];
-    setCalls(updatedCalls);
+  const refreshCalls = async () => {
+    if (!userToken) {
+        setCalls([]);
+        return;
+    }
 
     try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCalls));
+      const response = await fetch(`${API_BASE_URL}/api/calls/`, {
+          headers: {
+              'Authorization': `Bearer ${userToken}`,
+          },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCalls(data);
+      }
     } catch (e) {
-      console.error('Failed to save call history', e);
+      console.error('Failed to load call history', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshCalls();
+  }, [userToken]);
+
+  const addCall = async (newCallData: Omit<Call, 'id' | 'timestamp'>) => {
+    if (!userToken) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/calls/`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${userToken}`,
+          },
+          body: JSON.stringify(newCallData),
+      });
+
+      if (response.ok) {
+          const savedCall = await response.json();
+          setCalls(prev => [savedCall, ...prev]);
+      }
+    } catch (e) {
+      console.error('Failed to save call', e);
     }
   };
 
   return (
-    <CallHistoryContext.Provider value={{ calls, addCall, isLoading }}>
+    <CallHistoryContext.Provider value={{ calls, addCall, refreshCalls, isLoading }}>
       {children}
     </CallHistoryContext.Provider>
   );
