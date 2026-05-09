@@ -1,0 +1,37 @@
+{
+  "title": "2025 NHL Rulebook",
+  "rules": [
+    {
+      "rule_id": 1,
+      "title": "The Rink",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Dimensions",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "The official size of the ice surface shall be two hundred feet (200') long and eighty-five feet (85') wide."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule_id": 10,
+      "title": "Game Flow",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Icing",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "For the purpose of this rule, the center red line will divide the ice into two halves. Should any player of a team, equal or superior in numerical strength to the opposing team, shoot, bat or deflect the ball from his own half of the ice beyond the goal line of the opposing team, play shall be stopped."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

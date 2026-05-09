@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookmarks", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "full_reference"})
+    @UniqueConstraint(columnNames = {"user_id", "sport", "full_reference"})
 })
 public class Bookmark {
     @Id
@@ -23,6 +23,9 @@ public class Bookmark {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column(length = 50)
+    private String sport = "NFL";
 
     @Column(name = "full_reference", nullable = false)
     private String fullReference;
@@ -46,6 +49,14 @@ public class Bookmark {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getSport() {
+        return sport;
+    }
+
+    public void setSport(String sport) {
+        this.sport = sport;
     }
 
     public String getFullReference() {

@@ -5,8 +5,8 @@ import { getRuleByReference, getRuleByFullReference } from './utils/search';
 import relations from './assets/rule_relations.json';
 
 const RuleDetailScreen = ({ route, navigation }: any) => {
-    const { ruleId, sectionId, articleId } = route.params;
-    const rule = getRuleByReference(ruleId, sectionId, articleId);
+    const { sport, ruleId, sectionId, articleId } = route.params;
+    const rule = getRuleByReference(sport as any, ruleId, sectionId, articleId);
     const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
     if (!rule) {
@@ -20,15 +20,15 @@ const RuleDetailScreen = ({ route, navigation }: any) => {
     const key = `${rule.ruleId}-${rule.sectionId}-${rule.articleId}`;
     const relatedRefs = (relations as any)[key] || [];
 
-    const bookmarked = isBookmarked(rule.fullReference);
+    const bookmarked = isBookmarked(rule.sport, rule.fullReference);
     const pending = isPending(rule.fullReference);
 
     const toggleBookmark = () => {
         if (pending) return;
         if (bookmarked) {
-            removeBookmark(rule.fullReference);
+            removeBookmark(rule.sport, rule.fullReference);
         } else {
-            addBookmark(rule.fullReference);
+            addBookmark(rule.sport, rule.fullReference);
         }
     };
 
@@ -37,7 +37,7 @@ const RuleDetailScreen = ({ route, navigation }: any) => {
             <View style={styles.header}>
                 <View style={{ flex: 1 }}>
                     <Text style={styles.title}>{rule.ruleTitle}</Text>
-                    <Text style={styles.subtitle}>{rule.sectionTitle}</Text>
+                    <Text style={styles.subtitle}>{rule.sectionTitle} ({rule.sport.toUpperCase()})</Text>
                 </View>
                 <TouchableOpacity onPress={toggleBookmark} disabled={pending}>
                     {pending ? (
@@ -61,13 +61,14 @@ const RuleDetailScreen = ({ route, navigation }: any) => {
                     <Text style={styles.relatedEmpty}>No related rules found.</Text>
                 ) : (
                     relatedRefs.map((ref: string) => {
-                        const r = getRuleByFullReference(ref);
+                        const r = getRuleByFullReference(rule.sport, ref);
                         if (!r) return null;
                         return (
                             <TouchableOpacity
                                 key={ref}
                                 style={styles.relatedLink}
                                 onPress={() => navigation.push('RuleDetail', {
+                                    sport: r.sport,
                                     ruleId: r.ruleId,
                                     sectionId: r.sectionId,
                                     articleId: r.articleId

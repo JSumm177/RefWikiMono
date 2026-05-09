@@ -1,0 +1,37 @@
+{
+  "title": "2025 NCAA Football Rulebook",
+  "rules": [
+    {
+      "rule_id": 1,
+      "title": "The Game, Field, Players and Equipment",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "General Provisions",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "The game shall be played between two teams of no more than 11 players each, on a rectangular field and with an inflated ball as defined in these rules."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule_id": 6,
+      "title": "Kicks",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Free Kicks",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "For any free kick formation, the kicking team's restraining line shall be the yard line through the most forward point from which the ball shall be kicked."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

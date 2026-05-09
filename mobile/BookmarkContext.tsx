@@ -2,12 +2,17 @@ import React, { createContext, useState, useEffect, useContext, ReactNode } from
 import { AuthContext } from './AuthContext';
 import { API_BASE_URL } from './utils/api';
 
+interface Bookmark {
+    sport: string;
+    fullReference: string;
+}
+
 interface BookmarkContextType {
-    bookmarks: string[];
+    bookmarks: Bookmark[];
     pendingReferences: string[];
-    addBookmark: (fullReference: string) => Promise<void>;
-    removeBookmark: (fullReference: string) => Promise<void>;
-    isBookmarked: (fullReference: string) => boolean;
+    addBookmark: (sport: string, fullReference: string) => Promise<void>;
+    removeBookmark: (sport: string, fullReference: string) => Promise<void>;
+    isBookmarked: (sport: string, fullReference: string) => boolean;
     isPending: (fullReference: string) => boolean;
     refreshBookmarks: () => Promise<void>;
 }
@@ -23,7 +28,7 @@ export const BookmarkContext = createContext<BookmarkContextType>({
 });
 
 export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
-    const [bookmarks, setBookmarks] = useState<string[]>([]);
+    const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
     const [pendingReferences, setPendingReferences] = useState<string[]>([]);
     const { userToken } = useContext(AuthContext);
 
@@ -52,7 +57,7 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
         refreshBookmarks();
     }, [userToken]);
 
-    const addBookmark = async (fullReference: string) => {
+    const addBookmark = async (sport: string, fullReference: string) => {
         if (!userToken || pendingReferences.includes(fullReference)) return;
 
         setPendingReferences(prev => [...prev, fullReference]);
@@ -63,11 +68,11 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${userToken}`,
                 },
-                body: JSON.stringify({ fullReference }),
+                body: JSON.stringify({ sport, fullReference }),
             });
 
             if (response.ok) {
-                setBookmarks(prev => [...prev, fullReference]);
+                setBookmarks(prev => [...prev, { sport, fullReference }]);
             }
         } catch (error) {
             console.error('Failed to add bookmark', error);
@@ -76,7 +81,7 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const removeBookmark = async (fullReference: string) => {
+    const removeBookmark = async (sport: string, fullReference: string) => {
         if (!userToken || pendingReferences.includes(fullReference)) return;
 
         setPendingReferences(prev => [...prev, fullReference]);
@@ -87,11 +92,11 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${userToken}`,
                 },
-                body: JSON.stringify({ fullReference }),
+                body: JSON.stringify({ sport, fullReference }),
             });
 
             if (response.ok || response.status === 204) {
-                setBookmarks(prev => prev.filter(ref => ref !== fullReference));
+                setBookmarks(prev => prev.filter(b => b.fullReference !== fullReference || b.sport !== sport));
             }
         } catch (error) {
             console.error('Failed to remove bookmark', error);
@@ -100,8 +105,8 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const isBookmarked = (fullReference: string) => {
-        return bookmarks.includes(fullReference);
+    const isBookmarked = (sport: string, fullReference: string) => {
+        return bookmarks.some(b => b.fullReference === fullReference && b.sport === sport);
     };
 
     const isPending = (fullReference: string) => {

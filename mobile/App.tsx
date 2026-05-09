@@ -30,10 +30,11 @@ const HomeScreen = ({ navigation }: any) => {
   const { calls } = useContext(CallHistoryContext);
   const { bookmarks, removeBookmark, isPending } = useContext(BookmarkContext);
 
-  const handleNavigateToRule = (ref: string) => {
-    const rule = getRuleByFullReference(ref);
+  const handleNavigateToRule = (ref: string, sport: string) => {
+    const rule = getRuleByFullReference(sport as any, ref);
     if (rule) {
       navigation.navigate('RuleDetail', {
+        sport: rule.sport,
         ruleId: rule.ruleId,
         sectionId: rule.sectionId,
         articleId: rule.articleId
@@ -50,17 +51,17 @@ const HomeScreen = ({ navigation }: any) => {
         ) : (
           <FlatList
             data={bookmarks}
-            keyExtractor={(item) => item}
+            keyExtractor={(item) => `${item.sport}-${item.fullReference}`}
             renderItem={({ item }) => (
               <View style={styles.starredRow}>
                 <TouchableOpacity
                     style={{ flex: 1 }}
-                    onPress={() => handleNavigateToRule(item)}
+                    onPress={() => handleNavigateToRule(item.fullReference, item.sport)}
                 >
-                    <Text>{item}</Text>
+                    <Text>{item.fullReference} ({item.sport.toUpperCase()})</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => removeBookmark(item)} disabled={isPending(item)}>
-                  {isPending(item) ? (
+                <TouchableOpacity onPress={() => removeBookmark(item.sport, item.fullReference)} disabled={isPending(item.fullReference)}>
+                  {isPending(item.fullReference) ? (
                     <ActivityIndicator size="small" color="#FFC107" />
                   ) : (
                     <Text style={styles.bookmarkActive}>★</Text>
@@ -100,38 +101,58 @@ const HomeScreen = ({ navigation }: any) => {
 
 const SearchScreen = ({ navigation }: any) => {
   const [query, setQuery] = useState('');
+  const [sport, setSport] = useState('nfl');
   const [results, setResults] = useState<SearchableRule[]>([]);
   const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
-  const handleSearch = (text: string) => {
-    setQuery(text);
-    if (text.length > 2) {
-      setResults(searchRules(text));
+  const performSearch = (q: string, s: string) => {
+    if (q.length > 2) {
+      setResults(searchRules(s as any, q));
     } else {
       setResults([]);
     }
   };
 
-  const toggleBookmark = (fullReference: string) => {
-    if (isPending(fullReference)) return;
-    if (isBookmarked(fullReference)) {
-      removeBookmark(fullReference);
+  const handleSearch = (text: string) => {
+    setQuery(text);
+    performSearch(text, sport);
+  };
+
+  const toggleBookmark = (item: SearchableRule) => {
+    if (isPending(item.fullReference)) return;
+    if (isBookmarked(item.sport, item.fullReference)) {
+      removeBookmark(item.sport, item.fullReference);
     } else {
-      addBookmark(fullReference);
+      addBookmark(item.sport, item.fullReference);
     }
   };
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search rules (e.g., Holding)"
-        value={query}
-        onChangeText={handleSearch}
-      />
+      <View style={styles.searchHeader}>
+        <View style={styles.sportSelector}>
+            {['nfl', 'ncaa', 'nba', 'mlb', 'nhl', 'soccer'].map((s) => (
+                <TouchableOpacity
+                    key={s}
+                    onPress={() => { setSport(s); performSearch(query, s); }}
+                    style={[styles.sportButton, sport === s && styles.sportButtonActive]}
+                >
+                    <Text style={[styles.sportButtonText, sport === s && styles.sportButtonTextActive]}>
+                        {s.toUpperCase()}
+                    </Text>
+                </TouchableOpacity>
+            ))}
+        </View>
+        <TextInput
+            style={styles.searchInput}
+            placeholder={`Search ${sport.toUpperCase()}...`}
+            value={query}
+            onChangeText={handleSearch}
+        />
+      </View>
       <FlatList
         data={results}
-        keyExtractor={(item) => `${item.ruleId}-${item.sectionId}-${item.articleId}`}
+        keyExtractor={(item) => `${item.sport}-${item.ruleId}-${item.sectionId}-${item.articleId}`}
         style={styles.list}
         renderItem={({ item }) => (
           <View style={styles.card}>
@@ -139,6 +160,7 @@ const SearchScreen = ({ navigation }: any) => {
               <TouchableOpacity
                 style={{ flex: 1 }}
                 onPress={() => navigation.navigate('RuleDetail', {
+                    sport: item.sport,
                     ruleId: item.ruleId,
                     sectionId: item.sectionId,
                     articleId: item.articleId
@@ -147,12 +169,12 @@ const SearchScreen = ({ navigation }: any) => {
                 <Text style={styles.cardTitle}>{item.ruleTitle} - {item.sectionTitle}</Text>
                 <Text style={styles.cardSubtitle}>{item.fullReference}</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => toggleBookmark(item.fullReference)} disabled={isPending(item.fullReference)}>
+              <TouchableOpacity onPress={() => toggleBookmark(item)} disabled={isPending(item.fullReference)}>
                 {isPending(item.fullReference) ? (
                     <ActivityIndicator size="small" color="#FFC107" style={{ padding: 5 }} />
                 ) : (
-                    <Text style={[styles.bookmarkIcon, isBookmarked(item.fullReference) && styles.bookmarkActive]}>
-                    {isBookmarked(item.fullReference) ? '★' : '☆'}
+                    <Text style={[styles.bookmarkIcon, isBookmarked(item.sport, item.fullReference) && styles.bookmarkActive]}>
+                    {isBookmarked(item.sport, item.fullReference) ? '★' : '☆'}
                     </Text>
                 )}
               </TouchableOpacity>
@@ -308,6 +330,35 @@ const styles = StyleSheet.create({
     color: '#999',
     textAlign: 'right',
   },
+  searchHeader: {
+    marginTop: 20,
+    marginBottom: 15,
+  },
+  sportSelector: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 5,
+    marginBottom: 10,
+  },
+  sportButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  sportButtonActive: {
+    backgroundColor: '#007BFF',
+    borderColor: '#007BFF',
+  },
+  sportButtonText: {
+    fontSize: 12,
+    color: '#666',
+  },
+  sportButtonTextActive: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
   searchInput: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -316,8 +367,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#f9f9f9',
     width: '100%',
-    marginBottom: 15,
-    marginTop: 20,
   },
   bookmarkIcon: {
     fontSize: 24,

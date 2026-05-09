@@ -20,10 +20,10 @@ const Dashboard: React.FC = () => {
     const { bookmarks, removeBookmark, isPending } = useContext(BookmarkContext);
     const navigate = useNavigate();
 
-    const handleNavigateToRule = (ref: string) => {
-        const rule = getRuleByFullReference(ref);
+    const handleNavigateToRule = (sport: string, ref: string) => {
+        const rule = getRuleByFullReference(sport as any, ref);
         if (rule) {
-            navigate(`/rule/${rule.ruleId}/${rule.sectionId}/${rule.articleId}`);
+            navigate(`/rule/${rule.sport}/${rule.ruleId}/${rule.sectionId}/${rule.articleId}`);
         }
     };
 
@@ -35,10 +35,10 @@ const Dashboard: React.FC = () => {
                     <p style={{ color: '#666' }}>You haven't starred any rules yet. Search and click the ★ icon to save them here!</p>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {bookmarks.map(ref => {
-                            const pending = isPending(ref);
+                        {bookmarks.map(b => {
+                            const pending = isPending(b.fullReference);
                             return (
-                                <div key={ref} style={{
+                                <div key={`${b.sport}-${b.fullReference}`} style={{
                                     backgroundColor: '#fff8e1',
                                     padding: '12px 15px',
                                     borderRadius: '8px',
@@ -49,12 +49,12 @@ const Dashboard: React.FC = () => {
                                 }}>
                                     <span
                                         style={{ flex: 1, cursor: 'pointer', textAlign: 'left' }}
-                                        onClick={() => handleNavigateToRule(ref)}
+                                        onClick={() => handleNavigateToRule(b.sport, b.fullReference)}
                                     >
-                                        {ref}
+                                        <strong>{b.sport.toUpperCase()}</strong>: {b.fullReference}
                                     </span>
                                     <button
-                                        onClick={() => removeBookmark(ref)}
+                                        onClick={() => removeBookmark(b.sport, b.fullReference)}
                                         disabled={pending}
                                         style={{
                                             background: 'none',

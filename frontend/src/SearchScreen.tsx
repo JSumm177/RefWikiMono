@@ -6,59 +6,91 @@ import { BookmarkContext } from './BookmarkContext';
 
 const SearchScreen: React.FC = () => {
     const [query, setQuery] = useState('');
+    const [sport, setSport] = useState('nfl');
     const [results, setResults] = useState<SearchableRule[]>([]);
     const navigate = useNavigate();
     const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const text = e.target.value;
-        setQuery(text);
-        if (text.length > 2) {
-            setResults(searchRules(text));
+    const performSearch = (q: string, s: string) => {
+        if (q.length > 2) {
+            setResults(searchRules(s as any, q));
         } else {
             setResults([]);
         }
     };
 
-    const toggleBookmark = (fullReference: string) => {
-        if (isPending(fullReference)) return;
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const text = e.target.value;
+        setQuery(text);
+        performSearch(text, sport);
+    };
 
-        if (isBookmarked(fullReference)) {
-            removeBookmark(fullReference);
+    const handleSportChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newSport = e.target.value;
+        setSport(newSport);
+        performSearch(query, newSport);
+    };
+
+    const toggleBookmark = (item: SearchableRule) => {
+        if (isPending(item.fullReference)) return;
+
+        if (isBookmarked(item.sport, item.fullReference)) {
+            removeBookmark(item.sport, item.fullReference);
         } else {
-            addBookmark(fullReference);
+            addBookmark(item.sport, item.fullReference);
         }
     };
 
     return (
         <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            <input
-                type="text"
-                name="search"
-                autoComplete="on"
-                placeholder="Search rules (e.g., Holding)"
-                value={query}
-                onChange={handleSearch}
-                style={{
-                    width: '100%',
-                    padding: '12px',
-                    fontSize: '16px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border)',
-                    backgroundColor: 'var(--bg)',
-                    color: 'var(--text-h)',
-                    marginBottom: '20px',
-                    boxSizing: 'border-box'
-                }}
-            />
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                <select
+                    value={sport}
+                    onChange={handleSportChange}
+                    style={{
+                        padding: '12px',
+                        fontSize: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border)',
+                        backgroundColor: 'var(--bg)',
+                        color: 'var(--text-h)',
+                        cursor: 'pointer'
+                    }}
+                >
+                    <option value="nfl">NFL</option>
+                    <option value="ncaa">NCAA</option>
+                    <option value="nba">NBA</option>
+                    <option value="mlb">MLB</option>
+                    <option value="nhl">NHL</option>
+                    <option value="soccer">Soccer</option>
+                </select>
+                <input
+                    type="text"
+                    name="search"
+                    autoComplete="on"
+                    placeholder={`Search ${sport.toUpperCase()} rules...`}
+                    value={query}
+                    onChange={handleSearch}
+                    style={{
+                        flex: 1,
+                        padding: '12px',
+                        fontSize: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border)',
+                        backgroundColor: 'var(--bg)',
+                        color: 'var(--text-h)',
+                        boxSizing: 'border-box'
+                    }}
+                />
+            </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 {results.map(item => {
-                    const bookmarked = isBookmarked(item.fullReference);
+                    const bookmarked = isBookmarked(item.sport, item.fullReference);
                     const pending = isPending(item.fullReference);
 
                     return (
-                        <div key={`${item.ruleId}-${item.sectionId}-${item.articleId}`} style={{
+                        <div key={`${item.sport}-${item.ruleId}-${item.sectionId}-${item.articleId}`} style={{
                             backgroundColor: 'var(--bg)',
                             padding: '15px',
                             borderRadius: '8px',
@@ -68,13 +100,13 @@ const SearchScreen: React.FC = () => {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                 <div
                                     style={{ flex: 1, cursor: 'pointer' }}
-                                    onClick={() => navigate(`/rule/${item.ruleId}/${item.sectionId}/${item.articleId}`)}
+                                    onClick={() => navigate(`/rule/${item.sport}/${item.ruleId}/${item.sectionId}/${item.articleId}`)}
                                 >
                                     <h3 style={{ margin: '0 0 5px 0' }}>{item.ruleTitle} - {item.sectionTitle}</h3>
                                     <div style={{ color: 'var(--text)', marginBottom: '5px' }}>{item.fullReference}</div>
                                 </div>
                                 <button
-                                    onClick={() => toggleBookmark(item.fullReference)}
+                                    onClick={() => toggleBookmark(item)}
                                     disabled={pending}
                                     style={{
                                         background: 'none',
@@ -87,8 +119,7 @@ const SearchScreen: React.FC = () => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        minWidth: '40px',
-                                        zIndex: 10 // Ensure it's on top
+                                        minWidth: '40px'
                                     }}
                                 >
                                     {pending ? (
@@ -108,17 +139,16 @@ const SearchScreen: React.FC = () => {
                             <div style={{ color: 'var(--text-h)', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                 {item.articleText}
                             </div>
-                            {/* Simple CSS for the spinner animation if not already present */}
-                            <style>{`
-                                @keyframes spin {
-                                    0% { transform: rotate(0deg); }
-                                    100% { transform: rotate(360deg); }
-                                }
-                            `}</style>
                         </div>
                     );
                 })}
             </div>
+            <style>{`
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
         </div>
     );
 };

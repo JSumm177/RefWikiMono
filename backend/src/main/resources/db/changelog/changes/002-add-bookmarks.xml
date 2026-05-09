@@ -10,10 +10,11 @@
             CREATE TABLE IF NOT EXISTS bookmarks (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
                 user_id BIGINT NOT NULL,
+                sport VARCHAR(50) DEFAULT 'NFL',
                 full_reference VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-                UNIQUE KEY unique_user_bookmark (user_id, full_reference)
+                UNIQUE KEY unique_user_bookmark (user_id, sport, full_reference)
             );
         </sql>
     </changeSet>

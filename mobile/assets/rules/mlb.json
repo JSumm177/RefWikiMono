@@ -1,0 +1,37 @@
+{
+  "title": "2025 MLB Official Rules",
+  "rules": [
+    {
+      "rule_id": 1,
+      "title": "Objectives of the Game",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "The Game",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "Baseball is a game between two teams of nine players each, under direction of a manager, played on a closed field in accordance with these rules, under jurisdiction of one or more umpires."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule_id": 6,
+      "title": "Improper Play, Illegal Action, and Misconduct",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Pitcher Illegal Action",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "If there is a runner, or runners, it is a balk when the pitcher, while touching his plate, makes any motion naturally associated with his pitch and fails to make such delivery."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,21 +6,22 @@ import { BookmarkContext } from './BookmarkContext';
 import relations from './assets/rule_relations.json';
 
 const RuleDetailScreen: React.FC = () => {
-    const { ruleId, sectionId, articleId } = useParams<{ ruleId: string; sectionId: string; articleId: string }>();
+    const { sport, ruleId, sectionId, articleId } = useParams<{ sport: string; ruleId: string; sectionId: string; articleId: string }>();
     const navigate = useNavigate();
     const [rule, setRule] = useState<SearchableRule | undefined>();
     const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
     useEffect(() => {
-        if (ruleId && sectionId && articleId) {
+        if (sport && ruleId && sectionId && articleId) {
             const result = getRuleByReference(
+                sport as any,
                 parseInt(ruleId, 10),
                 parseInt(sectionId, 10),
                 parseInt(articleId, 10)
             );
             setRule(result);
         }
-    }, [ruleId, sectionId, articleId]);
+    }, [sport, ruleId, sectionId, articleId]);
 
     if (!rule) {
         return <div style={{ padding: '20px', textAlign: 'center' }}>Rule not found.</div>;
@@ -75,7 +76,7 @@ const RuleDetailScreen: React.FC = () => {
                 </button>
             </div>
 
-            <h2 style={{ color: 'var(--text)', marginBottom: '20px' }}>{rule.sectionTitle}</h2>
+            <h2 style={{ color: 'var(--text)', marginBottom: '20px' }}>{rule.sectionTitle} ({rule.sport.toUpperCase()})</h2>
             <p style={{ fontSize: '1.1em', lineHeight: '1.6', whiteSpace: 'pre-wrap', color: 'var(--text-h)' }}>
                 {rule.articleText}
             </p>
@@ -87,12 +88,12 @@ const RuleDetailScreen: React.FC = () => {
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {relatedRefs.map((ref: string) => {
-                            const r = getRuleByFullReference(ref);
+                            const r = getRuleByFullReference(rule.sport, ref);
                             if (!r) return null;
                             return (
                                 <Link
                                     key={ref}
-                                    to={`/rule/${r.ruleId}/${r.sectionId}/${r.articleId}`}
+                                    to={`/rule/${r.sport}/${r.ruleId}/${r.sectionId}/${r.articleId}`}
                                     style={{ color: '#007BFF', textDecoration: 'none' }}
                                 >
                                     • {ref}

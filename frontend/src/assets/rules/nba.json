@@ -1,0 +1,37 @@
+{
+  "title": "2025 NBA Rulebook",
+  "rules": [
+    {
+      "rule_id": 1,
+      "title": "Court Dimensions - Equipment",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Court",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "The playing court shall be measured and marked as shown in the Court Diagram."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule_id": 12,
+      "title": "Fouls and Penalties",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Personal Foul",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "A player shall not hold, push, charge into, or impede the progress of an opponent by extending a hand, arm, leg or knee."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
