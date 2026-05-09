@@ -45,16 +45,17 @@ public class RuleServlet extends HttpServlet {
                          "JOIN rules r ON s.rule_id = r.id " +
                          "JOIN rulebooks rb ON r.rulebook_id = rb.id " +
                          "JOIN sports sp ON rb.sport_id = sp.id " +
-                         "WHERE MATCH(a.text) AGAINST(:query) ";
-            
+                         "WHERE (MATCH(a.text) AGAINST(:query IN BOOLEAN MODE) OR a.text LIKE :likeQuery) ";
+
             if (sport != null && !sport.isEmpty()) {
                 sql += "AND sp.name = :sport ";
             }
-            
+
             sql += "LIMIT 20";
 
             var nativeQuery = session.createNativeQuery(sql, ArticleEntity.class)
-                    .setParameter("query", query);
+                    .setParameter("query", query + "*")
+                    .setParameter("likeQuery", "%" + query + "%");
             
             if (sport != null && !sport.isEmpty()) {
                 nativeQuery.setParameter("sport", sport.toUpperCase());

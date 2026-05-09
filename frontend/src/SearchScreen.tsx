@@ -62,7 +62,7 @@ const SearchScreen: React.FC = () => {
                     <option value="NBA">NBA</option>
                     <option value="MLB">MLB</option>
                     <option value="NHL">NHL</option>
-                    <option value="Soccer">Soccer</option>
+                    <option value="MLS">MLS (Soccer)</option>
                 </select>
                 <input
                     type="text"

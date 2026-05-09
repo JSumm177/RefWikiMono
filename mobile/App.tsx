@@ -127,14 +127,14 @@ const SearchScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <View style={styles.searchHeader}>
         <View style={styles.sportSelector}>
-            {['NFL', 'NCAA', 'NBA', 'MLB', 'NHL', 'Soccer'].map((s) => (
+            {['NFL', 'NCAA', 'NBA', 'MLB', 'NHL', 'MLS'].map((s) => (
                 <TouchableOpacity
                     key={s}
                     onPress={() => setSport(s)}
                     style={[styles.sportButton, sport === s && styles.sportButtonActive]}
                 >
                     <Text style={[styles.sportButtonText, sport === s && styles.sportButtonTextActive]}>
-                        {s}
+                        {s === 'MLS' ? 'MLS (Soccer)' : s}
                     </Text>
                 </TouchableOpacity>
             ))}

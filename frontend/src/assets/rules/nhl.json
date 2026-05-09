@@ -12,23 +12,55 @@
           "articles": [
             {
               "article_id": 1,
-              "text": "The official size of the ice surface shall be two hundred feet (200') long and eighty-five feet (85') wide."
+              "text": "The official size of the rink shall be two hundred feet (200') long and eighty-five feet (85') wide. The corners shall be rounded in the arc of a circle with a radius of twenty-eight feet (28')."
             }
           ]
         }
       ]
     },
     {
-      "rule_id": 10,
-      "title": "Game Flow",
+      "rule_id": 15,
+      "title": "Calling of Penalties",
       "sections": [
         {
           "section_id": 1,
-          "title": "Icing",
+          "title": "Procedure",
           "articles": [
             {
               "article_id": 1,
-              "text": "For the purpose of this rule, the center red line will divide the ice into two halves. Should any player of a team, equal or superior in numerical strength to the opposing team, shoot, bat or deflect the ball from his own half of the ice beyond the goal line of the opposing team, play shall be stopped."
+              "text": "Should an infraction of the rules which would call for a minor, major, misconduct, game misconduct or match penalty be committed by a player of the side in possession of the puck, the Referee shall immediately blow his whistle and penalize the offending player."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule_id": 81,
+      "title": "Icing",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Icing the Puck",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "For the purpose of this rule, the center red line will divide the ice into two halves. Should any player of a team, equal or superior in numerical strength (power-play) to the opposing team, shoot, bat or deflect the puck from his own half of the ice beyond the goal line of the opposing team, play shall be stopped."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule_id": 83,
+      "title": "Off-side",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Off-side Position",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "Players of the attacking team must not precede the puck into the attacking zone. A player is off-side when both skates are completely over the leading edge of the blue line involved in the play."
             }
           ]
         }

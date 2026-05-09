@@ -19,6 +19,66 @@
       ]
     },
     {
+      "rule_id": 4,
+      "title": "Definitions",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Basket/Backboard",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "A team's basket consists of the basket ring and its net through which the ball must pass to score. The basket that a team defends is its own basket."
+            }
+          ]
+        },
+        {
+          "section_id": 2,
+          "title": "Blocking/Charging",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "Blocking is illegal personal contact which impedes the progress of an opponent with or without the ball."
+            },
+            {
+              "article_id": 2,
+              "text": "Charging is illegal personal contact, with or without the ball, by pushing or moving into an opponent's torso."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule_id": 10,
+      "title": "Violations and Penalties",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Out-of-Bounds",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "A player shall not be the last to touch the ball before it goes out-of-bounds."
+            }
+          ]
+        },
+        {
+          "section_id": 2,
+          "title": "Dribble",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "A player shall not run with the ball without dribbling it."
+            },
+            {
+              "article_id": 2,
+              "text": "A player in control of the ball who steps on or over the restricted area arc must have both feet on the floor."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "rule_id": 12,
       "title": "Fouls and Penalties",
       "sections": [
@@ -29,6 +89,24 @@
             {
               "article_id": 1,
               "text": "A player shall not hold, push, charge into, or impede the progress of an opponent by extending a hand, arm, leg or knee."
+            },
+            {
+              "article_id": 2,
+              "text": "A player who is moving with the ball is required to stop or change direction to avoid contact if an opponent has established a legal guarding position in his path."
+            },
+            {
+              "article_id": 3,
+              "text": "If a player with the ball makes contact with an opponent in a legal guarding position, it is a charging foul."
+            }
+          ]
+        },
+        {
+          "section_id": 2,
+          "title": "Technical Foul",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "An official may assess a technical foul for unsportsmanlike conduct including profanity, disparaging remarks, or physical contact with an official."
             }
           ]
         }

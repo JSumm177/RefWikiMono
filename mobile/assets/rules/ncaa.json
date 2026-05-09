@@ -12,7 +12,7 @@
           "articles": [
             {
               "article_id": 1,
-              "text": "The game shall be played between two teams of no more than 11 players each, on a rectangular field and with an inflated ball as defined in these rules."
+              "text": "The game shall be played between two teams of not more than 11 players each, on a rectangular field and with an inflated ball of specified shape and size."
             }
           ]
         }
@@ -28,7 +28,41 @@
           "articles": [
             {
               "article_id": 1,
-              "text": "For any free kick formation, the kicking team's restraining line shall be the yard line through the most forward point from which the ball shall be kicked."
+              "text": "For any free kick, a free-kick line shall be established at the 35-yard line for the kicking team and the 25-yard line for the receiving team."
+            }
+          ]
+        },
+        {
+          "section_id": 5,
+          "title": "Fair Catch",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "A fair catch is a catch of a free kick or scrimmage kick that is beyond the neutral zone by a player of the receiving team who has given a valid signal."
+            },
+            {
+              "article_id": 2,
+              "text": "If a player of the receiving team signals for a fair catch on a free kick and catches the ball inside his own 25-yard line, the ball becomes dead and is placed at the 25-yard line."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule_id": 9,
+      "title": "Conduct of Players and Others Subject to the Rules",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Personal Fouls",
+          "articles": [
+            {
+              "article_id": 3,
+              "text": "Targeting and Making Forcible Contact to Head or Neck Area of a Defenseless Player. No player shall target and make forcible contact to the head or neck area of a defenseless opponent with the helmet, forearm, hand, fist, elbow or shoulder."
+            },
+            {
+              "article_id": 4,
+              "text": "Targeting and Making Forcible Contact With the Crown of the Helmet. No player shall target and make forcible contact against an opponent with the crown of his helmet."
             }
           ]
         }

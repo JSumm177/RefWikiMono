@@ -30,7 +30,7 @@ public class RulebookImportListener implements ServletContextListener {
                 importRulebook(session, "nba", "rules/nba.json", 2025);
                 importRulebook(session, "mlb", "rules/mlb.json", 2025);
                 importRulebook(session, "nhl", "rules/nhl.json", 2025);
-                importRulebook(session, "soccer", "rules/soccer.json", 2025);
+                importRulebook(session, "mls", "rules/mls.json", 2025);
                 logger.info("Import completed successfully.");
             } else {
                 logger.info("Rulebook data already present. Skipping import.");

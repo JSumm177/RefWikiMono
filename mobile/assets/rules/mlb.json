@@ -3,16 +3,36 @@
   "source_url": "https://www.mlb.com/official-information",
   "rules": [
     {
-      "rule_id": 1,
-      "title": "Objectives of the Game",
+      "rule_id": 2,
+      "title": "The Playing Field",
       "sections": [
         {
           "section_id": 1,
-          "title": "The Game",
+          "title": "Layout of the Field",
           "articles": [
             {
               "article_id": 1,
-              "text": "Baseball is a game between two teams of nine players each, under direction of a manager, played on a closed field in accordance with these rules, under jurisdiction of one or more umpires."
+              "text": "The field shall be laid out according to the instructions, supplemented by the diagrams in Appendix 1 and 2."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rule_id": 5,
+      "title": "The Game",
+      "sections": [
+        {
+          "section_id": 1,
+          "title": "Starting and Ending a Game",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "The players of the home team shall take their defensive positions, the first batter of the visiting team shall take his position in the batter's box, the umpire shall call 'Play' and the game shall start."
+            },
+            {
+              "article_id": 5,
+              "text": "The Strike Zone is that area over home plate the upper limit of which is a horizontal line at the midpoint between the top of the shoulders and the top of the uniform pants, and the lower control is a line at the hollow beneath the kneecap."
             }
           ]
         }
@@ -23,12 +43,26 @@
       "title": "Improper Play, Illegal Action, and Misconduct",
       "sections": [
         {
-          "section_id": 1,
-          "title": "Pitcher Illegal Action",
+          "section_id": 2,
+          "title": "Pitching Infractions",
           "articles": [
             {
               "article_id": 1,
-              "text": "If there is a runner, or runners, it is a balk when the pitcher, while touching his plate, makes any motion naturally associated with his pitch and fails to make such delivery."
+              "text": "A Balk is an illegal act by the pitcher with a runner or runners on base, entitling all runners to advance one base."
+            },
+            {
+              "article_id": 2,
+              "text": "If there is a runner or runners, it is a balk when: (a) The pitcher, while touching his plate, makes any motion naturally associated with his pitch and fails to make such delivery; (b) The pitcher, while touching his plate, feints a throw to first or third base and fails to complete the throw."
+            }
+          ]
+        },
+        {
+          "section_id": 4,
+          "title": "Illegal Action by the Batter",
+          "articles": [
+            {
+              "article_id": 1,
+              "text": "A batter is out for illegal action when: (a) He hits a ball with one or both feet on the ground entirely outside the batter's box."
             }
           ]
         }
