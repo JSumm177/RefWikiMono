@@ -1,8 +1,9 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useContext } from 'react';
 import { CallHistoryProvider, CallHistoryContext } from '../CallHistoryContext';
+import { AuthContext } from '../AuthContext';
 
 const TestComponent = () => {
     const { calls, addCall, isLoading } = useContext(CallHistoryContext);
@@ -21,7 +22,9 @@ const TestComponent = () => {
                     penaltyName: 'Holding',
                     ruleReference: 'Rule 72',
                     controversyLevel: 5,
-                    notes: 'Clear hold'
+                    notes: 'Clear hold',
+                    sport: 'NFL',
+                    team: 'Chiefs'
                 })}
             >
                 Add Call
@@ -31,15 +34,11 @@ const TestComponent = () => {
 };
 
 describe('CallHistoryContext', () => {
-    let getItemSpy: any;
-    let setItemSpy: any;
     let consoleErrorSpy: any;
 
     beforeEach(() => {
-        getItemSpy = vi.spyOn(Storage.prototype, 'getItem');
-        setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+        vi.stubGlobal('fetch', vi.fn());
         consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-        window.localStorage.clear();
         vi.clearAllMocks();
     });
 
@@ -47,34 +46,51 @@ describe('CallHistoryContext', () => {
         vi.restoreAllMocks();
     });
 
-    it('loads empty state if localStorage is empty', async () => {
-        getItemSpy.mockReturnValue(null);
+    const mockAuthContext = {
+        isAuthenticated: true,
+        login: () => {},
+        logout: () => {},
+    };
+
+    it('loads empty state if API returns empty array', async () => {
+        (fetch as any).mockResolvedValue({
+            ok: true,
+            json: async () => [],
+            text: async () => "[]"
+        });
 
         render(
-            <CallHistoryProvider>
-                <TestComponent />
-            </CallHistoryProvider>
+            <AuthContext.Provider value={mockAuthContext}>
+                <CallHistoryProvider>
+                    <TestComponent />
+                </CallHistoryProvider>
+            </AuthContext.Provider>
         );
 
-        // Wait for loading to finish
         await waitFor(() => {
             expect(screen.getByTestId('loading-status')).toHaveTextContent('Ready');
         });
 
         expect(screen.getByTestId('calls-count')).toHaveTextContent('0');
-        expect(getItemSpy).toHaveBeenCalledWith('@call_history');
+        expect(fetch).toHaveBeenCalledWith('/api/calls/', expect.anything());
     });
 
-    it('loads stored calls from localStorage upon initialization', async () => {
+    it('loads stored calls from API upon initialization', async () => {
         const storedData = [
-            { id: '1', timestamp: '2023-01-01T00:00:00Z', penaltyName: 'Offside', ruleReference: 'Rule 7', controversyLevel: 1, notes: 'Jumped early' }
+            { id: '1', timestamp: '2023-01-01T00:00:00Z', penaltyName: 'Offside', ruleReference: 'Rule 7', controversyLevel: 1, notes: 'Jumped early', sport: 'NFL', team: '' }
         ];
-        getItemSpy.mockReturnValue(JSON.stringify(storedData));
+        (fetch as any).mockResolvedValue({
+            ok: true,
+            json: async () => storedData,
+            text: async () => JSON.stringify(storedData)
+        });
 
         render(
-            <CallHistoryProvider>
-                <TestComponent />
-            </CallHistoryProvider>
+            <AuthContext.Provider value={mockAuthContext}>
+                <CallHistoryProvider>
+                    <TestComponent />
+                </CallHistoryProvider>
+            </AuthContext.Provider>
         );
 
         await waitFor(() => {
@@ -83,90 +99,55 @@ describe('CallHistoryContext', () => {
 
         expect(screen.getByTestId('calls-count')).toHaveTextContent('1');
         expect(screen.getByTestId('call-Offside')).toHaveTextContent('Offside - Rule 7');
-        expect(getItemSpy).toHaveBeenCalledWith('@call_history');
     });
 
-    it('handles localStorage.getItem error gracefully', async () => {
-        getItemSpy.mockImplementation(() => {
-            throw new Error('Access denied');
+    it('adds a new call via POST request', async () => {
+        (fetch as any).mockResolvedValueOnce({
+            ok: true,
+            json: async () => [],
+            text: async () => "[]"
         });
 
         render(
-            <CallHistoryProvider>
-                <TestComponent />
-            </CallHistoryProvider>
+            <AuthContext.Provider value={mockAuthContext}>
+                <CallHistoryProvider>
+                    <TestComponent />
+                </CallHistoryProvider>
+            </AuthContext.Provider>
         );
 
         await waitFor(() => {
             expect(screen.getByTestId('loading-status')).toHaveTextContent('Ready');
         });
 
-        expect(screen.getByTestId('calls-count')).toHaveTextContent('0');
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load call history', expect.any(Error));
-    });
+        const newCallResponse = {
+            id: 'generated-id',
+            timestamp: '2023-01-01T10:00:00Z',
+            penaltyName: 'Holding',
+            ruleReference: 'Rule 72',
+            controversyLevel: 5,
+            notes: 'Clear hold',
+            sport: 'NFL',
+            team: 'Chiefs'
+        };
 
-    it('handles JSON.parse error gracefully', async () => {
-        getItemSpy.mockReturnValue('invalid-json');
-
-        render(
-            <CallHistoryProvider>
-                <TestComponent />
-            </CallHistoryProvider>
-        );
-
-        await waitFor(() => {
-            expect(screen.getByTestId('loading-status')).toHaveTextContent('Ready');
+        (fetch as any).mockResolvedValueOnce({
+            ok: true,
+            json: async () => newCallResponse,
+            text: async () => JSON.stringify(newCallResponse)
         });
 
-        expect(screen.getByTestId('calls-count')).toHaveTextContent('0');
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load call history', expect.any(Error));
-    });
-
-    it('adds a new call, generates id and timestamp, and saves to localStorage', async () => {
-        getItemSpy.mockReturnValue(null);
-
-        render(
-            <CallHistoryProvider>
-                <TestComponent />
-            </CallHistoryProvider>
-        );
-
-        await waitFor(() => {
-            expect(screen.getByTestId('loading-status')).toHaveTextContent('Ready');
-        });
-
-        // Add call
         const user = userEvent.setup();
         await user.click(screen.getByRole('button', { name: 'Add Call' }));
 
-        expect(screen.getByTestId('calls-count')).toHaveTextContent('1');
+        await waitFor(() => {
+            expect(screen.getByTestId('calls-count')).toHaveTextContent('1');
+        });
+
         expect(screen.getByTestId('call-Holding')).toHaveTextContent('Holding - Rule 72');
-
-        expect(setItemSpy).toHaveBeenCalledWith('@call_history', expect.stringContaining('"penaltyName":"Holding"'));
-        expect(setItemSpy).toHaveBeenCalledWith('@call_history', expect.stringContaining('"id":'));
-        expect(setItemSpy).toHaveBeenCalledWith('@call_history', expect.stringContaining('"timestamp":'));
-    });
-
-    it('handles localStorage.setItem error gracefully', async () => {
-        getItemSpy.mockReturnValue(null);
-        setItemSpy.mockImplementation(() => {
-            throw new Error('Quota exceeded');
-        });
-
-        render(
-            <CallHistoryProvider>
-                <TestComponent />
-            </CallHistoryProvider>
-        );
-
-        await waitFor(() => {
-            expect(screen.getByTestId('loading-status')).toHaveTextContent('Ready');
-        });
-
-        const user = userEvent.setup();
-        await user.click(screen.getByRole('button', { name: 'Add Call' }));
-
-        expect(screen.getByTestId('calls-count')).toHaveTextContent('1');
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to save call history', expect.any(Error));
+        expect(fetch).toHaveBeenCalledWith('/api/calls/', expect.objectContaining({
+            method: 'POST',
+            body: expect.stringContaining('"penaltyName":"Holding"')
+        }));
     });
 });

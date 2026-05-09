@@ -1,0 +1,177 @@
+
+
+> backend@1.0.0 test
+> mvn test
+
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--------------------------< [0;36mcom.example:api[0;1m >---------------------------[m
+[[1;34mINFO[m] [1mBuilding api Maven Webapp 1.0-SNAPSHOT[m
+[[1;34mINFO[m]   from pom.xml
+[[1;34mINFO[m] [1m--------------------------------[ war ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mresources:3.4.0:resources[m [1m(default-resources)[m @ [36mapi[0;1m ---[m
+[[1;33mWARNING[m] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[[1;34mINFO[m] Copying 13 resources from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mcompiler:3.10.1:compile[m [1m(default-compile)[m @ [36mapi[0;1m ---[m
+[[1;34mINFO[m] Changes detected - recompiling the module!
+[[1;33mWARNING[m] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[[1;34mINFO[m] Compiling 21 source files to /Users/jsumm/Documents/GitHub/RefWikiMono/backend/target/classes
+[[1;34mINFO[m] /Users/jsumm/Documents/GitHub/RefWikiMono/backend/src/main/java/com/example/DatabaseConfig.java: /Users/jsumm/Documents/GitHub/RefWikiMono/backend/src/main/java/com/example/DatabaseConfig.java uses or overrides a deprecated API.
+[[1;34mINFO[m] /Users/jsumm/Documents/GitHub/RefWikiMono/backend/src/main/java/com/example/DatabaseConfig.java: Recompile with -Xlint:deprecation for details.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mtypescript-generator:3.2.1263:generate[m [1m(generate)[m @ [36mapi[0;1m ---[m
+Running TypeScriptGenerator version 3.2.1263
+Parsing 'com.example.AuthRequest'
+Parsing 'com.example.AuthResponse'
+Parsing 'com.example.BookmarkRequest'
+Parsing 'com.example.CallLogRequest'
+Parsing 'com.example.RuleDto'
+Writing declarations to: /Users/jsumm/Documents/GitHub/RefWikiMono/frontend/src/api-types.d.ts
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mresources:3.4.0:testResources[m [1m(default-testResources)[m @ [36mapi[0;1m ---[m
+[[1;33mWARNING[m] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/jsumm/Documents/GitHub/RefWikiMono/backend/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mcompiler:3.10.1:testCompile[m [1m(default-testCompile)[m @ [36mapi[0;1m ---[m
+[[1;34mINFO[m] Changes detected - recompiling the module!
+[[1;33mWARNING[m] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[[1;34mINFO[m] Compiling 6 source files to /Users/jsumm/Documents/GitHub/RefWikiMono/backend/target/test-classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32msurefire:3.1.2:test[m [1m(default-test)[m @ [36mapi[0;1m ---[m
+[[1;34mINFO[m] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[[1;34mINFO[m] 
+[[1;34mINFO[m] -------------------------------------------------------
+[[1;34mINFO[m]  T E S T S
+[[1;34mINFO[m] -------------------------------------------------------
+[[1;34mINFO[m] Running com.example.[1mJwtUtilTest[m
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m3[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.295 s -- in com.example.[1mJwtUtilTest[m
+[[1;34mINFO[m] Running com.example.[1mAuthRequestTest[m
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m3[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in com.example.[1mAuthRequestTest[m
+[[1;34mINFO[m] Running com.example.[1mUserTest[m
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m2[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.example.[1mUserTest[m
+[[1;34mINFO[m] Running com.example.[1mAuthServletTest[m
+2026-05-09 15:29:22.080 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-05-09 15:29:22.211 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-05-09 15:29:22.212 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-05-09 15:29:22.213 [main] WARN  com.example.DatabaseConfig - One or more database environment variables are missing.
+2026-05-09 15:29:22.213 [main] INFO  com.example.DatabaseConfig - Test environment detected. Delaying database initialization.
+May 09, 2026 3:29:22 PM liquibase.database
+INFO: Set default schema name to PUBLIC
+May 09, 2026 3:29:22 PM liquibase.lockservice
+INFO: Successfully acquired change log lock
+May 09, 2026 3:29:22 PM liquibase.changelog
+INFO: Creating database history table with name: PUBLIC.DATABASECHANGELOG
+May 09, 2026 3:29:22 PM liquibase.changelog
+INFO: Reading from PUBLIC.DATABASECHANGELOG
+May 09, 2026 3:29:23 PM liquibase.command
+INFO: Using deploymentId: 8362162969
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Reading from PUBLIC.DATABASECHANGELOG
+Running Changeset: db/changelog/changes/001-initial-schema.xml::1::admin
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Custom SQL executed
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: ChangeSet db/changelog/changes/001-initial-schema.xml::1::admin ran successfully in 18ms
+Running Changeset: db/changelog/changes/001-initial-schema.xml::2::admin
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Custom SQL executed
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: ChangeSet db/changelog/changes/001-initial-schema.xml::2::admin ran successfully in 4ms
+Running Changeset: db/changelog/changes/001-initial-schema.xml::3::admin
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Custom SQL executed
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: ChangeSet db/changelog/changes/001-initial-schema.xml::3::admin ran successfully in 11ms
+Running Changeset: db/changelog/changes/002-add-bookmarks.xml::3::admin
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Custom SQL executed
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: ChangeSet db/changelog/changes/002-add-bookmarks.xml::3::admin ran successfully in 3ms
+Running Changeset: db/changelog/changes/003-add-calls.xml::4::admin
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Custom SQL executed
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: ChangeSet db/changelog/changes/003-add-calls.xml::4::admin ran successfully in 3ms
+Running Changeset: db/changelog/changes/004-add-rulebook-tables.xml::5::admin
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Table sports created
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Table rulebooks created
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Table rules created
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Table sections created
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: Table articles created
+May 09, 2026 3:29:23 PM liquibase.changelog
+INFO: ChangeSet db/changelog/changes/004-add-rulebook-tables.xml::5::admin ran successfully in 10ms
+May 09, 2026 3:29:23 PM liquibase.util
+INFO: UPDATE SUMMARY
+May 09, 2026 3:29:23 PM liquibase.util
+INFO: Run:                          6
+May 09, 2026 3:29:23 PM liquibase.util
+INFO: Previously run:               0
+May 09, 2026 3:29:23 PM liquibase.util
+INFO: Filtered out:                 0
+May 09, 2026 3:29:23 PM liquibase.util
+INFO: -------------------------------
+May 09, 2026 3:29:23 PM liquibase.util
+INFO: Total change sets:            6
+
+
+UPDATE SUMMARY
+Run:                          6
+Previously run:               0
+Filtered out:                 0
+-------------------------------
+Total change sets:            6
+
+May 09, 2026 3:29:23 PM liquibase.util
+INFO: Update summary generated
+May 09, 2026 3:29:23 PM liquibase.command
+INFO: Update command completed successfully.
+Liquibase: Update has been successful.
+May 09, 2026 3:29:23 PM liquibase.lockservice
+INFO: Successfully released change log lock
+May 09, 2026 3:29:23 PM liquibase.lockservice
+INFO: Successfully released change log lock
+May 09, 2026 3:29:23 PM liquibase.command
+INFO: Command execution complete
+2026-05-09 15:29:23.218 [main] INFO  com.example.DatabaseConfig - Liquibase migrations ran successfully.
+2026-05-09 15:29:23.289 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.7.Final
+2026-05-09 15:29:23.292 [main] INFO  org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
+2026-05-09 15:29:23.413 [main] WARN  org.hibernate.dialect.Dialect - HHH000511: The 2.2.0 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 5.7.0. Check the community dialects project for available legacy versions.
+2026-05-09 15:29:23.585 [main] INFO  o.h.b.i.BytecodeProviderInitiator - HHH000021: Bytecode provider name : bytebuddy
+2026-05-09 15:29:24.177 [main] INFO  com.example.DatabaseConfig - Hibernate SessionFactory initialized successfully.
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/Users/jsumm/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.5/byte-buddy-agent-1.14.5.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-05-09 15:29:25.209 [main] INFO  com.example.AuthServlet - User registered successfully: mobile@example.com
+2026-05-09 15:29:25.337 [main] INFO  com.example.AuthServlet - Login successful: mobile@example.com
+2026-05-09 15:29:25.345 [main] INFO  com.example.AuthServlet - Logout successful
+2026-05-09 15:29:25.350 [main] WARN  com.example.AuthServlet - Registration failed: Missing email or password
+2026-05-09 15:29:25.353 [main] WARN  com.example.AuthServlet - Registration failed: Password does not meet complexity requirements
+2026-05-09 15:29:25.439 [main] INFO  com.example.AuthServlet - User registered successfully: duplicate@example.com
+2026-05-09 15:29:25.442 [main] WARN  com.example.AuthServlet - Registration failed: User already exists for email duplicate@example.com
+2026-05-09 15:29:25.450 [main] INFO  com.example.AuthServlet - Logout successful
+2026-05-09 15:29:25.553 [main] INFO  com.example.AuthServlet - User registered successfully: login@example.com
+2026-05-09 15:29:25.647 [main] INFO  com.example.AuthServlet - Login successful: login@example.com
+2026-05-09 15:29:25.654 [main] WARN  com.example.AuthServlet - Login failed: User not found for nonexistent@example.com
+2026-05-09 15:29:25.765 [main] INFO  com.example.AuthServlet - User registered successfully: test@example.com
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m14[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.851 s -- in com.example.[1mAuthServletTest[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] Results:
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1;32mTests run: 22, Failures: 0, Errors: 0, Skipped: 0[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  9.259 s
+[[1;34mINFO[m] Finished at: 2026-05-09T15:29:25-06:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[0m[0m

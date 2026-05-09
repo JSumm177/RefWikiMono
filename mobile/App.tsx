@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, ActivityIndicator, FlatList, TextInput, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -10,7 +10,7 @@ import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 import LogCallScreen from './LogCallScreen';
 import RuleDetailScreen from './RuleDetailScreen';
-import { searchRules, SearchableRule, getRuleByFullReference } from './utils/search';
+import { searchRules, SearchableRule } from './utils/search';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,18 +30,6 @@ const HomeScreen = ({ navigation }: any) => {
   const { calls } = useContext(CallHistoryContext);
   const { bookmarks, removeBookmark, isPending } = useContext(BookmarkContext);
 
-  const handleNavigateToRule = (ref: string, sport: string) => {
-    const rule = getRuleByFullReference(sport as any, ref);
-    if (rule) {
-      navigation.navigate('RuleDetail', {
-        sport: rule.sport,
-        ruleId: rule.ruleId,
-        sectionId: rule.sectionId,
-        articleId: rule.articleId
-      });
-    }
-  };
-
   return (
     <View style={styles.container}>
       <View style={{ marginBottom: 20 }}>
@@ -53,13 +41,17 @@ const HomeScreen = ({ navigation }: any) => {
             data={bookmarks}
             keyExtractor={(item) => `${item.sport}-${item.fullReference}`}
             renderItem={({ item }) => (
-              <View style={styles.starredRow}>
-                <TouchableOpacity
-                    style={{ flex: 1 }}
-                    onPress={() => handleNavigateToRule(item.fullReference, item.sport)}
-                >
-                    <Text>{item.fullReference} ({item.sport.toUpperCase()})</Text>
-                </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.starredRow}
+                onPress={() => {
+                  if (item.articleId) {
+                    navigation.navigate('RuleDetail', { id: item.articleId });
+                  } else {
+                    navigation.navigate('Search', { query: item.fullReference, sport: item.sport });
+                  }
+                }}
+              >
+                <Text style={{ flex: 1 }}>{item.fullReference} ({item.sport})</Text>
                 <TouchableOpacity onPress={() => removeBookmark(item.sport, item.fullReference)} disabled={isPending(item.fullReference)}>
                   {isPending(item.fullReference) ? (
                     <ActivityIndicator size="small" color="#FFC107" />
@@ -67,7 +59,7 @@ const HomeScreen = ({ navigation }: any) => {
                     <Text style={styles.bookmarkActive}>★</Text>
                   )}
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             )}
           />
         )}
@@ -103,29 +95,31 @@ const HomeScreen = ({ navigation }: any) => {
 
 const SearchScreen = ({ navigation }: any) => {
   const [query, setQuery] = useState('');
-  const [sport, setSport] = useState('nfl');
+  const [sport, setSport] = useState('NFL');
   const [results, setResults] = useState<SearchableRule[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
-  const performSearch = (q: string, s: string) => {
-    if (q.length > 2) {
-      setResults(searchRules(s as any, q));
-    } else {
-      setResults([]);
-    }
-  };
-
-  const handleSearch = (text: string) => {
-    setQuery(text);
-    performSearch(text, sport);
-  };
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (query.length > 2) {
+        setIsSearching(true);
+        const data = await searchRules(sport, query);
+        setResults(data);
+        setIsSearching(false);
+      } else {
+        setResults([]);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query, sport]);
 
   const toggleBookmark = (item: SearchableRule) => {
     if (isPending(item.fullReference)) return;
     if (isBookmarked(item.sport, item.fullReference)) {
       removeBookmark(item.sport, item.fullReference);
     } else {
-      addBookmark(item.sport, item.fullReference);
+      addBookmark(item.sport, item.fullReference, item.id);
     }
   };
 
@@ -133,40 +127,38 @@ const SearchScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <View style={styles.searchHeader}>
         <View style={styles.sportSelector}>
-            {['nfl', 'ncaa', 'nba', 'mlb', 'nhl', 'soccer'].map((s) => (
+            {['NFL', 'NCAA', 'NBA', 'MLB', 'NHL', 'Soccer'].map((s) => (
                 <TouchableOpacity
                     key={s}
-                    onPress={() => { setSport(s); performSearch(query, s); }}
+                    onPress={() => setSport(s)}
                     style={[styles.sportButton, sport === s && styles.sportButtonActive]}
                 >
                     <Text style={[styles.sportButtonText, sport === s && styles.sportButtonTextActive]}>
-                        {s.toUpperCase()}
+                        {s}
                     </Text>
                 </TouchableOpacity>
             ))}
         </View>
         <TextInput
             style={styles.searchInput}
-            placeholder={`Search ${sport.toUpperCase()}...`}
+            placeholder={`Search ${sport}...`}
             value={query}
-            onChangeText={handleSearch}
+            onChangeText={setQuery}
         />
       </View>
+
+      {isSearching && <ActivityIndicator size="small" color="#007BFF" style={{ marginBottom: 10 }} />}
+
       <FlatList
         data={results}
-        keyExtractor={(item) => `${item.sport}-${item.ruleId}-${item.sectionId}-${item.articleId}`}
+        keyExtractor={(item) => item.id.toString()}
         style={styles.list}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <TouchableOpacity
                 style={{ flex: 1 }}
-                onPress={() => navigation.navigate('RuleDetail', {
-                    sport: item.sport,
-                    ruleId: item.ruleId,
-                    sectionId: item.sectionId,
-                    articleId: item.articleId
-                })}
+                onPress={() => navigation.navigate('RuleDetail', { id: item.id })}
               >
                 <Text style={styles.cardTitle}>{item.ruleTitle} - {item.sectionTitle}</Text>
                 <Text style={styles.cardSubtitle}>{item.fullReference}</Text>

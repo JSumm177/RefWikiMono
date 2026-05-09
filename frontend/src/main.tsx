@@ -40,7 +40,7 @@ createRoot(document.getElementById('root')!).render(
                 <Route index element={<Dashboard />} />
                 <Route path="search" element={<SearchScreen />} />
                 <Route path="log-call" element={<LogCallScreen />} />
-                <Route path="rule/:sport/:ruleId/:sectionId/:articleId" element={<RuleDetailScreen />} />
+                <Route path="rule/:id" element={<RuleDetailScreen />} />
               </Route>
 
               <Route path="*" element={<Navigate to="/" />} />

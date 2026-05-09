@@ -85,6 +85,11 @@ public class DatabaseConfig {
             configuration.addAnnotatedClass(com.example.User.class);
             configuration.addAnnotatedClass(com.example.Bookmark.class);
             configuration.addAnnotatedClass(com.example.CallLog.class);
+            configuration.addAnnotatedClass(com.example.Sport.class);
+            configuration.addAnnotatedClass(com.example.Rulebook.class);
+            configuration.addAnnotatedClass(com.example.RuleEntity.class);
+            configuration.addAnnotatedClass(com.example.SectionEntity.class);
+            configuration.addAnnotatedClass(com.example.ArticleEntity.class);
 
             // We supply a custom connection provider to use the Hikari datasource
             // OR simply let Hibernate use its default mechanism with the JDBC properties provided above

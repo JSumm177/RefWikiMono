@@ -122,20 +122,22 @@ const LogCallScreen: React.FC = () => {
             type="text"
             placeholder="e.g. Rule 8, Section 5"
             value={ruleReference}
-            onChange={(e) => {
+            onChange={async (e) => {
               const val = e.target.value;
               setRuleReference(val);
               if (val.trim() !== '') {
-                setSearchResults(searchRules(val));
+                const results = await searchRules(sport, val);
+                setSearchResults(results);
                 setShowDropdown(true);
               } else {
                 setSearchResults([]);
                 setShowDropdown(false);
               }
             }}
-            onFocus={() => {
+            onFocus={async () => {
               if (ruleReference.trim() !== '') {
-                setSearchResults(searchRules(ruleReference));
+                const results = await searchRules(sport, ruleReference);
+                setSearchResults(results);
                 setShowDropdown(true);
               }
             }}

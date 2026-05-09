@@ -4,12 +4,13 @@ import { AuthContext } from './AuthContext';
 interface Bookmark {
     sport: string;
     fullReference: string;
+    articleId?: number;
 }
 
 interface BookmarkContextType {
     bookmarks: Bookmark[];
     pendingReferences: string[];
-    addBookmark: (sport: string, fullReference: string) => Promise<void>;
+    addBookmark: (sport: string, fullReference: string, articleId?: number) => Promise<void>;
     removeBookmark: (sport: string, fullReference: string) => Promise<void>;
     isBookmarked: (sport: string, fullReference: string) => boolean;
     isPending: (fullReference: string) => boolean;
@@ -58,7 +59,7 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
         refreshBookmarks();
     }, [isAuthenticated]);
 
-    const addBookmark = async (sport: string, fullReference: string) => {
+    const addBookmark = async (sport: string, fullReference: string, articleId?: number) => {
         if (!isAuthenticated || pendingReferences.includes(fullReference)) return;
 
         setPendingReferences(prev => [...prev, fullReference]);
@@ -68,12 +69,12 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ sport, fullReference }),
+                body: JSON.stringify({ sport, fullReference, articleId }),
                 credentials: 'include'
             });
 
             if (response.ok) {
-                setBookmarks(prev => [...prev, { sport, fullReference }]);
+                setBookmarks(prev => [...prev, { sport, fullReference, articleId }]);
             }
         } catch (error) {
             console.error('Failed to add bookmark', error);

@@ -90,19 +90,21 @@ const LogCallScreen = ({ navigation }: any) => {
           style={[styles.input, showDropdown && searchResults.length > 0 && { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }]}
           placeholder="e.g. Rule 8, Section 5"
           value={ruleReference}
-          onChangeText={(val) => {
+          onChangeText={async (val) => {
             setRuleReference(val);
             if (val.trim() !== '') {
-              setSearchResults(searchRules(val));
+              const results = await searchRules(sport, val);
+              setSearchResults(results);
               setShowDropdown(true);
             } else {
               setSearchResults([]);
               setShowDropdown(false);
             }
           }}
-          onFocus={() => {
+          onFocus={async () => {
             if (ruleReference.trim() !== '') {
-              setSearchResults(searchRules(ruleReference));
+              const results = await searchRules(sport, ruleReference);
+              setSearchResults(results);
               setShowDropdown(true);
             }
           }}

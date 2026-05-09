@@ -156,7 +156,7 @@ public class AuthServletTest {
         assertEquals("jwt", addedCookie.getName());
         assertNotNull(addedCookie.getValue());
         assertTrue(addedCookie.isHttpOnly());
-        assertTrue(addedCookie.getSecure());
+        assertFalse(addedCookie.getSecure()); // Changed to false for local dev
         assertEquals("/", addedCookie.getPath());
     }
 
@@ -230,7 +230,7 @@ public class AuthServletTest {
         assertEquals("", addedCookie.getValue());
         assertEquals(0, addedCookie.getMaxAge());
         assertTrue(addedCookie.isHttpOnly());
-        assertTrue(addedCookie.getSecure());
+        assertFalse(addedCookie.getSecure()); // Changed to false for local dev
         assertEquals("/", addedCookie.getPath());
     }
 

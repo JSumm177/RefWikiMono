@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CallHistoryContext } from './CallHistoryContext';
 import { BookmarkContext } from './BookmarkContext';
-import { getRuleByFullReference } from './utils/search';
 
 const getControversyColor = (level: number) => {
     switch (level) {
@@ -20,10 +19,12 @@ const Dashboard: React.FC = () => {
     const { bookmarks, removeBookmark, isPending } = useContext(BookmarkContext);
     const navigate = useNavigate();
 
-    const handleNavigateToRule = (sport: string, ref: string) => {
-        const rule = getRuleByFullReference(sport as any, ref);
-        if (rule) {
-            navigate(`/rule/${rule.sport}/${rule.ruleId}/${rule.sectionId}/${rule.articleId}`);
+    const handleNavigateToRule = (b: { sport: string, fullReference: string, articleId?: number }) => {
+        if (b.articleId) {
+            navigate(`/rule/${b.articleId}`);
+        } else {
+            // Fallback for older bookmarks: navigate to search with the reference
+            navigate(`/search?q=${encodeURIComponent(b.fullReference)}&sport=${b.sport}`);
         }
     };
 
@@ -49,7 +50,7 @@ const Dashboard: React.FC = () => {
                                 }}>
                                     <span
                                         style={{ flex: 1, cursor: 'pointer', textAlign: 'left' }}
-                                        onClick={() => handleNavigateToRule(b.sport, b.fullReference)}
+                                        onClick={() => handleNavigateToRule(b)}
                                     >
                                         <strong>{b.sport.toUpperCase()}</strong>: {b.fullReference}
                                     </span>

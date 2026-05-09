@@ -31,6 +31,9 @@ public class Bookmark {
     @Column(name = "full_reference", nullable = false)
     private String fullReference;
 
+    @Column(name = "article_id")
+    private Long articleId;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -67,6 +70,14 @@ public class Bookmark {
 
     public void setFullReference(String fullReference) {
         this.fullReference = fullReference;
+    }
+
+    public Long getArticleId() {
+        return articleId;
+    }
+
+    public void setArticleId(Long articleId) {
+        this.articleId = articleId;
     }
 
     public LocalDateTime getCreatedAt() {

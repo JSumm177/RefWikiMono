@@ -13,5 +13,28 @@ export interface AuthResponse {
 }
 
 export interface BookmarkRequest {
+    sport: string;
+    fullReference: string;
+    articleId: number;
+}
+
+export interface CallLogRequest {
+    sport: string;
+    team: string;
+    penaltyName: string;
+    ruleReference: string;
+    controversyLevel: number;
+    notes: string;
+}
+
+export interface RuleDto {
+    id: number;
+    sport: string;
+    ruleNumber: number;
+    ruleTitle: string;
+    sectionNumber: number;
+    sectionTitle: string;
+    articleNumber: number;
+    articleText: string;
     fullReference: string;
 }

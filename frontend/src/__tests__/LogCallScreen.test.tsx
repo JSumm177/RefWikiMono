@@ -16,7 +16,7 @@ vi.mock('react-router-dom', async () => {
 
 // Mock search utils
 vi.mock('../utils/search', () => ({
-    searchRules: vi.fn((query) => {
+    searchRules: vi.fn(async (sport, query) => {
         if (query === 'Rule 8') {
             return [
                 {
@@ -26,7 +26,8 @@ vi.mock('../utils/search', () => ({
                     sectionTitle: 'Forward Pass',
                     articleId: 1,
                     articleText: 'Definition of forward pass...',
-                    fullReference: 'Rule 8, Section 1, Article 1'
+                    fullReference: 'Rule 8, Section 1, Article 1',
+                    sport: 'NFL'
                 }
             ];
         }
@@ -36,9 +37,11 @@ vi.mock('../utils/search', () => ({
 
 describe('LogCallScreen', () => {
     const mockAddCall = vi.fn();
+    const mockRefreshCalls = vi.fn();
     const mockContextValue = {
         calls: [],
         addCall: mockAddCall,
+        refreshCalls: mockRefreshCalls,
         isLoading: false,
     };
 
@@ -64,7 +67,7 @@ describe('LogCallScreen', () => {
         expect(mockAddCall).not.toHaveBeenCalled();
     });
 
-    it('submits successfully when fields are filled', () => {
+    it('submits successfully when fields are filled', async () => {
         render(
             <CallHistoryContext.Provider value={mockContextValue}>
                 <MemoryRouter>
@@ -88,11 +91,15 @@ describe('LogCallScreen', () => {
         const submitButton = screen.getByRole('button', { name: /Log Call/i });
         fireEvent.click(submitButton);
 
-        expect(mockAddCall).toHaveBeenCalledWith({
-            penaltyName: 'Holding',
-            ruleReference: 'Rule 12',
-            controversyLevel: 3,
-            notes: 'Obvious hold.'
+        await waitFor(() => {
+            expect(mockAddCall).toHaveBeenCalledWith({
+                penaltyName: 'Holding',
+                ruleReference: 'Rule 12',
+                controversyLevel: 3,
+                notes: 'Obvious hold.',
+                sport: 'NFL',
+                team: ''
+            });
         });
         expect(window.alert).toHaveBeenCalledWith('Call logged to history!');
         expect(mockNavigate).toHaveBeenCalledWith('/');

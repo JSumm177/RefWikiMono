@@ -193,6 +193,7 @@
                         <class>com.example.AuthResponse</class>
                         <class>com.example.BookmarkRequest</class>
                         <class>com.example.CallLogRequest</class>
+                        <class>com.example.RuleDto</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../frontend/src/api-types.d.ts</outputFile>

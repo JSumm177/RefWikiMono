@@ -1,24 +1,40 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { BookmarkContext } from './BookmarkContext';
-import { getRuleByReference, getRuleByFullReference } from './utils/search';
-import relations from './assets/rule_relations.json';
+import { getRuleById } from './utils/search';
+import type { SearchableRule } from './utils/search';
 
 const RuleDetailScreen = ({ route, navigation }: any) => {
-    const { sport, ruleId, sectionId, articleId } = route.params;
-    const rule = getRuleByReference(sport as any, ruleId, sectionId, articleId);
+    const { id } = route.params;
+    const [rule, setRule] = useState<SearchableRule | undefined>();
+    const [isLoading, setIsLoading] = useState(true);
     const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
-    if (!rule) {
+    useEffect(() => {
+        if (id) {
+            setIsLoading(true);
+            getRuleById(id).then(result => {
+                setRule(result);
+                setIsLoading(false);
+            });
+        }
+    }, [id]);
+
+    if (isLoading) {
         return (
-            <View style={styles.container}>
-                <Text>Rule not found.</Text>
+            <View style={styles.centered}>
+                <ActivityIndicator size="large" color="#007BFF" />
             </View>
         );
     }
 
-    const key = `${rule.ruleId}-${rule.sectionId}-${rule.articleId}`;
-    const relatedRefs = (relations as any)[key] || [];
+    if (!rule) {
+        return (
+            <View style={styles.centered}>
+                <Text>Rule not found.</Text>
+            </View>
+        );
+    }
 
     const bookmarked = isBookmarked(rule.sport, rule.fullReference);
     const pending = isPending(rule.fullReference);
@@ -28,7 +44,7 @@ const RuleDetailScreen = ({ route, navigation }: any) => {
         if (bookmarked) {
             removeBookmark(rule.sport, rule.fullReference);
         } else {
-            addBookmark(rule.sport, rule.fullReference);
+            addBookmark(rule.sport, rule.fullReference, rule.id);
         }
     };
 
@@ -37,7 +53,7 @@ const RuleDetailScreen = ({ route, navigation }: any) => {
             <View style={styles.header}>
                 <View style={{ flex: 1 }}>
                     <Text style={styles.title}>{rule.ruleTitle}</Text>
-                    <Text style={styles.subtitle}>{rule.sectionTitle} ({rule.sport.toUpperCase()})</Text>
+                    <Text style={styles.subtitle}>{rule.sectionTitle} ({rule.sport})</Text>
                 </View>
                 <TouchableOpacity onPress={toggleBookmark} disabled={pending}>
                     {pending ? (
@@ -57,28 +73,7 @@ const RuleDetailScreen = ({ route, navigation }: any) => {
 
             <View style={styles.relatedSection}>
                 <Text style={styles.relatedTitle}>Related Rules</Text>
-                {relatedRefs.length === 0 ? (
-                    <Text style={styles.relatedEmpty}>No related rules found.</Text>
-                ) : (
-                    relatedRefs.map((ref: string) => {
-                        const r = getRuleByFullReference(rule.sport, ref);
-                        if (!r) return null;
-                        return (
-                            <TouchableOpacity
-                                key={ref}
-                                style={styles.relatedLink}
-                                onPress={() => navigation.push('RuleDetail', {
-                                    sport: r.sport,
-                                    ruleId: r.ruleId,
-                                    sectionId: r.sectionId,
-                                    articleId: r.articleId
-                                })}
-                            >
-                                <Text style={styles.relatedLinkText}>• {ref}</Text>
-                            </TouchableOpacity>
-                        );
-                    })
-                )}
+                <Text style={styles.relatedEmpty}>Search the new database to find more rules!</Text>
             </View>
         </ScrollView>
     );
@@ -88,6 +83,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     content: {
         padding: 20,
@@ -146,13 +146,6 @@ const styles = StyleSheet.create({
     relatedEmpty: {
         color: '#999',
         fontStyle: 'italic',
-    },
-    relatedLink: {
-        paddingVertical: 8,
-    },
-    relatedLinkText: {
-        color: '#007BFF',
-        fontSize: 16,
     }
 });
 

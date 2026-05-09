@@ -5,12 +5,13 @@ import { API_BASE_URL } from './utils/api';
 interface Bookmark {
     sport: string;
     fullReference: string;
+    articleId?: number;
 }
 
 interface BookmarkContextType {
     bookmarks: Bookmark[];
     pendingReferences: string[];
-    addBookmark: (sport: string, fullReference: string) => Promise<void>;
+    addBookmark: (sport: string, fullReference: string, articleId?: number) => Promise<void>;
     removeBookmark: (sport: string, fullReference: string) => Promise<void>;
     isBookmarked: (sport: string, fullReference: string) => boolean;
     isPending: (fullReference: string) => boolean;
@@ -61,7 +62,7 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
         refreshBookmarks();
     }, [userToken]);
 
-    const addBookmark = async (sport: string, fullReference: string) => {
+    const addBookmark = async (sport: string, fullReference: string, articleId?: number) => {
         if (!userToken || pendingReferences.includes(fullReference)) return;
 
         setPendingReferences(prev => [...prev, fullReference]);
@@ -72,11 +73,11 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${userToken}`,
                 },
-                body: JSON.stringify({ sport, fullReference }),
+                body: JSON.stringify({ sport, fullReference, articleId }),
             });
 
             if (response.ok) {
-                setBookmarks(prev => [...prev, { sport, fullReference }]);
+                setBookmarks(prev => [...prev, { sport, fullReference, articleId }]);
             }
         } catch (error) {
             console.error('Failed to add bookmark', error);

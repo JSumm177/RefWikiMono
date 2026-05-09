@@ -1,44 +1,43 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getRuleByReference, getRuleByFullReference } from './utils/search';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getRuleById } from './utils/search';
 import type { SearchableRule } from './utils/search';
 import { BookmarkContext } from './BookmarkContext';
-import relations from './assets/rule_relations.json';
 
 const RuleDetailScreen: React.FC = () => {
-    const { sport, ruleId, sectionId, articleId } = useParams<{ sport: string; ruleId: string; sectionId: string; articleId: string }>();
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [rule, setRule] = useState<SearchableRule | undefined>();
+    const [isLoading, setIsLoading] = useState(true);
     const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
     useEffect(() => {
-        if (sport && ruleId && sectionId && articleId) {
-            const result = getRuleByReference(
-                sport as any,
-                parseInt(ruleId, 10),
-                parseInt(sectionId, 10),
-                parseInt(articleId, 10)
-            );
-            setRule(result);
+        if (id) {
+            setIsLoading(true);
+            getRuleById(parseInt(id, 10)).then(result => {
+                setRule(result);
+                setIsLoading(false);
+            });
         }
-    }, [sport, ruleId, sectionId, articleId]);
+    }, [id]);
+
+    if (isLoading) {
+        return <div style={{ padding: '20px', textAlign: 'center' }}>Loading rule...</div>;
+    }
 
     if (!rule) {
         return <div style={{ padding: '20px', textAlign: 'center' }}>Rule not found.</div>;
     }
 
-    const key = `${rule.ruleId}-${rule.sectionId}-${rule.articleId}`;
-    const relatedRefs = (relations as any)[key] || [];
-
-    const bookmarked = isBookmarked(rule.fullReference);
+    const bookmarked = isBookmarked(rule.sport, rule.fullReference);
     const pending = isPending(rule.fullReference);
 
     const toggleBookmark = () => {
         if (pending) return;
         if (bookmarked) {
-            removeBookmark(rule.fullReference);
+            removeBookmark(rule.sport, rule.fullReference);
         } else {
-            addBookmark(rule.fullReference);
+            addBookmark(rule.sport, rule.fullReference, rule.id);
         }
     };
 
@@ -76,32 +75,14 @@ const RuleDetailScreen: React.FC = () => {
                 </button>
             </div>
 
-            <h2 style={{ color: 'var(--text)', marginBottom: '20px' }}>{rule.sectionTitle} ({rule.sport.toUpperCase()})</h2>
+            <h2 style={{ color: 'var(--text)', marginBottom: '20px' }}>{rule.sectionTitle} ({rule.sport})</h2>
             <p style={{ fontSize: '1.1em', lineHeight: '1.6', whiteSpace: 'pre-wrap', color: 'var(--text-h)' }}>
                 {rule.articleText}
             </p>
 
             <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
                 <h3>Related Rules</h3>
-                {relatedRefs.length === 0 ? (
-                    <p style={{ color: '#666', fontStyle: 'italic' }}>No related rules found.</p>
-                ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {relatedRefs.map((ref: string) => {
-                            const r = getRuleByFullReference(rule.sport, ref);
-                            if (!r) return null;
-                            return (
-                                <Link
-                                    key={ref}
-                                    to={`/rule/${r.sport}/${r.ruleId}/${r.sectionId}/${r.articleId}`}
-                                    style={{ color: '#007BFF', textDecoration: 'none' }}
-                                >
-                                    • {ref}
-                                </Link>
-                            );
-                        })}
-                    </div>
-                )}
+                <p style={{ color: '#666', fontStyle: 'italic' }}>Note: Search the new database to find more rules!</p>
             </div>
         </div>
     );

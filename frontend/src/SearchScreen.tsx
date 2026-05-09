@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchRules } from './utils/search';
 import type { SearchableRule } from './utils/search';
@@ -6,30 +6,30 @@ import { BookmarkContext } from './BookmarkContext';
 
 const SearchScreen: React.FC = () => {
     const [query, setQuery] = useState('');
-    const [sport, setSport] = useState('nfl');
+    const [sport, setSport] = useState('NFL');
     const [results, setResults] = useState<SearchableRule[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
     const navigate = useNavigate();
     const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
-    const performSearch = (q: string, s: string) => {
+    const performSearch = useCallback(async (q: string, s: string) => {
         if (q.length > 2) {
-            setResults(searchRules(s as any, q));
+            setIsSearching(true);
+            const data = await searchRules(s, q);
+            setResults(data);
+            setIsSearching(false);
         } else {
             setResults([]);
         }
-    };
+    }, []);
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const text = e.target.value;
-        setQuery(text);
-        performSearch(text, sport);
-    };
-
-    const handleSportChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newSport = e.target.value;
-        setSport(newSport);
-        performSearch(query, newSport);
-    };
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            performSearch(query, sport);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [query, sport, performSearch]);
 
     const toggleBookmark = (item: SearchableRule) => {
         if (isPending(item.fullReference)) return;
@@ -37,7 +37,7 @@ const SearchScreen: React.FC = () => {
         if (isBookmarked(item.sport, item.fullReference)) {
             removeBookmark(item.sport, item.fullReference);
         } else {
-            addBookmark(item.sport, item.fullReference);
+            addBookmark(item.sport, item.fullReference, item.id);
         }
     };
 
@@ -46,7 +46,7 @@ const SearchScreen: React.FC = () => {
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                 <select
                     value={sport}
-                    onChange={handleSportChange}
+                    onChange={(e) => setSport(e.target.value)}
                     style={{
                         padding: '12px',
                         fontSize: '16px',
@@ -57,20 +57,18 @@ const SearchScreen: React.FC = () => {
                         cursor: 'pointer'
                     }}
                 >
-                    <option value="nfl">NFL</option>
-                    <option value="ncaa">NCAA</option>
-                    <option value="nba">NBA</option>
-                    <option value="mlb">MLB</option>
-                    <option value="nhl">NHL</option>
-                    <option value="soccer">Soccer</option>
+                    <option value="NFL">NFL</option>
+                    <option value="NCAA">NCAA</option>
+                    <option value="NBA">NBA</option>
+                    <option value="MLB">MLB</option>
+                    <option value="NHL">NHL</option>
+                    <option value="Soccer">Soccer</option>
                 </select>
                 <input
                     type="text"
-                    name="search"
-                    autoComplete="on"
-                    placeholder={`Search ${sport.toUpperCase()} rules...`}
+                    placeholder={`Search ${sport} rules...`}
                     value={query}
-                    onChange={handleSearch}
+                    onChange={(e) => setQuery(e.target.value)}
                     style={{
                         flex: 1,
                         padding: '12px',
@@ -84,13 +82,15 @@ const SearchScreen: React.FC = () => {
                 />
             </div>
 
+            {isSearching && <div style={{ textAlign: 'center', marginBottom: '10px' }}>Searching...</div>}
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 {results.map(item => {
                     const bookmarked = isBookmarked(item.sport, item.fullReference);
                     const pending = isPending(item.fullReference);
 
                     return (
-                        <div key={`${item.sport}-${item.ruleId}-${item.sectionId}-${item.articleId}`} style={{
+                        <div key={item.id} style={{
                             backgroundColor: 'var(--bg)',
                             padding: '15px',
                             borderRadius: '8px',
@@ -100,7 +100,7 @@ const SearchScreen: React.FC = () => {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                 <div
                                     style={{ flex: 1, cursor: 'pointer' }}
-                                    onClick={() => navigate(`/rule/${item.sport}/${item.ruleId}/${item.sectionId}/${item.articleId}`)}
+                                    onClick={() => navigate(`/rule/${item.id}`)}
                                 >
                                     <h3 style={{ margin: '0 0 5px 0' }}>{item.ruleTitle} - {item.sectionTitle}</h3>
                                     <div style={{ color: 'var(--text)', marginBottom: '5px' }}>{item.fullReference}</div>

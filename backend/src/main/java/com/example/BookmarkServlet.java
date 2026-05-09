@@ -91,6 +91,7 @@ public class BookmarkServlet extends HttpServlet {
                 bookmark.setUser(user);
                 bookmark.setSport(sport);
                 bookmark.setFullReference(bookmarkReq.fullReference);
+                bookmark.setArticleId(bookmarkReq.articleId);
 
                 session.persist(bookmark);
                 transaction.commit();

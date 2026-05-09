@@ -6,6 +6,8 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
     <include file="db/changelog/changes/001-initial-schema.xml"/>
+    <include file="db/changelog/changes/002-add-bookmarks.xml"/>
     <include file="db/changelog/changes/003-add-calls.xml"/>
+    <include file="db/changelog/changes/004-add-rulebook-tables.xml"/>
 
 </databaseChangeLog>
