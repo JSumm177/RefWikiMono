@@ -121,7 +121,7 @@ const Dashboard: React.FC = () => {
                             <div style={{ color: '#555', marginBottom: '5px' }}>{item.ruleReference}</div>
                             <div style={{ color: '#333', marginBottom: '10px' }}>{item.notes}</div>
                             <div style={{ fontSize: '0.8em', color: '#999', textAlign: 'right' }}>
-                                {new Date(item.timestamp).toLocaleString()}
+                                {item.timestamp ? new Date(item.timestamp).toLocaleString() : ''}
                             </div>
                         </div>
                     ))}

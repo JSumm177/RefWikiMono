@@ -45,8 +45,12 @@ export const CallHistoryProvider = ({ children }: { children: ReactNode }) => {
           },
       });
       if (response.ok) {
-        const data = await response.json();
-        setCalls(data);
+        const text = await response.text();
+        if (text) {
+          setCalls(JSON.parse(text));
+        } else {
+          setCalls([]);
+        }
       }
     } catch (e) {
       console.error('Failed to load call history', e);
@@ -73,8 +77,11 @@ export const CallHistoryProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (response.ok) {
-          const savedCall = await response.json();
-          setCalls(prev => [savedCall, ...prev]);
+          const text = await response.text();
+          if (text) {
+            const savedCall = JSON.parse(text);
+            setCalls(prev => [savedCall, ...prev]);
+          }
       }
     } catch (e) {
       console.error('Failed to save call', e);

@@ -42,8 +42,12 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
                 credentials: 'include'
             });
             if (response.ok) {
-                const data = await response.json();
-                setBookmarks(data);
+                const text = await response.text();
+                if (text) {
+                    setBookmarks(JSON.parse(text));
+                } else {
+                    setBookmarks([]);
+                }
             }
         } catch (error) {
             console.error('Failed to fetch bookmarks', error);

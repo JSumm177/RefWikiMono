@@ -89,7 +89,9 @@ const HomeScreen = ({ navigation }: any) => {
                 </View>
                 <Text style={styles.cardSubtitle}>{item.ruleReference}</Text>
                 <Text style={styles.cardNotes}>{item.notes}</Text>
-                <Text style={styles.cardTime}>{new Date(item.timestamp).toLocaleString()}</Text>
+                <Text style={styles.cardTime}>
+                    {item.timestamp ? new Date(item.timestamp).toLocaleString() : ''}
+                </Text>
               </View>
             )}
           />

@@ -103,19 +103,31 @@ public class CallLogServlet extends HttpServlet {
 
         if (token == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().print("{\"error\": \"Unauthorized: No token provided\"}");
             return null;
         }
 
         String email = JwtUtil.validateTokenAndGetSubject(token);
         if (email == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().print("{\"error\": \"Unauthorized: Invalid token\"}");
             return null;
         }
 
         try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
-            return session.createQuery("FROM User WHERE email = :email", User.class)
+            User user = session.createQuery("FROM User WHERE email = :email", User.class)
                     .setParameter("email", email)
                     .uniqueResult();
+            if (user == null) {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.getWriter().print("{\"error\": \"Unauthorized: User not found\"}");
+                return null;
+            }
+            return user;
+        } catch (Exception e) {
+            logger.error("Database error during authentication", e);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return null;
         }
     }
 }
