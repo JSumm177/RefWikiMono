@@ -8,6 +8,7 @@ import Dashboard from './Dashboard.tsx'
 import SearchScreen from './SearchScreen.tsx'
 import LogCallScreen from './LogCallScreen.tsx'
 import CommunityFeed from './CommunityFeed.tsx'
+import LeaderboardScreen from './LeaderboardScreen.tsx'
 import RuleDetailScreen from './RuleDetailScreen.tsx'
 import Header from './Header.tsx'
 import { AuthProvider, AuthContext } from './AuthContext.tsx'
@@ -41,6 +42,7 @@ createRoot(document.getElementById('root')!).render(
                 <Route index element={<Dashboard />} />
                 <Route path="search" element={<SearchScreen />} />
                 <Route path="community" element={<CommunityFeed />} />
+                <Route path="leaderboard" element={<LeaderboardScreen />} />
                 <Route path="log-call" element={<LogCallScreen />} />
                 <Route path="rule/:id" element={<RuleDetailScreen />} />
               </Route>

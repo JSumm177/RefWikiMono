@@ -27,6 +27,7 @@ const Header: React.FC = () => {
                 <Link to="/" style={{ color: '#fff', textDecoration: 'none' }}>Live Log</Link>
                 <Link to="/search" style={{ color: '#fff', textDecoration: 'none' }}>Search</Link>
                 <Link to="/community" style={{ color: '#fff', textDecoration: 'none' }}>Community</Link>
+                <Link to="/leaderboard" style={{ color: '#fff', textDecoration: 'none' }}>Leaderboard</Link>
                 <Link to="/log-call" style={{ color: '#fff', textDecoration: 'none' }}>Log Call</Link>
                 <button
                     onClick={handleLogout}
