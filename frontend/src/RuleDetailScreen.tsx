@@ -42,43 +42,70 @@ const RuleDetailScreen: React.FC = () => {
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
+        <div style={{ padding: '40px 20px', maxWidth: '900px', margin: '0 auto', textAlign: 'left' }}>
             <button
                 onClick={() => navigate(-1)}
                 style={{
-                    marginBottom: '20px',
-                    background: 'none',
-                    border: '1px solid var(--border)',
-                    color: 'var(--text-h)',
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
+                    marginBottom: '30px',
+                    background: 'var(--accent-bg)',
+                    border: '1px solid var(--accent-border)',
+                    color: 'var(--accent)',
+                    padding: '10px 20px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
                 }}
             >
-                ← Back
+                ← Back to results
             </button>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <h1 style={{ margin: 0 }}>{rule.ruleTitle}</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '20px', marginBottom: '20px' }}>
+                <h1 style={{
+                    margin: 0,
+                    fontSize: '42px',
+                    lineHeight: '1.2',
+                    flex: 1,
+                    wordBreak: 'break-word'
+                }}>
+                    {rule.ruleTitle}
+                </h1>
                 <button
                     onClick={toggleBookmark}
                     disabled={pending}
                     style={{
                         background: 'none',
                         border: 'none',
-                        fontSize: '32px',
+                        fontSize: '40px',
                         cursor: pending ? 'not-allowed' : 'pointer',
                         color: bookmarked ? '#FFC107' : '#ccc',
+                        marginTop: '5px'
                     }}
                 >
                     {pending ? '...' : (bookmarked ? '★' : '☆')}
                 </button>
             </div>
 
-            <h2 style={{ color: 'var(--text)', marginBottom: '20px' }}>{rule.sectionTitle} ({rule.sport})</h2>
-            <p style={{ fontSize: '1.1em', lineHeight: '1.6', whiteSpace: 'pre-wrap', color: 'var(--text-h)' }}>
+            <div style={{ marginBottom: '30px' }}>
+                <h2 style={{ color: 'var(--accent)', margin: '0 0 5px 0' }}>{rule.sectionTitle}</h2>
+                <div style={{ color: 'var(--text)', fontWeight: 'bold' }}>{rule.sport} • {rule.fullReference}</div>
+            </div>
+
+            <div style={{
+                fontSize: '1.2em',
+                lineHeight: '1.8',
+                whiteSpace: 'pre-wrap',
+                color: 'var(--text-h)',
+                backgroundColor: 'var(--code-bg)',
+                padding: '25px',
+                borderRadius: '12px',
+                border: '1px solid var(--border)'
+            }}>
                 {rule.articleText}
-            </p>
+            </div>
 
             <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
                 <h3>Related Rules</h3>
