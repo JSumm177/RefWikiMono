@@ -1,6 +1,6 @@
 # RefWikiMono
 
-A hardened, fullstack monorepo managed with **Turborepo**, featuring a React TypeScript frontend, a Java Servlet backend, and a React Native application with Expo CNG.
+A hardened, fullstack monorepo managed with **Turborepo**, featuring a React TypeScript frontend, a Java Servlet backend, and a React Native application with Expo CNG. RefWiki is a social rulebook platform designed to help fans and officials understand live game penalties through community consensus.
 
 ## 🚀 Quick Start (Local Development)
 
@@ -23,14 +23,25 @@ Once running, you can access the following services:
 
 ---
 
+## ✨ Key Features
+
+- **Multi-Sport Rule Engine**: High-performance database-backed search for NFL, NCAA, NBA, MLB, NHL, and MLS.
+- **Community Feed**: Fans can publish "Calls" from live games to a global social feed.
+- **"Hall of Shame" Leaderboard**: Real-time ranking of the most controversial calls based on community voting.
+- **Live Voting System**: Users can vote on a 1-5 "Controversy Scale" to build community consensus.
+- **Cross-Platform Sync**: Persistent bookmarks (stars) and call history synced between Web and Mobile.
+- **Security Hardened**: BCrypt hashing, JWT session management, CORS whitelisting, and environment-aware secure cookies.
+
+---
+
 ## 🏗 Project Architecture
 
 - **Workspaces**: Managed by Turborepo for efficient building and caching.
-- **Frontend**: React (Vite, TypeScript, Vitest). Fully containerized.
-- **Backend**: Java Servlet (Maven, Jetty). Runs in Docker with explicit DNS for dependency resolution.
+- **Frontend**: React (Vite, TypeScript, Vitest). Uses a custom context-based state management for Auth, Bookmarks, and Call History.
+- **Backend**: Java Servlet (Maven, Jetty). Uses Hibernate ORM with MySQL and Liquibase for version-controlled schema migrations.
 - **Mobile**: React Native (Expo CNG). Native folders are automatically generated from `app.json`.
-- **Adminer**: Lightweight database management tool included for easy data inspection.
-- **Infrastructure**: Docker Compose for unified networking between all components.
+- **Database**: MySQL 8.0 with `FULLTEXT` indexing for natural language rule searching.
+- **Infrastructure**: Docker Compose for unified networking and environment-consistent services.
 
 ---
 
@@ -64,15 +75,8 @@ Run these from the **root** directory:
 
 The mobile project uses **Continuous Native Generation**. You should generally not edit the `ios` or `android` folders directly.
 
-### 🔄 Resetting Native Folders
-If the native build becomes corrupted or you change native configuration in `app.json`, reset them:
-```bash
-cd mobile
-npx expo prebuild --clean
-```
-
 ### 🌍 Network Discovery
-The project includes a custom stabilization plugin (`mobile/plugins/withStabilization.js`) that automatically detects your machine's local IP address and injects it into the mobile builds, ensuring they can always find the Metro bundler.
+The project includes a custom stabilization plugin (`mobile/plugins/withStabilization.js`) that automatically detects your machine's local IP address and injects it into the mobile builds, ensuring they can always find the Metro bundler across your local network.
 
 ---
 
