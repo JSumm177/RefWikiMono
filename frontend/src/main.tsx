@@ -7,6 +7,7 @@ import RegisterPage from './RegisterPage.tsx'
 import Dashboard from './Dashboard.tsx'
 import SearchScreen from './SearchScreen.tsx'
 import LogCallScreen from './LogCallScreen.tsx'
+import CommunityFeed from './CommunityFeed.tsx'
 import RuleDetailScreen from './RuleDetailScreen.tsx'
 import Header from './Header.tsx'
 import { AuthProvider, AuthContext } from './AuthContext.tsx'
@@ -39,6 +40,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
                 <Route index element={<Dashboard />} />
                 <Route path="search" element={<SearchScreen />} />
+                <Route path="community" element={<CommunityFeed />} />
                 <Route path="log-call" element={<LogCallScreen />} />
                 <Route path="rule/:id" element={<RuleDetailScreen />} />
               </Route>

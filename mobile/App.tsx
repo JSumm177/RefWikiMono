@@ -10,6 +10,7 @@ import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 import LogCallScreen from './LogCallScreen';
 import RuleDetailScreen from './RuleDetailScreen';
+import CommunityFeed from './CommunityFeed';
 import { searchRules, SearchableRule } from './utils/search';
 
 const Stack = createNativeStackNavigator();
@@ -198,6 +199,7 @@ const MainTabNavigator = () => {
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Search" component={SearchScreen} />
+      <Tab.Screen name="Community" component={CommunityFeed} />
       <Tab.Screen name="Log Call" component={LogCallScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>

@@ -22,6 +22,7 @@ const LogCallScreen: React.FC = () => {
   const [sport, setSport] = useState('NFL');
   const [team, setTeam] = useState('');
   const [controversyLevel, setControversyLevel] = useState(1);
+  const [isPublic, setIsPublic] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchableRule[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -50,6 +51,7 @@ const LogCallScreen: React.FC = () => {
       notes,
       sport,
       team,
+      isPublic,
     });
 
     setPenaltyName('');
@@ -58,6 +60,7 @@ const LogCallScreen: React.FC = () => {
     setSport('NFL');
     setTeam('');
     setControversyLevel(1);
+    setIsPublic(false);
 
     alert('Call logged to history!');
     navigate('/');
@@ -222,6 +225,19 @@ const LogCallScreen: React.FC = () => {
           onChange={(e) => setNotes(e.target.value)}
           style={{ ...inputStyle, minHeight: '100px', resize: 'vertical' }}
         />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+          <input
+            type="checkbox"
+            id="isPublic"
+            checked={isPublic}
+            onChange={(e) => setIsPublic(e.target.checked)}
+            style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+          />
+          <label htmlFor="isPublic" style={{ fontWeight: 'bold', cursor: 'pointer' }}>
+            Publish to Community Feed
+          </label>
+        </div>
 
         <button type="submit" style={{
           width: '100%',

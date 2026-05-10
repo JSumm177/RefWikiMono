@@ -7,4 +7,5 @@ public class CallLogRequest {
     public String ruleReference;
     public Integer controversyLevel;
     public String notes;
+    public boolean isPublic;
 }

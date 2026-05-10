@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 @WebServlet("/api/calls/*")
 public class CallLogServlet extends HttpServlet {
@@ -27,7 +28,13 @@ public class CallLogServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        logger.info("GET /api/calls request received");
+        String pathInfo = req.getPathInfo();
+        
+        if ("/community".equals(pathInfo)) {
+            handleGetCommunity(req, resp);
+            return;
+        }
+
         User user = authenticate(req, resp);
         if (user == null) return;
 
@@ -44,11 +51,41 @@ public class CallLogServlet extends HttpServlet {
         }
     }
 
+    private void handleGetCommunity(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+            // Select public calls and calculate average ratings
+            String hql = "SELECT c, AVG(v.rating), COUNT(v) FROM CallLog c " +
+                         "LEFT JOIN CallVote v ON v.call.id = c.id " +
+                         "WHERE c.isPublic = true " +
+                         "GROUP BY c.id " +
+                         "ORDER BY c.timestamp DESC";
+            
+            List<Object[]> results = session.createQuery(hql, Object[].class).list();
+            List<CommunityCallDto> dtos = new ArrayList<>();
+            
+            for (Object[] row : results) {
+                dtos.add(CommunityCallDto.fromEntity((CallLog)row[0], (Double)row[1], (Long)row[2]));
+            }
+
+            resp.setContentType("application/json");
+            resp.getWriter().print(objectMapper.writeValueAsString(dtos));
+        } catch (Exception e) {
+            logger.error("Failed to fetch community calls", e);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        logger.info("POST /api/calls request received");
+        String pathInfo = req.getPathInfo();
+        
         User user = authenticate(req, resp);
         if (user == null) return;
+
+        if (pathInfo != null && pathInfo.contains("/vote")) {
+            handleVote(req, resp, user);
+            return;
+        }
 
         try {
             CallLogRequest callReq = objectMapper.readValue(req.getInputStream(), CallLogRequest.class);
@@ -68,6 +105,7 @@ public class CallLogServlet extends HttpServlet {
                 call.setRuleReference(callReq.ruleReference);
                 call.setControversyLevel(callReq.controversyLevel != null ? callReq.controversyLevel : 1);
                 call.setNotes(callReq.notes);
+                call.setPublic(callReq.isPublic);
 
                 session.persist(call);
                 transaction.commit();
@@ -78,6 +116,49 @@ public class CallLogServlet extends HttpServlet {
             }
         } catch (Exception e) {
             logger.error("Failed to log call", e);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void handleVote(HttpServletRequest req, HttpServletResponse resp, User user) throws IOException {
+        try {
+            String[] parts = req.getPathInfo().split("/");
+            Long callId = Long.parseLong(parts[1]);
+            
+            // Re-use CallLogRequest for rating just to be efficient
+            CallLogRequest voteReq = objectMapper.readValue(req.getInputStream(), CallLogRequest.class);
+            
+            try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+                Transaction tx = session.beginTransaction();
+                
+                CallLog call = session.get(CallLog.class, callId);
+                if (call == null || !call.isPublic()) {
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+
+                // Check if already voted
+                CallVote existing = session.createQuery("FROM CallVote WHERE call.id = :cId AND user.id = :uId", CallVote.class)
+                        .setParameter("cId", callId)
+                        .setParameter("uId", user.getId())
+                        .uniqueResult();
+                
+                if (existing != null) {
+                    existing.setRating(voteReq.controversyLevel);
+                } else {
+                    CallVote vote = new CallVote();
+                    vote.setCall(call);
+                    vote.setUser(user);
+                    vote.setRating(voteReq.controversyLevel);
+                    session.persist(vote);
+                }
+                
+                tx.commit();
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().print("{\"message\": \"Vote recorded\"}");
+            }
+        } catch (Exception e) {
+            logger.error("Failed to record vote", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

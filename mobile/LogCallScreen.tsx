@@ -21,6 +21,7 @@ const LogCallScreen = ({ navigation }: any) => {
   const [sport, setSport] = useState('NFL');
   const [team, setTeam] = useState('');
   const [controversyLevel, setControversyLevel] = useState(1);
+  const [isPublic, setIsPublic] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchableRule[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -37,6 +38,7 @@ const LogCallScreen = ({ navigation }: any) => {
       notes,
       sport,
       team,
+      isPublic,
     });
 
     setPenaltyName('');
@@ -45,6 +47,7 @@ const LogCallScreen = ({ navigation }: any) => {
     setSport('NFL');
     setTeam('');
     setControversyLevel(1);
+    setIsPublic(false);
 
     Alert.alert('Success', 'Call logged to history!', [
       { text: 'OK', onPress: () => navigation.navigate('Home') }
@@ -171,6 +174,16 @@ const LogCallScreen = ({ navigation }: any) => {
         numberOfLines={4}
       />
 
+      <TouchableOpacity
+        style={styles.toggleRow}
+        onPress={() => setIsPublic(!isPublic)}
+      >
+        <View style={[styles.checkbox, isPublic && styles.checkboxActive]}>
+          {isPublic && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
+        </View>
+        <Text style={styles.toggleLabel}>Publish to Community Feed</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Log Call</Text>
       </TouchableOpacity>
@@ -269,6 +282,30 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 15,
+    marginBottom: 10,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: '#007BFF',
+    borderRadius: 4,
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxActive: {
+    backgroundColor: '#007BFF',
+  },
+  toggleLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
   },
 });
 

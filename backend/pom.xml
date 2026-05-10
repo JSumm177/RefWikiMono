@@ -194,6 +194,7 @@
                         <class>com.example.BookmarkRequest</class>
                         <class>com.example.CallLogRequest</class>
                         <class>com.example.RuleDto</class>
+                        <class>com.example.CommunityCallDto</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../frontend/src/api-types.d.ts</outputFile>

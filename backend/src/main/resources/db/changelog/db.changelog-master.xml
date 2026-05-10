@@ -10,5 +10,6 @@
     <include file="db/changelog/changes/003-add-calls.xml"/>
     <include file="db/changelog/changes/004-add-rulebook-tables.xml"/>
     <include file="db/changelog/changes/005-add-article-id-to-bookmarks.xml"/>
+    <include file="db/changelog/changes/006-add-social-features.xml"/>
 
 </databaseChangeLog>

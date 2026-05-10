@@ -40,6 +40,9 @@ public class CallLog {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Column(name = "is_public")
+    private boolean isPublic = false;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "timestamp")
     private LocalDateTime timestamp = LocalDateTime.now();
@@ -108,6 +111,14 @@ public class CallLog {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
     }
 
     public LocalDateTime getTimestamp() {
