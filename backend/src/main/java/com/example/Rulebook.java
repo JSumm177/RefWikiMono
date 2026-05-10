@@ -14,7 +14,7 @@ public class Rulebook {
     @JoinColumn(name = "sport_id", nullable = false)
     private Sport sport;
 
-    @Column(nullable = false)
+    @Column(name = "release_year", nullable = false)
     private Integer year;
 
     @Column(nullable = false)

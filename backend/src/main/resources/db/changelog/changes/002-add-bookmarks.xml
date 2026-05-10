@@ -5,17 +5,25 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
-    <changeSet id="3" author="admin">
-        <sql>
-            CREATE TABLE IF NOT EXISTS bookmarks (
-                id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                user_id BIGINT NOT NULL,
-                sport VARCHAR(50) DEFAULT 'NFL',
-                full_reference VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-                UNIQUE KEY unique_user_bookmark (user_id, sport, full_reference)
-            );
+    <changeSet id="4" author="admin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="bookmarks" columnName="sport"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="bookmarks">
+            <column name="sport" type="VARCHAR(50)" defaultValue="NFL"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="104" author="admin">
+        <sql dbms="mysql">
+            ALTER TABLE bookmarks DROP INDEX unique_user_bookmark;
+            ALTER TABLE bookmarks ADD UNIQUE KEY unique_user_sport_bookmark (user_id, sport, full_reference);
+        </sql>
+        <sql dbms="h2">
+            DROP INDEX IF EXISTS unique_user_bookmark;
+            CREATE UNIQUE INDEX IF NOT EXISTS unique_user_sport_bookmark ON bookmarks (user_id, sport, full_reference);
         </sql>
     </changeSet>
 

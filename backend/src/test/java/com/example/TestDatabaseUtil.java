@@ -42,9 +42,17 @@ public class TestDatabaseUtil {
     public static void clearTables() {
         try (Connection conn = DatabaseConfig.getDataSource().getConnection();
              Statement stmt = conn.createStatement()) {
-            // Delete instead of truncate because of foreign keys or Liquibase
+            stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
             stmt.execute("DELETE FROM users");
-            stmt.execute("DELETE FROM items");
+            stmt.execute("DELETE FROM bookmarks");
+            stmt.execute("DELETE FROM calls");
+            stmt.execute("DELETE FROM call_votes");
+            stmt.execute("DELETE FROM articles");
+            stmt.execute("DELETE FROM sections");
+            stmt.execute("DELETE FROM rules");
+            stmt.execute("DELETE FROM rulebooks");
+            stmt.execute("DELETE FROM sports");
+            stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
         } catch (Exception e) {
             throw new RuntimeException("Failed to clear tables", e);
         }

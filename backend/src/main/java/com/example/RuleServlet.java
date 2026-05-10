@@ -40,13 +40,26 @@ public class RuleServlet extends HttpServlet {
         }
 
         try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
-            String sql = "SELECT a.* FROM articles a " +
-                         "JOIN sections s ON a.section_id = s.id " +
-                         "JOIN rules r ON s.rule_id = r.id " +
-                         "JOIN rulebooks rb ON r.rulebook_id = rb.id " +
-                         "JOIN sports sp ON rb.sport_id = sp.id " +
-                         "WHERE (MATCH(a.text) AGAINST(:query IN BOOLEAN MODE) OR a.text LIKE :likeQuery) ";
-
+            boolean isH2 = session.doReturningWork(conn -> conn.getMetaData().getDatabaseProductName().contains("H2"));
+            
+            String sql;
+            if (isH2) {
+                // H2 doesn't support MATCH AGAINST
+                sql = "SELECT a.* FROM articles a " +
+                      "JOIN sections s ON a.section_id = s.id " +
+                      "JOIN rules r ON s.rule_id = r.id " +
+                      "JOIN rulebooks rb ON r.rulebook_id = rb.id " +
+                      "JOIN sports sp ON rb.sport_id = sp.id " +
+                      "WHERE a.text LIKE :likeQuery ";
+            } else {
+                sql = "SELECT a.* FROM articles a " +
+                      "JOIN sections s ON a.section_id = s.id " +
+                      "JOIN rules r ON s.rule_id = r.id " +
+                      "JOIN rulebooks rb ON r.rulebook_id = rb.id " +
+                      "JOIN sports sp ON rb.sport_id = sp.id " +
+                      "WHERE (MATCH(a.text) AGAINST(:query IN BOOLEAN MODE) OR a.text LIKE :likeQuery) ";
+            }
+            
             if (sport != null && !sport.isEmpty()) {
                 sql += "AND sp.name = :sport ";
             }
@@ -54,8 +67,11 @@ public class RuleServlet extends HttpServlet {
             sql += "LIMIT 20";
 
             var nativeQuery = session.createNativeQuery(sql, ArticleEntity.class)
-                    .setParameter("query", query + "*")
                     .setParameter("likeQuery", "%" + query + "%");
+            
+            if (!isH2) {
+                nativeQuery.setParameter("query", query + "*");
+            }
             
             if (sport != null && !sport.isEmpty()) {
                 nativeQuery.setParameter("sport", sport.toUpperCase());
