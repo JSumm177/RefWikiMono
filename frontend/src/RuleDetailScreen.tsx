@@ -3,19 +3,43 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getRuleById } from './utils/search';
 import type { SearchableRule } from './utils/search';
 import { BookmarkContext } from './BookmarkContext';
+import type { CommunityCallDto } from './api-types';
+
+const getControversyColor = (level: number) => {
+    switch (Math.round(level)) {
+        case 1: return '#4CAF50';
+        case 2: return '#8BC34A';
+        case 3: return '#FFC107';
+        case 4: return '#FF9800';
+        case 5: return '#F44336';
+        default: return '#ccc';
+    }
+};
 
 const RuleDetailScreen: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [rule, setRule] = useState<SearchableRule | undefined>();
+    const [controversialCalls, setControversialCalls] = useState<CommunityCallDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const { isBookmarked, isPending, addBookmark, removeBookmark } = useContext(BookmarkContext);
 
     useEffect(() => {
         if (id) {
             setIsLoading(true);
-            getRuleById(parseInt(id, 10)).then(result => {
+            getRuleById(parseInt(id, 10)).then(async result => {
                 setRule(result);
+                if (result) {
+                    // Fetch controversial calls for this specific rule
+                    try {
+                        const response = await fetch(`/api/leaderboard/?ruleRef=${encodeURIComponent(result.fullReference)}`);
+                        if (response.ok) {
+                            setControversialCalls(await response.json());
+                        }
+                    } catch (e) {
+                        console.error("Failed to fetch rule leaderboard", e);
+                    }
+                }
                 setIsLoading(false);
             });
         }
@@ -105,6 +129,39 @@ const RuleDetailScreen: React.FC = () => {
                 border: '1px solid var(--border)'
             }}>
                 {rule.articleText}
+            </div>
+
+            <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
+                <h3>Community Hall of Shame (This Rule)</h3>
+                {controversialCalls.length === 0 ? (
+                    <p style={{ color: '#666', fontStyle: 'italic' }}>No controversial calls logged for this rule yet.</p>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {controversialCalls.map(call => (
+                            <div key={call.id} style={{
+                                backgroundColor: 'var(--bg)',
+                                padding: '15px',
+                                borderRadius: '8px',
+                                border: '1px solid var(--border)',
+                                borderLeft: `6px solid ${getControversyColor(call.averageRating!)}`,
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}>
+                                <div>
+                                    <div style={{ fontWeight: 'bold' }}>{call.penaltyName} ({call.team})</div>
+                                    <div style={{ fontSize: '0.8em', color: '#666' }}>Published by {call.userName}</div>
+                                </div>
+                                <div style={{ textAlign: 'center' }}>
+                                    <div style={{ fontWeight: 'bold', fontSize: '1.2em', color: getControversyColor(call.averageRating!) }}>
+                                        {call.averageRating?.toFixed(1)}
+                                    </div>
+                                    <div style={{ fontSize: '0.6em', color: '#999' }}>RATING</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>

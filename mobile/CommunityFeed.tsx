@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { API_BASE_URL } from './utils/api';
+import { AuthContext } from './AuthContext';
 
 interface CommunityCall {
   id: number;
@@ -30,6 +31,7 @@ const getControversyColor = (level: number) => {
 const CommunityFeed = () => {
   const [calls, setCalls] = useState<CommunityCall[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { userToken } = useContext(AuthContext);
 
   const fetchCommunity = async () => {
     try {
@@ -49,10 +51,15 @@ const CommunityFeed = () => {
   }, []);
 
   const handleVote = async (callId: number, rating: number) => {
+    if (!userToken) return;
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/calls/${callId}/vote`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userToken}`
+        },
         body: JSON.stringify({ controversyLevel: rating }),
       });
       if (response.ok) {

@@ -37,16 +37,27 @@ public class LeaderboardServlet extends HttpServlet {
     }
 
     private void handleGetMostControversial(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String ruleRef = req.getParameter("ruleRef");
         try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
-            // Get public calls with highest average controversy and at least 3 votes
+            // Get public calls with highest average controversy and at least 1 vote
             String hql = "SELECT c, AVG(v.rating), COUNT(v) FROM CallLog c " +
                          "JOIN CallVote v ON v.call.id = c.id " +
-                         "WHERE c.isPublic = true " +
-                         "GROUP BY c.id " +
-                         "HAVING COUNT(v) >= 1 " + // Set to 1 for dev testing, increase for prod
-                         "ORDER BY AVG(v.rating) DESC";
+                         "WHERE c.isPublic = true ";
             
-            List<Object[]> results = session.createQuery(hql, Object[].class).setMaxResults(10).list();
+            if (ruleRef != null && !ruleRef.isEmpty()) {
+                hql += "AND c.ruleReference = :ruleRef ";
+            }
+            
+            hql += "GROUP BY c.id " +
+                   "HAVING COUNT(v) >= 1 " + 
+                   "ORDER BY AVG(v.rating) DESC";
+            
+            var query = session.createQuery(hql, Object[].class).setMaxResults(10);
+            if (ruleRef != null && !ruleRef.isEmpty()) {
+                query.setParameter("ruleRef", ruleRef);
+            }
+            
+            List<Object[]> results = query.list();
             List<CommunityCallDto> dtos = new ArrayList<>();
             
             for (Object[] row : results) {
