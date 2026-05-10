@@ -107,5 +107,7 @@ public class RulebookImportListener implements ServletContextListener {
     }
 
     @Override
-    public void contextDestroyed(ServletContextEvent sce) {}
+    public void contextDestroyed(ServletContextEvent sce) {
+        DatabaseConfig.shutdown();
+    }
 }

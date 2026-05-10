@@ -130,6 +130,16 @@ public class DatabaseConfig {
         return sessionFactory;
     }
 
+    public static void shutdown() {
+        logger.info("Shutting down Database connection pool and SessionFactory...");
+        if (sessionFactory != null && !sessionFactory.isClosed()) {
+            sessionFactory.close();
+        }
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+    }
+
     // Visible for testing
     public static void setDataSourceForTesting(HikariDataSource testDataSource) {
         if (dataSource != null && !dataSource.isClosed()) {

@@ -6,6 +6,8 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
     <changeSet id="5" author="admin">
+        <validCheckSum>9:216d8032cd2e6d26656abfa9771bbe27</validCheckSum>
+        <validCheckSum>9:18585ad058d9413e49d91fc3bbcae56b</validCheckSum>
         <createTable tableName="sports">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
