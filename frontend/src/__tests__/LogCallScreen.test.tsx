@@ -98,7 +98,8 @@ describe('LogCallScreen', () => {
                 controversyLevel: 3,
                 notes: 'Obvious hold.',
                 sport: 'NFL',
-                team: ''
+                team: '',
+                isPublic: false
             });
         });
         expect(window.alert).toHaveBeenCalledWith('Call logged to history!');

@@ -25,6 +25,7 @@ export interface CallLogRequest {
     ruleReference: string;
     controversyLevel: number;
     notes: string;
+    isPublic: boolean;
 }
 
 export interface RuleDto {
@@ -37,4 +38,18 @@ export interface RuleDto {
     articleNumber: number;
     articleText: string;
     fullReference: string;
+}
+
+export interface CommunityCallDto {
+    id: number;
+    sport: string;
+    team: string;
+    penaltyName: string;
+    ruleReference: string;
+    originalControversy: number;
+    notes: string;
+    userName: string;
+    timestamp: string;
+    averageRating: number;
+    voteCount: number;
 }
