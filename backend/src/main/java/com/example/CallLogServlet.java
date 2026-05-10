@@ -48,6 +48,7 @@ public class CallLogServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("Failed to fetch calls", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("{\"error\": \"An internal error occurred\"}");
         }
     }
 
@@ -72,6 +73,7 @@ public class CallLogServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("Failed to fetch community calls", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("{\"error\": \"An internal error occurred\"}");
         }
     }
 
@@ -117,6 +119,7 @@ public class CallLogServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("Failed to log call", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("{\"error\": \"An internal error occurred\"}");
         }
     }
 
@@ -160,6 +163,7 @@ public class CallLogServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("Failed to record vote", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("{\"error\": \"An internal error occurred\"}");
         }
     }
 

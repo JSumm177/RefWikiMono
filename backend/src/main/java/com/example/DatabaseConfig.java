@@ -51,7 +51,11 @@ public class DatabaseConfig {
         } else {
             logger.info("Initializing database connection pool to jdbc:mysql://{}:{}/{}", dbHost, dbPort, dbName);
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName + "?allowPublicKeyRetrieval=true&useSSL=false");
+            
+            String useSSL = System.getenv("DB_USE_SSL");
+            if (useSSL == null) useSSL = "false";
+            
+            config.setJdbcUrl("jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName + "?allowPublicKeyRetrieval=true&useSSL=" + useSSL);
             config.setUsername(dbUser);
             config.setPassword(dbPass);
             config.setDriverClassName("com.mysql.cj.jdbc.Driver");

@@ -45,6 +45,7 @@ public class BookmarkServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("Failed to fetch bookmarks", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("{\"error\": \"An internal error occurred\"}");
         }
     }
 
@@ -102,6 +103,7 @@ public class BookmarkServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("Failed to add bookmark", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("{\"error\": \"An internal error occurred\"}");
         }
     }
 
@@ -141,6 +143,7 @@ public class BookmarkServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("Failed to delete bookmark", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("{\"error\": \"An internal error occurred\"}");
         }
     }
 

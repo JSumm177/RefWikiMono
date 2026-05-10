@@ -75,7 +75,11 @@ public class AuthServlet extends HttpServlet {
         if ("web".equalsIgnoreCase(platform)) {
             Cookie cookie = new Cookie("jwt", "");
             cookie.setHttpOnly(true);
-            cookie.setSecure(false); // Fix for local dev (non-HTTPS)
+            
+            // Security Hardening: Only allow insecure cookies in local dev
+            boolean isProd = "production".equalsIgnoreCase(System.getenv("APP_ENV"));
+            cookie.setSecure(isProd); 
+
             cookie.setPath("/");
             cookie.setMaxAge(0); // 0 means delete cookie
             resp.addCookie(cookie);
@@ -144,9 +148,9 @@ public class AuthServlet extends HttpServlet {
             }
 
         } catch (Exception e) {
-            logger.error("Registration failed with exception", e);
+            logger.error("Registration failed", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            responseJson.error = "Registration failed";
+            responseJson.error = "An internal error occurred";
             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
         }
     }
@@ -183,7 +187,11 @@ public class AuthServlet extends HttpServlet {
                         if ("web".equalsIgnoreCase(platform)) {
                             Cookie cookie = new Cookie("jwt", token);
                             cookie.setHttpOnly(true);
-                            cookie.setSecure(false); // Fix for local dev (non-HTTPS)
+                            
+                            // Security Hardening: Only allow insecure cookies in local dev
+                            boolean isProd = "production".equalsIgnoreCase(System.getenv("APP_ENV"));
+                            cookie.setSecure(isProd);
+
                             cookie.setPath("/");
                             cookie.setMaxAge(24 * 60 * 60); // 24 hours
                             resp.addCookie(cookie);
@@ -212,9 +220,9 @@ public class AuthServlet extends HttpServlet {
             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
 
         } catch (Exception e) {
-            logger.error("Login failed with exception", e);
+            logger.error("Login failed", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            responseJson.error = "Login failed";
+            responseJson.error = "An internal error occurred";
             resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
         }
     }
