@@ -10,6 +10,7 @@ import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 import LogCallScreen from './LogCallScreen';
 import RuleDetailScreen from './RuleDetailScreen';
+import CallDetailScreen from './CallDetailScreen';
 import CommunityFeed from './CommunityFeed';
 import LeaderboardScreen from './LeaderboardScreen';
 import { searchRules, SearchableRule } from './utils/search';
@@ -76,9 +77,13 @@ const HomeScreen = ({ navigation }: any) => {
             keyExtractor={(item) => item.id}
             style={styles.list}
             renderItem={({ item }) => (
-              <View style={[styles.card, { borderLeftColor: getControversyColor(item.controversyLevel), borderLeftWidth: 6 }]}>
+              <TouchableOpacity
+                style={[styles.card, { borderLeftColor: getControversyColor(item.controversyLevel), borderLeftWidth: 6 }]}
+                disabled={!item.isPublic}
+                onPress={() => navigation.navigate('CallDetail', { id: item.id })}
+              >
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <Text style={styles.cardTitle}>{item.penaltyName}</Text>
+                    <Text style={styles.cardTitle}>{item.penaltyName} {item.isPublic && <Text style={{ fontSize: 10, color: '#007BFF' }}>(PUBLIC)</Text>}</Text>
                     <Text style={styles.tag}>{item.sport} {item.team ? `• ${item.team}` : ''}</Text>
                 </View>
                 <Text style={styles.cardSubtitle}>{item.ruleReference}</Text>
@@ -86,7 +91,7 @@ const HomeScreen = ({ navigation }: any) => {
                 <Text style={styles.cardTime}>
                     {item.timestamp ? new Date(item.timestamp).toLocaleString() : ''}
                 </Text>
-              </View>
+              </TouchableOpacity>
             )}
           />
         )}
@@ -248,6 +253,11 @@ const Navigation = () => {
               name="RuleDetail"
               component={RuleDetailScreen}
               options={{ title: 'Rule Details' }}
+            />
+            <Stack.Screen
+              name="CallDetail"
+              component={CallDetailScreen}
+              options={{ title: 'Call Analysis' }}
             />
           </>
         )}

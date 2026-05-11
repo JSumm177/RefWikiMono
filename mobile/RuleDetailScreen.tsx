@@ -121,7 +121,7 @@ const RuleDetailScreen = ({ route, navigation }: any) => {
                         </View>
                     ))
                 )}
-            </div>
+            </View>
 
             <View style={styles.relatedSection}>
                 <Text style={styles.relatedTitle}>Related Rules</Text>

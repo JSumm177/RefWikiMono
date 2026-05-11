@@ -28,7 +28,7 @@ const getControversyColor = (level: number) => {
     }
 };
 
-const CommunityFeed = () => {
+const CommunityFeed = ({ navigation }: any) => {
   const [calls, setCalls] = useState<CommunityCall[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { userToken } = useContext(AuthContext);
@@ -87,10 +87,13 @@ const CommunityFeed = () => {
         renderItem={({ item }) => (
           <View style={[styles.card, { borderLeftColor: getControversyColor(item.averageRating), borderLeftWidth: 8 }]}>
             <View style={styles.cardHeader}>
-              <View style={{ flex: 1 }}>
+              <TouchableOpacity
+                style={{ flex: 1 }}
+                onPress={() => navigation.navigate('CallDetail', { id: item.id })}
+              >
                 <Text style={styles.cardTitle}>{item.penaltyName}</Text>
                 <Text style={styles.cardSubtitle}>{item.sport} • {item.team}</Text>
-              </View>
+              </TouchableOpacity>
               <View style={styles.ratingBox}>
                 <Text style={[styles.avgRating, { color: getControversyColor(item.averageRating) }]}>
                   {item.averageRating.toFixed(1)}

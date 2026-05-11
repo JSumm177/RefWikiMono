@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { CommunityCallDto } from './api-types';
 
 const getControversyColor = (level: number) => {
@@ -15,6 +16,7 @@ const getControversyColor = (level: number) => {
 const CommunityFeed: React.FC = () => {
     const [calls, setCalls] = useState<CommunityCallDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     const fetchCommunity = async () => {
         try {
@@ -65,7 +67,10 @@ const CommunityFeed: React.FC = () => {
                         textAlign: 'left'
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div>
+                            <div
+                                style={{ flex: 1, cursor: 'pointer' }}
+                                onClick={() => navigate(`/call/${call.id}`)}
+                            >
                                 <h3 style={{ margin: '0 0 5px 0' }}>{call.penaltyName}</h3>
                                 <div style={{ color: 'var(--text)', fontSize: '0.9em' }}>
                                     {call.sport} • {call.team} • {call.ruleReference}

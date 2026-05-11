@@ -105,10 +105,15 @@ const Dashboard: React.FC = () => {
                             borderTop: '1px solid #eee',
                             borderRight: '1px solid #eee',
                             borderBottom: '1px solid #eee',
-                            textAlign: 'left'
-                        }}>
+                            textAlign: 'left',
+                            cursor: item.isPublic ? 'pointer' : 'default'
+                        }}
+                        onClick={() => {
+                            if (item.isPublic) navigate(`/call/${item.id}`);
+                        }}
+                        >
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                <h3 style={{ margin: 0 }}>{item.penaltyName}</h3>
+                                <h3 style={{ margin: 0 }}>{item.penaltyName} {item.isPublic && <span style={{ fontSize: '0.6em', verticalAlign: 'middle', color: '#007BFF' }}>(PUBLIC)</span>}</h3>
                                 <span style={{
                                     backgroundColor: '#eee',
                                     padding: '2px 8px',

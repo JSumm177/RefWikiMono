@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { API_BASE_URL } from './utils/api';
 
 interface CommunityCall {
@@ -24,7 +24,7 @@ const getControversyColor = (level: number) => {
     }
 };
 
-const LeaderboardScreen = () => {
+const LeaderboardScreen = ({ navigation }: any) => {
   const [calls, setCalls] = useState<CommunityCall[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -61,7 +61,10 @@ const LeaderboardScreen = () => {
         data={calls}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item, index }) => (
-          <View style={styles.card}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('CallDetail', { id: item.id })}
+          >
             <Text style={styles.rank}>#{index + 1}</Text>
             <View style={{ flex: 1 }}>
               <Text style={styles.penalty}>{item.penaltyName}</Text>
@@ -73,7 +76,7 @@ const LeaderboardScreen = () => {
                 {item.averageRating.toFixed(1)}
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
         ListEmptyComponent={
           <Text style={styles.empty}>No data yet. Get voting in the community feed!</Text>

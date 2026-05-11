@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { CommunityCallDto } from './api-types';
 
 const getControversyColor = (level: number) => {
@@ -15,6 +16,7 @@ const getControversyColor = (level: number) => {
 const LeaderboardScreen: React.FC = () => {
     const [calls, setCalls] = useState<CommunityCallDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
@@ -43,16 +45,24 @@ const LeaderboardScreen: React.FC = () => {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 {calls.map((call, index) => (
-                    <div key={call.id} style={{
-                        backgroundColor: 'var(--bg)',
-                        padding: '15px',
-                        borderRadius: '12px',
-                        border: '1px solid var(--border)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '20px',
-                        textAlign: 'left'
-                    }}>
+                    <div
+                        key={call.id}
+                        onClick={() => navigate(`/call/${call.id}`)}
+                        style={{
+                            backgroundColor: 'var(--bg)',
+                            padding: '15px',
+                            borderRadius: '12px',
+                            border: '1px solid var(--border)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '20px',
+                            textAlign: 'left',
+                            cursor: 'pointer',
+                            transition: 'transform 0.1s'
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                    >
                         <div style={{
                             fontSize: '24px',
                             fontWeight: 'bold',

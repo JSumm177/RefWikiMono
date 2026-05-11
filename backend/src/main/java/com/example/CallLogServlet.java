@@ -35,6 +35,11 @@ public class CallLogServlet extends HttpServlet {
             return;
         }
 
+        if (pathInfo != null && pathInfo.matches("^/\\d+$")) {
+            handleGetSingleCall(pathInfo.substring(1), req, resp);
+            return;
+        }
+
         User user = authenticate(req, resp);
         if (user == null) return;
 
@@ -74,6 +79,34 @@ public class CallLogServlet extends HttpServlet {
             logger.error("Failed to fetch community calls", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().print("{\"error\": \"An internal error occurred\"}");
+        }
+    }
+
+    private void handleGetSingleCall(String idStr, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            Long id = Long.parseLong(idStr);
+            try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+                String hql = "SELECT c, AVG(v.rating), COUNT(v) FROM CallLog c " +
+                             "LEFT JOIN CallVote v ON v.call.id = c.id " +
+                             "WHERE c.id = :id AND c.isPublic = true " +
+                             "GROUP BY c.id";
+                
+                Object[] result = session.createQuery(hql, Object[].class)
+                        .setParameter("id", id)
+                        .uniqueResult();
+                
+                if (result == null) {
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+
+                CommunityCallDto dto = CommunityCallDto.fromEntity((CallLog)result[0], (Double)result[1], (Long)result[2]);
+                resp.setContentType("application/json");
+                resp.getWriter().print(objectMapper.writeValueAsString(dto));
+            }
+        } catch (Exception e) {
+            logger.error("Failed to fetch single call", e);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
