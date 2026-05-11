@@ -14,8 +14,9 @@ public class CommunityCallDto {
     public String timestamp;
     public Double averageRating;
     public Long voteCount;
+    public Long commentCount;
 
-    public static CommunityCallDto fromEntity(CallLog call, Double avg, Long count) {
+    public static CommunityCallDto fromEntity(CallLog call, Double avg, Long count, Long comments) {
         CommunityCallDto dto = new CommunityCallDto();
         dto.id = call.getId();
         dto.sport = call.getSport();
@@ -28,6 +29,7 @@ public class CommunityCallDto {
         dto.timestamp = call.getTimestamp().toString();
         dto.averageRating = avg != null ? avg : call.getControversyLevel().doubleValue();
         dto.voteCount = count;
+        dto.commentCount = comments;
         return dto;
     }
 }

@@ -195,6 +195,8 @@
                         <class>com.example.CallLogRequest</class>
                         <class>com.example.RuleDto</class>
                         <class>com.example.CommunityCallDto</class>
+                        <class>com.example.CommentDto</class>
+                        <class>com.example.CommentRequest</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../frontend/src/api-types.d.ts</outputFile>

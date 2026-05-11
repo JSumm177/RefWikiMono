@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { CommunityCallDto } from './api-types';
+import type { CommunityCallDto, CommentDto } from './api-types';
 
 const getControversyColor = (level: number) => {
     switch (Math.round(level)) {
@@ -17,7 +17,10 @@ const CallDetailScreen: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [call, setCall] = useState<CommunityCallDto | undefined>();
+    const [comments, setComments] = useState<CommentDto[]>([]);
+    const [newComment, setNewComment] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [isCommenting, setIsCommenting] = useState(false);
 
     const fetchCall = async () => {
         try {
@@ -27,13 +30,27 @@ const CallDetailScreen: React.FC = () => {
             }
         } catch (error) {
             console.error('Failed to fetch call details', error);
-        } finally {
-            setIsLoading(false);
+        }
+    };
+
+    const fetchComments = async () => {
+        try {
+            const response = await fetch(`/api/comments/${id}`);
+            if (response.ok) {
+                setComments(await response.json());
+            }
+        } catch (error) {
+            console.error('Failed to fetch comments', error);
         }
     };
 
     useEffect(() => {
-        fetchCall();
+        const loadAll = async () => {
+            setIsLoading(true);
+            await Promise.all([fetchCall(), fetchComments()]);
+            setIsLoading(false);
+        };
+        loadAll();
     }, [id]);
 
     const handleVote = async (rating: number) => {
@@ -50,6 +67,30 @@ const CallDetailScreen: React.FC = () => {
             }
         } catch (error) {
             console.error('Failed to vote', error);
+        }
+    };
+
+    const handleSubmitComment = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newComment.trim()) return;
+
+        setIsCommenting(true);
+        try {
+            const response = await fetch(`/api/comments/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: newComment }),
+                credentials: 'include'
+            });
+            if (response.ok) {
+                setNewComment('');
+                fetchComments();
+                fetchCall(); // Refresh comment count
+            }
+        } catch (error) {
+            console.error('Failed to post comment', error);
+        } finally {
+            setIsCommenting(false);
         }
     };
 
@@ -140,6 +181,68 @@ const CallDetailScreen: React.FC = () => {
                     <p style={{ marginTop: '15px', fontSize: '0.8em', color: '#999' }}>
                         Total votes: {call.voteCount}
                     </p>
+                </div>
+            </div>
+
+            <div style={{ marginTop: '40px' }}>
+                <h2>Discussion ({call.commentCount})</h2>
+
+                <form onSubmit={handleSubmitComment} style={{ marginBottom: '30px' }}>
+                    <textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder="Add to the discussion..."
+                        style={{
+                            width: '100%',
+                            padding: '15px',
+                            borderRadius: '12px',
+                            border: '1px solid var(--border)',
+                            backgroundColor: 'var(--bg)',
+                            color: 'var(--text-h)',
+                            minHeight: '100px',
+                            marginBottom: '10px',
+                            fontSize: '16px',
+                            boxSizing: 'border-box'
+                        }}
+                    />
+                    <button
+                        type="submit"
+                        disabled={isCommenting || !newComment.trim()}
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#007BFF',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            opacity: isCommenting || !newComment.trim() ? 0.6 : 1
+                        }}
+                    >
+                        {isCommenting ? 'Posting...' : 'Post Comment'}
+                    </button>
+                </form>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    {comments.map(comment => (
+                        <div key={comment.id} style={{
+                            padding: '20px',
+                            backgroundColor: 'var(--social-bg)',
+                            borderRadius: '12px',
+                            border: '1px solid var(--border)'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                <span style={{ fontWeight: 'bold', color: 'var(--accent)' }}>{comment.userName}</span>
+                                <span style={{ fontSize: '0.8em', color: '#999' }}>{new Date(comment.createdAt!).toLocaleString()}</span>
+                            </div>
+                            <div style={{ lineHeight: '1.5', color: 'var(--text-h)' }}>{comment.text}</div>
+                        </div>
+                    ))}
+                    {comments.length === 0 && (
+                        <p style={{ textAlign: 'center', color: '#999', fontStyle: 'italic' }}>
+                            No comments yet. Start the conversation!
+                        </p>
+                    )}
                 </div>
             </div>
         </div>

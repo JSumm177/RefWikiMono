@@ -52,4 +52,16 @@ export interface CommunityCallDto {
     timestamp: string;
     averageRating: number;
     voteCount: number;
+    commentCount: number;
+}
+
+export interface CommentDto {
+    id: number;
+    userName: string;
+    text: string;
+    createdAt: string;
+}
+
+export interface CommentRequest {
+    text: string;
 }

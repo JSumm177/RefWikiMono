@@ -95,6 +95,7 @@ public class DatabaseConfig {
             configuration.addAnnotatedClass(com.example.SectionEntity.class);
             configuration.addAnnotatedClass(com.example.ArticleEntity.class);
             configuration.addAnnotatedClass(com.example.CallVote.class);
+            configuration.addAnnotatedClass(com.example.Comment.class);
 
             // We supply a custom connection provider to use the Hikari datasource
             // OR simply let Hibernate use its default mechanism with the JDBC properties provided above

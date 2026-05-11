@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
 import { API_BASE_URL } from './utils/api';
 import { AuthContext } from './AuthContext';
+
+interface Comment {
+  id: number;
+  userName: string;
+  text: string;
+  createdAt: string;
+}
 
 interface CommunityCall {
   id: number;
@@ -13,6 +20,7 @@ interface CommunityCall {
   notes: string;
   averageRating: number;
   voteCount: number;
+  commentCount: number;
 }
 
 const getControversyColor = (level: number) => {
@@ -29,7 +37,10 @@ const getControversyColor = (level: number) => {
 const CallDetailScreen = ({ route, navigation }: any) => {
     const { id } = route.params;
     const [call, setCall] = useState<CommunityCall | undefined>();
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [newComment, setNewComment] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [isCommenting, setIsCommenting] = useState(false);
     const { userToken } = useContext(AuthContext);
 
     const fetchCall = async () => {
@@ -40,13 +51,27 @@ const CallDetailScreen = ({ route, navigation }: any) => {
             }
         } catch (error) {
             console.error('Failed to fetch call details', error);
-        } finally {
-            setIsLoading(false);
+        }
+    };
+
+    const fetchComments = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/comments/${id}`);
+            if (response.ok) {
+                setComments(await response.json());
+            }
+        } catch (error) {
+            console.error('Failed to fetch comments', error);
         }
     };
 
     useEffect(() => {
-        fetchCall();
+        const loadAll = async () => {
+            setIsLoading(true);
+            await Promise.all([fetchCall(), fetchComments()]);
+            setIsLoading(false);
+        };
+        loadAll();
     }, [id]);
 
     const handleVote = async (rating: number) => {
@@ -65,6 +90,31 @@ const CallDetailScreen = ({ route, navigation }: any) => {
             }
         } catch (error) {
             console.error('Failed to vote', error);
+        }
+    };
+
+    const handleSubmitComment = async () => {
+        if (!userToken || !newComment.trim()) return;
+
+        setIsCommenting(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/comments/${id}`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${userToken}`
+                },
+                body: JSON.stringify({ text: newComment }),
+            });
+            if (response.ok) {
+                setNewComment('');
+                fetchComments();
+                fetchCall();
+            }
+        } catch (error) {
+            console.error('Failed to post comment', error);
+        } finally {
+            setIsCommenting(false);
         }
     };
 
@@ -120,6 +170,45 @@ const CallDetailScreen = ({ route, navigation }: any) => {
                     </View>
                     <Text style={styles.voteCount}>{call.voteCount} total votes cast</Text>
                 </View>
+            </View>
+
+            <View style={styles.commentSection}>
+                <Text style={styles.discussionHeader}>Discussion ({call.commentCount})</Text>
+
+                <View style={styles.commentInputContainer}>
+                    <TextInput
+                        style={styles.commentInput}
+                        placeholder="Add a comment..."
+                        value={newComment}
+                        onChangeText={setNewComment}
+                        multiline
+                    />
+                    <TouchableOpacity
+                        style={[styles.postButton, !newComment.trim() && { opacity: 0.5 }]}
+                        onPress={handleSubmitComment}
+                        disabled={isCommenting || !newComment.trim()}
+                    >
+                        {isCommenting ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                            <Text style={styles.postButtonText}>Post</Text>
+                        )}
+                    </TouchableOpacity>
+                </View>
+
+                {comments.map(comment => (
+                    <View key={comment.id} style={styles.commentCard}>
+                        <View style={styles.commentHeader}>
+                            <Text style={styles.commentUser}>{comment.userName}</Text>
+                            <Text style={styles.commentDate}>{new Date(comment.createdAt).toLocaleDateString()}</Text>
+                        </View>
+                        <Text style={styles.commentText}>{comment.text}</Text>
+                    </View>
+                ))}
+
+                {comments.length === 0 && (
+                    <Text style={styles.emptyComments}>No comments yet. Start the conversation!</Text>
+                )}
             </View>
         </ScrollView>
     );
@@ -241,6 +330,73 @@ const styles = StyleSheet.create({
         marginTop: 15,
         color: '#999',
         fontSize: 12,
+    },
+    commentSection: {
+        marginTop: 30,
+        paddingBottom: 40,
+    },
+    discussionHeader: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 15,
+        color: '#333',
+    },
+    commentInputContainer: {
+        marginBottom: 25,
+    },
+    commentInput: {
+        backgroundColor: '#f0f0f0',
+        borderRadius: 12,
+        padding: 15,
+        fontSize: 16,
+        minHeight: 80,
+        textAlignVertical: 'top',
+        borderWidth: 1,
+        borderColor: '#ddd',
+    },
+    postButton: {
+        backgroundColor: '#007BFF',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    postButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    commentCard: {
+        backgroundColor: '#fff',
+        padding: 15,
+        borderRadius: 12,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#eee',
+    },
+    commentHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 5,
+    },
+    commentUser: {
+        fontWeight: 'bold',
+        color: '#aa3bff',
+    },
+    commentDate: {
+        fontSize: 10,
+        color: '#999',
+    },
+    commentText: {
+        fontSize: 14,
+        color: '#444',
+        lineHeight: 20,
+    },
+    emptyComments: {
+        textAlign: 'center',
+        color: '#999',
+        fontStyle: 'italic',
+        marginTop: 20,
     }
 });
 
