@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import type { ProfileDto } from './api-types';
+import type { ProfileDto, TeamDto } from './api-types';
 
 const ProfileScreen: React.FC = () => {
     const [profile, setProfile] = useState<ProfileDto | undefined>();
+    const [teamsBySport, setTeamsBySport] = useState<Record<string, TeamDto[]>>({});
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState<Partial<ProfileDto>>({});
     const [isLoading, setIsLoading] = useState(true);
@@ -24,8 +25,26 @@ const ProfileScreen: React.FC = () => {
         }
     };
 
+    const fetchTeams = async () => {
+        try {
+            const response = await fetch('/api/teams/');
+            if (response.ok) {
+                const teams: TeamDto[] = await response.json();
+                const grouped = teams.reduce((acc, team) => {
+                    if (!acc[team.sportName!]) acc[team.sportName!] = [];
+                    acc[team.sportName!].push(team);
+                    return acc;
+                }, {} as Record<string, TeamDto[]>);
+                setTeamsBySport(grouped);
+            }
+        } catch (e) {
+            console.error("Failed to fetch teams", e);
+        }
+    };
+
     useEffect(() => {
         fetchProfile();
+        fetchTeams();
     }, []);
 
     const handleSave = async (e: React.FormEvent) => {
@@ -154,14 +173,19 @@ const ProfileScreen: React.FC = () => {
                             {sports.map(sport => (
                                 <div key={sport}>
                                     <label style={{ fontSize: '0.7em', color: '#666' }}>{sport}</label>
-                                    <input
+                                    <select
                                         style={{ ...inputStyle, marginBottom: 0 }}
                                         value={editData.homeTeams?.[sport] || ''}
                                         onChange={e => setEditData({
                                             ...editData,
                                             homeTeams: { ...editData.homeTeams, [sport]: e.target.value }
                                         })}
-                                    />
+                                    >
+                                        <option value="">Select Team</option>
+                                        {teamsBySport[sport]?.map(team => (
+                                            <option key={team.id} value={team.name}>{team.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             ))}
                         </div>

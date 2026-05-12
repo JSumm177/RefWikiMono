@@ -22,6 +22,8 @@ public class RulebookImportListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         logger.info("Initializing Rulebook Database...");
         try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+            ensureSportsAndTeams(session);
+
             Long count = session.createQuery("SELECT COUNT(r) FROM Rulebook r", Long.class).uniqueResult();
             if (count == 0) {
                 logger.info("Rulebook table is empty. Starting import...");
@@ -38,6 +40,90 @@ public class RulebookImportListener implements ServletContextListener {
         } catch (Exception e) {
             logger.error("Failed to import rulebooks", e);
         }
+    }
+
+    private void ensureSportsAndTeams(Session session) {
+        Transaction tx = session.beginTransaction();
+        try {
+            String[] sports = {"NFL", "NCAA", "NBA", "MLB", "NHL", "MLS"};
+            for (String sportName : sports) {
+                Sport sport = session.createQuery("FROM Sport WHERE name = :name", Sport.class)
+                        .setParameter("name", sportName)
+                        .uniqueResult();
+                if (sport == null) {
+                    sport = new Sport(sportName);
+                    session.persist(sport);
+                }
+                seedTeamsForSport(session, sport);
+            }
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+            throw e;
+        }
+    }
+
+    private void seedTeamsForSport(Session session, Sport sport) {
+        Long count = session.createQuery("SELECT COUNT(t) FROM Team t WHERE t.sport.id = :sId", Long.class)
+                .setParameter("sId", sport.getId())
+                .uniqueResult();
+        
+        if (count > 0) return;
+
+        String sportName = sport.getName();
+        if ("NFL".equals(sportName)) {
+            createTeam(session, sport, "Arizona Cardinals", "ARI");
+            createTeam(session, sport, "Atlanta Falcons", "ATL");
+            createTeam(session, sport, "Baltimore Ravens", "BAL");
+            createTeam(session, sport, "Buffalo Bills", "BUF");
+            createTeam(session, sport, "Carolina Panthers", "CAR");
+            createTeam(session, sport, "Chicago Bears", "CHI");
+            createTeam(session, sport, "Cincinnati Bengals", "CIN");
+            createTeam(session, sport, "Cleveland Browns", "CLE");
+            createTeam(session, sport, "Dallas Cowboys", "DAL");
+            createTeam(session, sport, "Denver Broncos", "DEN");
+            createTeam(session, sport, "Detroit Lions", "DET");
+            createTeam(session, sport, "Green Bay Packers", "GB");
+            createTeam(session, sport, "Houston Texans", "HOU");
+            createTeam(session, sport, "Indianapolis Colts", "IND");
+            createTeam(session, sport, "Jacksonville Jaguars", "JAX");
+            createTeam(session, sport, "Kansas City Chiefs", "KC");
+            createTeam(session, sport, "Las Vegas Raiders", "LV");
+            createTeam(session, sport, "Los Angeles Chargers", "LAC");
+            createTeam(session, sport, "Los Angeles Rams", "LAR");
+            createTeam(session, sport, "Miami Dolphins", "MIA");
+            createTeam(session, sport, "Minnesota Vikings", "MIN");
+            createTeam(session, sport, "New England Patriots", "NE");
+            createTeam(session, sport, "New Orleans Saints", "NO");
+            createTeam(session, sport, "New York Giants", "NYG");
+            createTeam(session, sport, "New York Jets", "NYJ");
+            createTeam(session, sport, "Philadelphia Eagles", "PHI");
+            createTeam(session, sport, "Pittsburgh Steelers", "PIT");
+            createTeam(session, sport, "San Francisco 49ers", "SF");
+            createTeam(session, sport, "Seattle Seahawks", "SEA");
+            createTeam(session, sport, "Tampa Bay Buccaneers", "TB");
+            createTeam(session, sport, "Tennessee Titans", "TEN");
+            createTeam(session, sport, "Washington Commanders", "WAS");
+        } else if ("NBA".equals(sportName)) {
+            createTeam(session, sport, "Boston Celtics", "BOS");
+            createTeam(session, sport, "Brooklyn Nets", "BKN");
+            createTeam(session, sport, "New York Knicks", "NYK");
+            createTeam(session, sport, "Philadelphia 76ers", "PHI");
+            createTeam(session, sport, "Toronto Raptors", "TOR");
+            createTeam(session, sport, "Golden State Warriors", "GSW");
+            createTeam(session, sport, "Los Angeles Lakers", "LAL");
+            createTeam(session, sport, "Los Angeles Clippers", "LAC");
+            createTeam(session, sport, "Phoenix Suns", "PHX");
+            createTeam(session, sport, "Sacramento Kings", "SAC");
+        }
+    }
+
+    private void createTeam(Session session, Sport sport, String name, String abbr) {
+        Team team = new Team();
+        team.setSport(sport);
+        team.setName(name);
+        team.setAbbreviation(abbr);
+        session.persist(team);
     }
 
     private void importRulebook(Session session, String sportName, String resourcePath, int year) throws Exception {

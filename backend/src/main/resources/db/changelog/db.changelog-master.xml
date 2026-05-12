@@ -15,5 +15,6 @@
     <include file="db/changelog/changes/008-add-comments.xml"/>
     <include file="db/changelog/changes/009-add-user-profiles.xml"/>
     <include file="db/changelog/changes/010-multi-sport-home-teams.xml"/>
+    <include file="db/changelog/changes/011-add-teams-table.xml"/>
 
 </databaseChangeLog>

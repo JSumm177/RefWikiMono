@@ -16,6 +16,7 @@ interface CommunityCall {
   timestamp: string;
   averageRating: number;
   voteCount: number;
+  commentCount: number;
 }
 
 const getControversyColor = (level: number) => {
