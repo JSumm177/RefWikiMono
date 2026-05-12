@@ -115,6 +115,67 @@ public class RulebookImportListener implements ServletContextListener {
             createTeam(session, sport, "Los Angeles Clippers", "LAC");
             createTeam(session, sport, "Phoenix Suns", "PHX");
             createTeam(session, sport, "Sacramento Kings", "SAC");
+        } else if ("MLB".equals(sportName)) {
+            createTeam(session, sport, "Arizona Diamondbacks", "ARI");
+            createTeam(session, sport, "Atlanta Braves", "ATL");
+            createTeam(session, sport, "Baltimore Orioles", "BAL");
+            createTeam(session, sport, "Boston Red Sox", "BOS");
+            createTeam(session, sport, "Chicago Cubs", "CHC");
+            createTeam(session, sport, "Chicago White Sox", "CWS");
+            createTeam(session, sport, "Cincinnati Reds", "CIN");
+            createTeam(session, sport, "Cleveland Guardians", "CLE");
+            createTeam(session, sport, "Colorado Rockies", "COL");
+            createTeam(session, sport, "Detroit Tigers", "DET");
+            createTeam(session, sport, "Houston Astros", "HOU");
+            createTeam(session, sport, "Kansas City Royals", "KC");
+            createTeam(session, sport, "Los Angeles Angels", "LAA");
+            createTeam(session, sport, "Los Angeles Dodgers", "LAD");
+            createTeam(session, sport, "Miami Marlins", "MIA");
+            createTeam(session, sport, "Milwaukee Brewers", "MIL");
+            createTeam(session, sport, "Minnesota Twins", "MIN");
+            createTeam(session, sport, "New York Mets", "NYM");
+            createTeam(session, sport, "New York Yankees", "NYY");
+            createTeam(session, sport, "Oakland Athletics", "OAK");
+            createTeam(session, sport, "Philadelphia Phillies", "PHI");
+            createTeam(session, sport, "Pittsburgh Pirates", "PIT");
+            createTeam(session, sport, "San Diego Padres", "SD");
+            createTeam(session, sport, "San Francisco Giants", "SF");
+            createTeam(session, sport, "Seattle Mariners", "SEA");
+            createTeam(session, sport, "St. Louis Cardinals", "STL");
+            createTeam(session, sport, "Tampa Bay Rays", "TB");
+            createTeam(session, sport, "Texas Rangers", "TEX");
+            createTeam(session, sport, "Toronto Blue Jays", "TOR");
+            createTeam(session, sport, "Washington Nationals", "WSH");
+        } else if ("MLS".equals(sportName)) {
+            createTeam(session, sport, "Atlanta United FC", "ATL");
+            createTeam(session, sport, "Austin FC", "ATX");
+            createTeam(session, sport, "Charlotte FC", "CLT");
+            createTeam(session, sport, "Chicago Fire FC", "CHI");
+            createTeam(session, sport, "FC Cincinnati", "CIN");
+            createTeam(session, sport, "Colorado Rapids", "COL");
+            createTeam(session, sport, "Columbus Crew", "CLB");
+            createTeam(session, sport, "D.C. United", "DC");
+            createTeam(session, sport, "FC Dallas", "DAL");
+            createTeam(session, sport, "Houston Dynamo FC", "HOU");
+            createTeam(session, sport, "Sporting Kansas City", "SKC");
+            createTeam(session, sport, "LA Galaxy", "LA");
+            createTeam(session, sport, "Los Angeles FC", "LAFC");
+            createTeam(session, sport, "Inter Miami CF", "MIA");
+            createTeam(session, sport, "Minnesota United FC", "MIN");
+            createTeam(session, sport, "CF Montréal", "MTL");
+            createTeam(session, sport, "Nashville SC", "NSH");
+            createTeam(session, sport, "New England Revolution", "NE");
+            createTeam(session, sport, "New York Red Bulls", "NY");
+            createTeam(session, sport, "New York City FC", "NYC");
+            createTeam(session, sport, "Orlando City SC", "ORL");
+            createTeam(session, sport, "Philadelphia Union", "PHI");
+            createTeam(session, sport, "Portland Timbers", "POR");
+            createTeam(session, sport, "Real Salt Lake", "RSL");
+            createTeam(session, sport, "San Jose Earthquakes", "SJ");
+            createTeam(session, sport, "Seattle Sounders FC", "SEA");
+            createTeam(session, sport, "St. Louis City SC", "STL");
+            createTeam(session, sport, "Toronto FC", "TOR");
+            createTeam(session, sport, "Vancouver Whitecaps FC", "VAN");
         }
     }
 
