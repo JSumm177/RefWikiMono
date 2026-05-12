@@ -1,6 +1,7 @@
 # Summary
 
 * [Introduction](README.md)
+* [Project Status](PROJECT_STATUS.md)
 * [Social Features](SOCIAL_FEATURES.md)
 * [API Endpoints](API_ENDPOINTS.md)
 * [Manual Test Steps (General)](MANUAL_APP_TEST_STEPS.md)
