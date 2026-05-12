@@ -1,4 +1,4 @@
-import { searchRules } from '../utils/search';
+import { searchRules, getRuleByFullReference, __setCachedFlattened } from '../utils/search';
 
 // Mock fetch globally
 global.fetch = jest.fn();
@@ -38,4 +38,30 @@ describe('searchRules', () => {
     const results = await searchRules('NFL', 'basketball');
     expect(results).toEqual([]);
   });
+});
+
+describe('getRuleByFullReference', () => {
+    const mockRules = [
+        { id: 1, fullReference: 'Rule 1, Section 1', articleText: 'Text 1' } as any,
+        { id: 2, fullReference: 'Rule 2, Section 1', articleText: 'Text 2' } as any,
+    ];
+
+    beforeEach(() => {
+        __setCachedFlattened(mockRules);
+    });
+
+    it('returns the rule when fullReference matches exactly', () => {
+        const result = getRuleByFullReference('Rule 1, Section 1');
+        expect(result).toEqual(mockRules[0]);
+    });
+
+    it('returns undefined when no match is found', () => {
+        const result = getRuleByFullReference('Rule 3, Section 1');
+        expect(result).toBeUndefined();
+    });
+
+    it('returns undefined for an empty string', () => {
+        const result = getRuleByFullReference('');
+        expect(result).toBeUndefined();
+    });
 });

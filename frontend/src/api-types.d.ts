@@ -77,3 +77,9 @@ export interface ProfileDto {
     reputationScore: number;
     bio: string;
 }
+
+export interface BookmarkDto {
+    sport: string;
+    fullReference: string;
+    articleId: number;
+}

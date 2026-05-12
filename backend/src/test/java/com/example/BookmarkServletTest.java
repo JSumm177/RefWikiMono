@@ -34,6 +34,7 @@ public class BookmarkServletTest {
     @BeforeAll
     public static void setupDb() {
         TestDatabaseUtil.startDatabase();
+        JwtUtil.setSecretForTesting("super_secret_key_for_testing_purposes_only_12345");
     }
 
     @BeforeEach
@@ -82,9 +83,29 @@ public class BookmarkServletTest {
     @Test
     public void testGetBookmarks() throws Exception {
         mockAuth();
+        
+        // Add a bookmark first
+        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            User user = session.createQuery("FROM User WHERE email = 'user@example.com'", User.class).uniqueResult();
+            Bookmark b = new Bookmark();
+            b.setUser(user);
+            b.setSport("NFL");
+            b.setFullReference("Rule 1");
+            b.setArticleId(10L);
+            session.persist(b);
+            tx.commit();
+        }
+
         bookmarkServlet.doGet(request, response);
         verify(response).setContentType("application/json");
-        List results = mapper.readValue(responseWriter.toString(), List.class);
-        assertEquals(0, results.size());
+        
+        List<BookmarkDto> results = mapper.readValue(responseWriter.toString(), 
+            mapper.getTypeFactory().constructCollectionType(List.class, BookmarkDto.class));
+        
+        assertEquals(1, results.size());
+        assertEquals("NFL", results.get(0).sport);
+        assertEquals("Rule 1", results.get(0).fullReference);
+        assertEquals(10L, results.get(0).articleId);
     }
 }
