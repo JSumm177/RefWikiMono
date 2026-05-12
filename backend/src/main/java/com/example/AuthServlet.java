@@ -123,25 +123,23 @@ public class AuthServlet extends HttpServlet {
                         .setParameter("email", authReq.email)
                         .uniqueResult();
 
+                // Hash password always to prevent timing attacks
+                String hash = BCrypt.hashpw(authReq.password, BCrypt.gensalt());
+
                 if (count != null && count > 0) {
-                    logger.warn("Registration failed: User already exists for email {}", authReq.email);
-                    resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                    responseJson.error = "User already exists";
-                    resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                    logger.info("Registration request for existing email: {}", authReq.email);
                     transaction.rollback();
-                    return;
+                } else {
+                    // Insert new user
+                    User newUser = new User();
+                    newUser.setEmail(authReq.email);
+                    newUser.setPasswordHash(hash);
+
+                    session.persist(newUser);
+                    transaction.commit();
+                    logger.info("User registered successfully: {}", authReq.email);
                 }
 
-                // Hash password and insert
-                String hash = BCrypt.hashpw(authReq.password, BCrypt.gensalt());
-                User newUser = new User();
-                newUser.setEmail(authReq.email);
-                newUser.setPasswordHash(hash);
-
-                session.persist(newUser);
-                transaction.commit();
-
-                logger.info("User registered successfully: {}", authReq.email);
                 resp.setStatus(HttpServletResponse.SC_CREATED);
                 responseJson.message = "User registered successfully";
                 resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
