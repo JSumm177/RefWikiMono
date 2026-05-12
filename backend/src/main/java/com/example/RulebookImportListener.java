@@ -209,6 +209,32 @@ public class RulebookImportListener implements ServletContextListener {
             createTeam(session, sport, "Vegas Golden Knights", "VGK");
             createTeam(session, sport, "Washington Capitals", "WSH");
             createTeam(session, sport, "Winnipeg Jets", "WPG");
+        } else if ("NCAA".equals(sportName)) {
+            createTeam(session, sport, "Alabama Crimson Tide", "ALA");
+            createTeam(session, sport, "Georgia Bulldogs", "UGA");
+            createTeam(session, sport, "Ohio State Buckeyes", "OSU");
+            createTeam(session, sport, "Texas Longhorns", "TEX");
+            createTeam(session, sport, "Michigan Wolverines", "MICH");
+            createTeam(session, sport, "Notre Dame Fighting Irish", "ND");
+            createTeam(session, sport, "Oregon Ducks", "ORE");
+            createTeam(session, sport, "Penn State Nittany Lions", "PSU");
+            createTeam(session, sport, "LSU Tigers", "LSU");
+            createTeam(session, sport, "Florida State Seminoles", "FSU");
+            createTeam(session, sport, "Clemson Tigers", "CLEM");
+            createTeam(session, sport, "Tennessee Volunteers", "TENN");
+            createTeam(session, sport, "Oklahoma Sooners", "OKLA");
+            createTeam(session, sport, "USC Trojans", "USC");
+            createTeam(session, sport, "Auburn Tigers", "AUB");
+            createTeam(session, sport, "Texas A&M Aggies", "TAMU");
+            createTeam(session, sport, "Washington Huskies", "WASH");
+            createTeam(session, sport, "Florida Gators", "FLA");
+            createTeam(session, sport, "Miami Hurricanes", "MIAMI");
+            createTeam(session, sport, "Ole Miss Rebels", "MISS");
+            createTeam(session, sport, "Missouri Tigers", "MIZZ");
+            createTeam(session, sport, "Utah Utes", "UTAH");
+            createTeam(session, sport, "Oklahoma State Cowboys", "OKST");
+            createTeam(session, sport, "Kansas State Wildcats", "KSU");
+            createTeam(session, sport, "Arizona Wildcats", "ARIZ");
         }
     }
 
