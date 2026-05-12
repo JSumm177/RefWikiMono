@@ -27,16 +27,10 @@ The application uses JSON Web Tokens (JWT) for authentication.
           "message": "User registered successfully"
         }
         ```
-    *   **Error (400 Bad Request):** Missing email or password.
+    *   **Error (400 Bad Request):** Missing email or password, or password does not meet complexity requirements.
         ```json
         {
-          "error": "Email and password are required"
-        }
-        ```
-    *   **Error (409 Conflict):** User already exists.
-        ```json
-        {
-          "error": "User already exists"
+          "error": "Error message details"
         }
         ```
     *   **Error (500 Internal Server Error):** Registration failed due to a server error.
