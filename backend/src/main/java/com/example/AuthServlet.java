@@ -20,6 +20,8 @@ public class AuthServlet extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthServlet.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
+    // A pre-computed dummy hash to prevent timing attacks during login
+    private static final String DUMMY_HASH = "$2a$10$6g4ScPKIKIamkJChxTs24evwsxes5dsT0WuMuA3eiIzSzfqbvVqtG";
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -208,6 +210,8 @@ public class AuthServlet extends HttpServlet {
                         logger.warn("Login failed: Invalid password for {}", authReq.email);
                     }
                 } else {
+                    // Timing attack mitigation: verify password against a dummy hash to normalize response times
+                    BCrypt.checkpw(authReq.password, DUMMY_HASH);
                     logger.warn("Login failed: User not found for {}", authReq.email);
                 }
             }
