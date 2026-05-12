@@ -15,13 +15,14 @@ public class CorsFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
 
         String origin = req.getHeader("Origin");
-        String allowedOrigins = System.getenv("ALLOWED_ORIGINS");
+        String allowedOriginsEnv = System.getenv("ALLOWED_ORIGINS");
         
-        if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
-            String[] origins = allowedOrigins.split(",");
+        if (origin != null && allowedOriginsEnv != null && !allowedOriginsEnv.isEmpty()) {
+            String[] origins = allowedOriginsEnv.split(",");
             boolean isAllowed = false;
             for (String o : origins) {
-                if (o.trim().equalsIgnoreCase(origin)) {
+                String trimmed = o.trim();
+                if (trimmed.equals("*") || trimmed.equalsIgnoreCase(origin)) {
                     isAllowed = true;
                     break;
                 }

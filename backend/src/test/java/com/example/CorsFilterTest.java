@@ -33,14 +33,7 @@ class CorsFilterTest {
     }
 
     @Test
-    void testCorsHeadersForAllowedOrigin() throws IOException, ServletException {
-        // Set environment variable via mock/reflection is tricky in Java without powermock.
-        // For standard testing of CorsFilter, if we can't inject environment easily,
-        // we might be restricted. Let's try mocking system env or just acknowledging
-        // we need to set the environment variable for tests if using surefire,
-        // but wait, System.getenv is used.
-        // Actually, we can test the fallback/missing env case easily.
-
+    void testCorsHeadersForDisallowedOrigin() throws IOException, ServletException {
         when(request.getHeader("Origin")).thenReturn("https://evil.com");
         when(request.getMethod()).thenReturn("GET");
 
@@ -49,6 +42,17 @@ class CorsFilterTest {
         verify(response, never()).setHeader(eq("Access-Control-Allow-Origin"), anyString());
         verify(response).setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS");
         verify(response).setHeader("Access-Control-Allow-Credentials", "true");
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    void testNoOriginHeader() throws IOException, ServletException {
+        when(request.getHeader("Origin")).thenReturn(null);
+        when(request.getMethod()).thenReturn("GET");
+
+        filter.doFilter(request, response, chain);
+
+        verify(response, never()).setHeader(eq("Access-Control-Allow-Origin"), anyString());
         verify(chain).doFilter(request, response);
     }
 
