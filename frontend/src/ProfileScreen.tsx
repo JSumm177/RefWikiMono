@@ -7,6 +7,7 @@ const ProfileScreen: React.FC = () => {
     const [editData, setEditData] = useState<Partial<ProfileDto>>({});
     const [isLoading, setIsLoading] = useState(true);
     const [message, setMessage] = useState('');
+    const sports = ['NFL', 'NCAA', 'NBA', 'MLB', 'NHL', 'MLS'];
 
     const fetchProfile = async () => {
         try {
@@ -119,8 +120,14 @@ const ProfileScreen: React.FC = () => {
                         </div>
 
                         <div style={{ marginBottom: '20px' }}>
-                            <label style={{ fontSize: '0.8em', color: '#999', fontWeight: 'bold' }}>HOME TEAM</label>
-                            <div style={{ fontSize: '1.1em' }}>{profile.homeTeam || 'Not set'}</div>
+                            <label style={{ fontSize: '0.8em', color: '#999', fontWeight: 'bold' }}>HOME TEAMS</label>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginTop: '5px' }}>
+                                {sports.map(sport => (
+                                    <div key={sport} style={{ padding: '8px', backgroundColor: '#f0f0f0', borderRadius: '4px', fontSize: '0.9em' }}>
+                                        <strong>{sport}:</strong> {profile.homeTeams[sport] || '—'}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         <div style={{ marginBottom: '20px' }}>
@@ -142,12 +149,22 @@ const ProfileScreen: React.FC = () => {
                             onChange={e => setEditData({...editData, displayName: e.target.value})}
                         />
 
-                        <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Home Team</label>
-                        <input
-                            style={inputStyle}
-                            value={editData.homeTeam || ''}
-                            onChange={e => setEditData({...editData, homeTeam: e.target.value})}
-                        />
+                        <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '10px' }}>Home Teams by Sport</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '20px' }}>
+                            {sports.map(sport => (
+                                <div key={sport}>
+                                    <label style={{ fontSize: '0.7em', color: '#666' }}>{sport}</label>
+                                    <input
+                                        style={{ ...inputStyle, marginBottom: 0 }}
+                                        value={editData.homeTeams?.[sport] || ''}
+                                        onChange={e => setEditData({
+                                            ...editData,
+                                            homeTeams: { ...editData.homeTeams, [sport]: e.target.value }
+                                        })}
+                                    />
+                                </div>
+                            ))}
+                        </div>
 
                         <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Role</label>
                         <select

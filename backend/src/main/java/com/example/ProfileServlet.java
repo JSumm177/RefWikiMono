@@ -14,6 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @WebServlet("/api/profile/*")
 public class ProfileServlet extends HttpServlet {
@@ -31,7 +35,6 @@ public class ProfileServlet extends HttpServlet {
                     .uniqueResult();
 
             if (profile == null) {
-                // Create a default profile if it doesn't exist
                 Transaction tx = session.beginTransaction();
                 profile = new UserProfile();
                 profile.setUser(user);
@@ -40,8 +43,15 @@ public class ProfileServlet extends HttpServlet {
                 tx.commit();
             }
 
+            List<UserHomeTeam> homeTeams = session.createQuery("FROM UserHomeTeam WHERE user.id = :userId", UserHomeTeam.class)
+                    .setParameter("userId", user.getId())
+                    .list();
+
+            Map<String, String> teamsMap = homeTeams.stream()
+                    .collect(Collectors.toMap(uht -> uht.getSport().getName(), UserHomeTeam::getTeamName));
+
             resp.setContentType("application/json");
-            resp.getWriter().print(objectMapper.writeValueAsString(ProfileDto.fromEntity(profile)));
+            resp.getWriter().print(objectMapper.writeValueAsString(ProfileDto.fromEntity(profile, teamsMap)));
         } catch (Exception e) {
             logger.error("Failed to fetch profile", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -70,16 +80,49 @@ public class ProfileServlet extends HttpServlet {
                 }
 
                 if (profileReq.displayName != null) profile.setDisplayName(profileReq.displayName);
-                if (profileReq.homeTeam != null) profile.setHomeTeam(profileReq.homeTeam);
                 if (profileReq.roleType != null) profile.setRoleType(profileReq.roleType);
                 if (profileReq.bio != null) profile.setBio(profileReq.bio);
                 profile.setUpdatedAt(LocalDateTime.now());
-
                 session.persist(profile);
+
+                // Handle Multiple Home Teams
+                if (profileReq.homeTeams != null) {
+                    for (Map.Entry<String, String> entry : profileReq.homeTeams.entrySet()) {
+                        String sportName = entry.getKey().toUpperCase();
+                        String teamName = entry.getValue();
+
+                        Sport sport = session.createQuery("FROM Sport WHERE name = :name", Sport.class)
+                                .setParameter("name", sportName)
+                                .uniqueResult();
+                        
+                        if (sport != null) {
+                            UserHomeTeam uht = session.createQuery("FROM UserHomeTeam WHERE user.id = :userId AND sport.id = :sportId", UserHomeTeam.class)
+                                    .setParameter("userId", user.getId())
+                                    .setParameter("sportId", sport.getId())
+                                    .uniqueResult();
+                            
+                            if (uht == null) {
+                                uht = new UserHomeTeam();
+                                uht.setUser(user);
+                                uht.setSport(sport);
+                            }
+                            uht.setTeamName(teamName);
+                            session.persist(uht);
+                        }
+                    }
+                }
+
                 tx.commit();
 
+                // Re-fetch everything to return consistent state
+                List<UserHomeTeam> updatedTeams = session.createQuery("FROM UserHomeTeam WHERE user.id = :userId", UserHomeTeam.class)
+                        .setParameter("userId", user.getId())
+                        .list();
+                Map<String, String> teamsMap = updatedTeams.stream()
+                        .collect(Collectors.toMap(uht -> uht.getSport().getName(), UserHomeTeam::getTeamName));
+
                 resp.setContentType("application/json");
-                resp.getWriter().print(objectMapper.writeValueAsString(ProfileDto.fromEntity(profile)));
+                resp.getWriter().print(objectMapper.writeValueAsString(ProfileDto.fromEntity(profile, teamsMap)));
             }
         } catch (Exception e) {
             logger.error("Failed to update profile", e);

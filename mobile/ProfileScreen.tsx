@@ -5,7 +5,7 @@ import { AuthContext } from './AuthContext';
 
 interface Profile {
   displayName: string;
-  homeTeam: string;
+  homeTeams: Record<string, string>;
   roleType: string;
   reputationScore: number;
   bio: string;
@@ -17,6 +17,7 @@ const ProfileScreen = () => {
   const [editData, setEditData] = useState<Partial<Profile>>({});
   const [isLoading, setIsLoading] = useState(true);
   const { userToken, signOut } = useContext(AuthContext);
+  const sports = ['NFL', 'NCAA', 'NBA', 'MLB', 'NHL', 'MLS'];
 
   const fetchProfile = async () => {
     try {
@@ -87,8 +88,14 @@ const ProfileScreen = () => {
             <Text style={styles.badgeText}>{profile?.roleType}</Text>
           </View>
 
-          <Text style={styles.label}>Home Team</Text>
-          <Text style={styles.value}>{profile?.homeTeam || 'Not set'}</Text>
+          <Text style={styles.label}>Home Teams</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {sports.map(sport => (
+              <View key={sport} style={styles.sportBadge}>
+                <Text style={styles.sportText}>{sport}: {profile?.homeTeams[sport] || '—'}</Text>
+              </View>
+            ))}
+          </View>
 
           <Text style={styles.label}>Reputation</Text>
           <Text style={styles.repValue}>⭐ {profile?.reputationScore}</Text>
@@ -109,12 +116,20 @@ const ProfileScreen = () => {
             onChangeText={(val) => setEditData({ ...editData, displayName: val })}
           />
 
-          <Text style={styles.label}>Home Team</Text>
-          <TextInput
-            style={styles.input}
-            value={editData.homeTeam}
-            onChangeText={(val) => setEditData({ ...editData, homeTeam: val })}
-          />
+          <Text style={styles.label}>Home Teams</Text>
+          {sports.map(sport => (
+            <View key={sport} style={{ marginBottom: 10 }}>
+              <Text style={{ fontSize: 10, color: '#666' }}>{sport}</Text>
+              <TextInput
+                style={[styles.input, { paddingVertical: 8 }]}
+                value={editData.homeTeams?.[sport] || ''}
+                onChangeText={(val) => setEditData({
+                  ...editData,
+                  homeTeams: { ...editData.homeTeams, [sport]: val }
+                })}
+              />
+            </View>
+          ))}
 
           <Text style={styles.label}>Bio</Text>
           <TextInput
@@ -198,6 +213,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  sportBadge: {
+    backgroundColor: '#eee',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  sportText: {
+    fontSize: 12,
+    color: '#444',
   },
   input: {
     borderWidth: 1,

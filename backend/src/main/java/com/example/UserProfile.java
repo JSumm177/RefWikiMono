@@ -17,9 +17,6 @@ public class UserProfile {
     @Column(name = "display_name")
     private String displayName;
 
-    @Column(name = "home_team")
-    private String homeTeam;
-
     @Column(name = "role_type", nullable = false)
     private String roleType = "FAN";
 
@@ -43,8 +40,6 @@ public class UserProfile {
     public void setUser(User user) { this.user = user; }
     public String getDisplayName() { return displayName; }
     public void setDisplayName(String displayName) { this.displayName = displayName; }
-    public String getHomeTeam() { return homeTeam; }
-    public void setHomeTeam(String homeTeam) { this.homeTeam = homeTeam; }
     public String getRoleType() { return roleType; }
     public void setRoleType(String roleType) { this.roleType = roleType; }
     public Integer getReputationScore() { return reputationScore; }

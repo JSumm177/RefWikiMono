@@ -72,7 +72,7 @@ export interface ProfileDto {
     userId: number;
     email: string;
     displayName: string;
-    homeTeam: string;
+    homeTeams: { [index: string]: string };
     roleType: string;
     reputationScore: number;
     bio: string;
