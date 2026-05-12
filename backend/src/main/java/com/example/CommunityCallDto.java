@@ -11,12 +11,13 @@ public class CommunityCallDto {
     public Integer originalControversy;
     public String notes;
     public String userName;
+    public String userRole;
     public String timestamp;
     public Double averageRating;
     public Long voteCount;
     public Long commentCount;
 
-    public static CommunityCallDto fromEntity(CallLog call, Double avg, Long count, Long comments) {
+    public static CommunityCallDto fromEntity(CallLog call, Double avg, Long count, Long comments, String role) {
         CommunityCallDto dto = new CommunityCallDto();
         dto.id = call.getId();
         dto.sport = call.getSport();
@@ -25,7 +26,8 @@ public class CommunityCallDto {
         dto.ruleReference = call.getRuleReference();
         dto.originalControversy = call.getControversyLevel();
         dto.notes = call.getNotes();
-        dto.userName = call.getUser().getEmail().split("@")[0]; // Privacy: only show first part of email
+        dto.userName = call.getUser().getEmail().split("@")[0];
+        dto.userRole = role != null ? role : "FAN";
         dto.timestamp = call.getTimestamp().toString();
         dto.averageRating = avg != null ? avg : call.getControversyLevel().doubleValue();
         dto.voteCount = count;

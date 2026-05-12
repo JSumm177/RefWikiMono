@@ -49,6 +49,7 @@ export interface CommunityCallDto {
     originalControversy: number;
     notes: string;
     userName: string;
+    userRole: string;
     timestamp: string;
     averageRating: number;
     voteCount: number;
@@ -58,10 +59,21 @@ export interface CommunityCallDto {
 export interface CommentDto {
     id: number;
     userName: string;
+    userRole: string;
     text: string;
     createdAt: string;
 }
 
 export interface CommentRequest {
     text: string;
+}
+
+export interface ProfileDto {
+    userId: number;
+    email: string;
+    displayName: string;
+    homeTeam: string;
+    roleType: string;
+    reputationScore: number;
+    bio: string;
 }

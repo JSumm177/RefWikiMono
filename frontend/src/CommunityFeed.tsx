@@ -86,6 +86,18 @@ const CommunityFeed: React.FC = () => {
 
                         <div style={{ margin: '15px 0', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '4px', fontStyle: 'italic' }}>
                             "{call.notes}" — <strong>{call.userName}</strong>
+                            <span style={{
+                                marginLeft: '10px',
+                                fontSize: '0.7em',
+                                padding: '2px 8px',
+                                backgroundColor: 'var(--accent)',
+                                color: '#fff',
+                                borderRadius: '10px',
+                                verticalAlign: 'middle',
+                                fontWeight: 'bold'
+                            }}>
+                                {call.userRole}
+                            </span>
                         </div>
 
                         <div style={{ borderTop: '1px solid #eee', paddingTop: '15px' }}>

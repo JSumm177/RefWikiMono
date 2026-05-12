@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @WebServlet("/api/comments/*")
@@ -36,13 +37,19 @@ public class CommentServlet extends HttpServlet {
         try {
             Long callId = Long.parseLong(pathInfo.substring(1));
             try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
-                List<Comment> comments = session.createQuery("FROM Comment WHERE call.id = :callId ORDER BY createdAt ASC", Comment.class)
+                String hql = "SELECT c, p.roleType FROM Comment c " +
+                             "LEFT JOIN UserProfile p ON p.user.id = c.user.id " +
+                             "WHERE c.call.id = :callId " +
+                             "ORDER BY c.createdAt ASC";
+                
+                List<Object[]> results = session.createQuery(hql, Object[].class)
                         .setParameter("callId", callId)
                         .list();
 
-                List<CommentDto> dtos = comments.stream()
-                        .map(CommentDto::fromEntity)
-                        .collect(Collectors.toList());
+                List<CommentDto> dtos = new ArrayList<>();
+                for (Object[] row : results) {
+                    dtos.add(CommentDto.fromEntity((Comment)row[0], (String)row[1]));
+                }
 
                 resp.setContentType("application/json");
                 resp.getWriter().print(objectMapper.writeValueAsString(dtos));
@@ -90,9 +97,16 @@ public class CommentServlet extends HttpServlet {
                 session.persist(comment);
                 tx.commit();
 
+                // Fetch the role for the response DTO
+                String role = "FAN";
+                UserProfile profile = session.createQuery("FROM UserProfile WHERE user.id = :uId", UserProfile.class)
+                        .setParameter("uId", user.getId())
+                        .uniqueResult();
+                if (profile != null) role = profile.getRoleType();
+
                 resp.setStatus(HttpServletResponse.SC_CREATED);
                 resp.setContentType("application/json");
-                resp.getWriter().print(objectMapper.writeValueAsString(CommentDto.fromEntity(comment)));
+                resp.getWriter().print(objectMapper.writeValueAsString(CommentDto.fromEntity(comment, role)));
             }
         } catch (Exception e) {
             logger.error("Failed to add comment", e);

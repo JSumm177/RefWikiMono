@@ -197,6 +197,7 @@
                         <class>com.example.CommunityCallDto</class>
                         <class>com.example.CommentDto</class>
                         <class>com.example.CommentRequest</class>
+                        <class>com.example.ProfileDto</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../frontend/src/api-types.d.ts</outputFile>

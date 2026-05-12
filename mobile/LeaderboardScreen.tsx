@@ -9,6 +9,7 @@ interface CommunityCall {
   penaltyName: string;
   ruleReference: string;
   userName: string;
+  userRole: string;
   averageRating: number;
   voteCount: number;
 }

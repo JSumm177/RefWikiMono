@@ -40,9 +40,10 @@ public class LeaderboardServlet extends HttpServlet {
         String ruleRef = req.getParameter("ruleRef");
         try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
             // Get public calls with highest average controversy and at least 1 vote
-            String hql = "SELECT c, AVG(v.rating), COUNT(DISTINCT v.id), COUNT(DISTINCT com.id) FROM CallLog c " +
+            String hql = "SELECT c, AVG(v.rating), COUNT(DISTINCT v.id), COUNT(DISTINCT com.id), p.roleType FROM CallLog c " +
                          "JOIN CallVote v ON v.call.id = c.id " +
                          "LEFT JOIN Comment com ON com.call.id = c.id " +
+                         "LEFT JOIN UserProfile p ON p.user.id = c.user.id " +
                          "WHERE c.isPublic = true ";
             
             if (ruleRef != null && !ruleRef.isEmpty()) {
@@ -62,7 +63,7 @@ public class LeaderboardServlet extends HttpServlet {
             List<CommunityCallDto> dtos = new ArrayList<>();
             
             for (Object[] row : results) {
-                dtos.add(CommunityCallDto.fromEntity((CallLog)row[0], (Double)row[1], (Long)row[2], (Long)row[3]));
+                dtos.add(CommunityCallDto.fromEntity((CallLog)row[0], (Double)row[1], (Long)row[2], (Long)row[3], (String)row[4]));
             }
 
             resp.setContentType("application/json");

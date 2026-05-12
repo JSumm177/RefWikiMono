@@ -60,9 +60,10 @@ public class CallLogServlet extends HttpServlet {
     private void handleGetCommunity(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
             // Select public calls and calculate average ratings and comment counts
-            String hql = "SELECT c, AVG(v.rating), COUNT(DISTINCT v.id), COUNT(DISTINCT com.id) FROM CallLog c " +
+            String hql = "SELECT c, AVG(v.rating), COUNT(DISTINCT v.id), COUNT(DISTINCT com.id), p.roleType FROM CallLog c " +
                          "LEFT JOIN CallVote v ON v.call.id = c.id " +
                          "LEFT JOIN Comment com ON com.call.id = c.id " +
+                         "LEFT JOIN UserProfile p ON p.user.id = c.user.id " +
                          "WHERE c.isPublic = true " +
                          "GROUP BY c.id " +
                          "ORDER BY c.timestamp DESC";
@@ -71,7 +72,7 @@ public class CallLogServlet extends HttpServlet {
             List<CommunityCallDto> dtos = new ArrayList<>();
             
             for (Object[] row : results) {
-                dtos.add(CommunityCallDto.fromEntity((CallLog)row[0], (Double)row[1], (Long)row[2], (Long)row[3]));
+                dtos.add(CommunityCallDto.fromEntity((CallLog)row[0], (Double)row[1], (Long)row[2], (Long)row[3], (String)row[4]));
             }
 
             resp.setContentType("application/json");
@@ -87,9 +88,10 @@ public class CallLogServlet extends HttpServlet {
         try {
             Long id = Long.parseLong(idStr);
             try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
-                String hql = "SELECT c, AVG(v.rating), COUNT(DISTINCT v.id), COUNT(DISTINCT com.id) FROM CallLog c " +
+                String hql = "SELECT c, AVG(v.rating), COUNT(DISTINCT v.id), COUNT(DISTINCT com.id), p.roleType FROM CallLog c " +
                              "LEFT JOIN CallVote v ON v.call.id = c.id " +
                              "LEFT JOIN Comment com ON com.call.id = c.id " +
+                             "LEFT JOIN UserProfile p ON p.user.id = c.user.id " +
                              "WHERE c.id = :id AND c.isPublic = true " +
                              "GROUP BY c.id";
                 
@@ -102,7 +104,7 @@ public class CallLogServlet extends HttpServlet {
                     return;
                 }
 
-                CommunityCallDto dto = CommunityCallDto.fromEntity((CallLog)result[0], (Double)result[1], (Long)result[2], (Long)result[3]);
+                CommunityCallDto dto = CommunityCallDto.fromEntity((CallLog)result[0], (Double)result[1], (Long)result[2], (Long)result[3], (String)result[4]);
                 resp.setContentType("application/json");
                 resp.getWriter().print(objectMapper.writeValueAsString(dto));
             }
@@ -147,9 +149,16 @@ public class CallLogServlet extends HttpServlet {
                 session.persist(call);
                 transaction.commit();
                 
+                // Fetch role for DTO
+                String role = "FAN";
+                UserProfile profile = session.createQuery("FROM UserProfile WHERE user.id = :uId", UserProfile.class)
+                        .setParameter("uId", user.getId())
+                        .uniqueResult();
+                if (profile != null) role = profile.getRoleType();
+
                 resp.setStatus(HttpServletResponse.SC_CREATED);
                 resp.setContentType("application/json");
-                resp.getWriter().print(objectMapper.writeValueAsString(call));
+                resp.getWriter().print(objectMapper.writeValueAsString(CommunityCallDto.fromEntity(call, null, 0L, 0L, role)));
             }
         } catch (Exception e) {
             logger.error("Failed to log call", e);

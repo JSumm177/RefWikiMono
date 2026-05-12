@@ -11,8 +11,8 @@ Snapshots:   0 total
 Time:        0 s, estimated 3 s
 ████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
  RUNS  __tests__/App.test.tsx
- RUNS  __tests__/RegisterScreen.test.tsx
  RUNS  __tests__/AuthContext.test.tsx
+ RUNS  __tests__/RegisterScreen.test.tsx
  RUNS  __tests__/search.test.ts
 
 Test Suites: 0 of 4 total
@@ -22,8 +22,8 @@ Time:        0 s, estimated 3 s
 ████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1APASS __tests__/search.test.ts
 
  RUNS  __tests__/App.test.tsx
- RUNS  __tests__/RegisterScreen.test.tsx
  RUNS  __tests__/AuthContext.test.tsx
+ RUNS  __tests__/RegisterScreen.test.tsx
  RUNS  __tests__/search.test.ts
 
 Test Suites: 0 of 4 total
@@ -32,8 +32,8 @@ Snapshots:   0 total
 Time:        0 s, estimated 3 s
 ████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
  RUNS  __tests__/App.test.tsx
- RUNS  __tests__/RegisterScreen.test.tsx
  RUNS  __tests__/AuthContext.test.tsx
+ RUNS  __tests__/RegisterScreen.test.tsx
  RUNS  __tests__/search.test.ts
 
 Test Suites: 0 of 4 total
@@ -42,8 +42,17 @@ Snapshots:   0 total
 Time:        0 s, estimated 3 s
 ████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
  RUNS  __tests__/App.test.tsx
- RUNS  __tests__/RegisterScreen.test.tsx
  RUNS  __tests__/AuthContext.test.tsx
+ RUNS  __tests__/RegisterScreen.test.tsx
+
+Test Suites: 1 passed, 1 of 4 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        0 s, estimated 3 s
+████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
+ RUNS  __tests__/App.test.tsx
+ RUNS  __tests__/AuthContext.test.tsx
+ RUNS  __tests__/RegisterScreen.test.tsx
 
 Test Suites: 1 passed, 1 of 4 total
 Tests:       3 passed, 3 total
@@ -51,17 +60,8 @@ Snapshots:   0 total
 Time:        1 s, estimated 3 s
 ████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
  RUNS  __tests__/App.test.tsx
- RUNS  __tests__/RegisterScreen.test.tsx
  RUNS  __tests__/AuthContext.test.tsx
-
-Test Suites: 1 passed, 1 of 4 total
-Tests:       4 passed, 4 total
-Snapshots:   0 total
-Time:        1 s, estimated 3 s
-████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
- RUNS  __tests__/App.test.tsx
  RUNS  __tests__/RegisterScreen.test.tsx
- RUNS  __tests__/AuthContext.test.tsx
 
 Test Suites: 1 passed, 1 of 4 total
 Tests:       6 passed, 6 total
@@ -70,8 +70,8 @@ Time:        1 s, estimated 3 s
 ████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1APASS __tests__/RegisterScreen.test.tsx
 
  RUNS  __tests__/App.test.tsx
- RUNS  __tests__/RegisterScreen.test.tsx
  RUNS  __tests__/AuthContext.test.tsx
+ RUNS  __tests__/RegisterScreen.test.tsx
 
 Test Suites: 1 passed, 1 of 4 total
 Tests:       6 passed, 6 total
@@ -117,8 +117,8 @@ Time:        1 s, estimated 3 s
 
 
  RUNS  __tests__/App.test.tsx
- RUNS  __tests__/RegisterScreen.test.tsx
  RUNS  __tests__/AuthContext.test.tsx
+ RUNS  __tests__/RegisterScreen.test.tsx
 
 Test Suites: 1 passed, 1 of 4 total
 Tests:       6 passed, 6 total
@@ -147,23 +147,18 @@ Time:        1 s, estimated 3 s
 Test Suites: 3 passed, 3 of 4 total
 Tests:       12 passed, 12 total
 Snapshots:   0 total
-Time:        2 s, estimated 3 s
-████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A
- RUNS  __tests__/App.test.tsx
-
-Test Suites: 3 passed, 3 of 4 total
-Tests:       12 passed, 12 total
-Snapshots:   0 total
-Time:        3 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1APASS __tests__/App.test.tsx
+Time:        1 s, estimated 3 s
+████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1APASS __tests__/App.test.tsx
 
  RUNS  __tests__/App.test.tsx
 
 Test Suites: 3 passed, 3 of 4 total
 Tests:       12 passed, 12 total
 Snapshots:   0 total
-Time:        3 s[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[999D[K
+Time:        1 s, estimated 3 s
+████████████████████████████████████████[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[999D[K
 Test Suites: 4 passed, 4 total
 Tests:       13 passed, 13 total
 Snapshots:   0 total
-Time:        3.196 s
+Time:        1.566 s, estimated 3 s
 Ran all test suites.

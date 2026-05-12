@@ -6,6 +6,7 @@ import { AuthContext } from './AuthContext';
 interface Comment {
   id: number;
   userName: string;
+  userRole: string;
   text: string;
   createdAt: string;
 }
@@ -17,6 +18,7 @@ interface CommunityCall {
   penaltyName: string;
   ruleReference: string;
   userName: string;
+  userRole: string;
   notes: string;
   averageRating: number;
   voteCount: number;

@@ -13,6 +13,7 @@ import RuleDetailScreen from './RuleDetailScreen';
 import CallDetailScreen from './CallDetailScreen';
 import CommunityFeed from './CommunityFeed';
 import LeaderboardScreen from './LeaderboardScreen';
+import ProfileScreen from './ProfileScreen';
 import { searchRules, SearchableRule } from './utils/search';
 
 const Stack = createNativeStackNavigator();
@@ -207,8 +208,8 @@ const MainTabNavigator = () => {
       <Tab.Screen name="Search" component={SearchScreen} />
       <Tab.Screen name="Community" component={CommunityFeed} />
       <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Log Call" component={LogCallScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
 };

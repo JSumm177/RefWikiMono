@@ -12,6 +12,7 @@ interface CommunityCall {
   originalControversy: number;
   notes: string;
   userName: string;
+  userRole: string;
   timestamp: string;
   averageRating: number;
   voteCount: number;
@@ -104,7 +105,12 @@ const CommunityFeed = ({ navigation }: any) => {
 
             <View style={styles.quoteBox}>
               <Text style={styles.quoteText}>"{item.notes}"</Text>
-              <Text style={styles.quoteAuthor}>— {item.userName}</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 5 }}>
+                  <Text style={styles.quoteAuthor}>— {item.userName}</Text>
+                  <View style={[styles.badge, { marginLeft: 8 }]}>
+                    <Text style={styles.badgeText}>{item.userRole}</Text>
+                  </View>
+              </View>
             </View>
 
             <Text style={styles.votePrompt}>How would you rate this call?</Text>
@@ -212,6 +218,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   voteButtonText: {
+    fontWeight: 'bold',
+  },
+  badge: {
+    backgroundColor: '#aa3bff',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 10,
     fontWeight: 'bold',
   },
 });

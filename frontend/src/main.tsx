@@ -9,6 +9,7 @@ import SearchScreen from './SearchScreen.tsx'
 import LogCallScreen from './LogCallScreen.tsx'
 import CommunityFeed from './CommunityFeed.tsx'
 import LeaderboardScreen from './LeaderboardScreen.tsx'
+import ProfileScreen from './ProfileScreen.tsx'
 import CallDetailScreen from './CallDetailScreen.tsx'
 import RuleDetailScreen from './RuleDetailScreen.tsx'
 import Header from './Header.tsx'
@@ -44,6 +45,7 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="search" element={<SearchScreen />} />
                 <Route path="community" element={<CommunityFeed />} />
                 <Route path="leaderboard" element={<LeaderboardScreen />} />
+                <Route path="profile" element={<ProfileScreen />} />
                 <Route path="call/:id" element={<CallDetailScreen />} />
                 <Route path="log-call" element={<LogCallScreen />} />
                 <Route path="rule/:id" element={<RuleDetailScreen />} />
