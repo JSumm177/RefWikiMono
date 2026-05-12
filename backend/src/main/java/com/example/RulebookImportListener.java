@@ -176,6 +176,39 @@ public class RulebookImportListener implements ServletContextListener {
             createTeam(session, sport, "St. Louis City SC", "STL");
             createTeam(session, sport, "Toronto FC", "TOR");
             createTeam(session, sport, "Vancouver Whitecaps FC", "VAN");
+        } else if ("NHL".equals(sportName)) {
+            createTeam(session, sport, "Anaheim Ducks", "ANA");
+            createTeam(session, sport, "Boston Bruins", "BOS");
+            createTeam(session, sport, "Buffalo Sabres", "BUF");
+            createTeam(session, sport, "Calgary Flames", "CGY");
+            createTeam(session, sport, "Carolina Hurricanes", "CAR");
+            createTeam(session, sport, "Chicago Blackhawks", "CHI");
+            createTeam(session, sport, "Colorado Avalanche", "COL");
+            createTeam(session, sport, "Columbus Blue Jackets", "CBJ");
+            createTeam(session, sport, "Dallas Stars", "DAL");
+            createTeam(session, sport, "Detroit Red Wings", "DET");
+            createTeam(session, sport, "Edmonton Oilers", "EDM");
+            createTeam(session, sport, "Florida Panthers", "FLA");
+            createTeam(session, sport, "Los Angeles Kings", "LAK");
+            createTeam(session, sport, "Minnesota Wild", "MIN");
+            createTeam(session, sport, "Montreal Canadiens", "MTL");
+            createTeam(session, sport, "Nashville Predators", "NSH");
+            createTeam(session, sport, "New Jersey Devils", "NJD");
+            createTeam(session, sport, "New York Islanders", "NYI");
+            createTeam(session, sport, "New York Rangers", "NYR");
+            createTeam(session, sport, "Ottawa Senators", "OTT");
+            createTeam(session, sport, "Philadelphia Flyers", "PHI");
+            createTeam(session, sport, "Pittsburgh Penguins", "PIT");
+            createTeam(session, sport, "San Jose Sharks", "SJS");
+            createTeam(session, sport, "Seattle Kraken", "SEA");
+            createTeam(session, sport, "St. Louis Blues", "STL");
+            createTeam(session, sport, "Tampa Bay Lightning", "TBL");
+            createTeam(session, sport, "Toronto Maple Leafs", "TOR");
+            createTeam(session, sport, "Utah Hockey Club", "UTA");
+            createTeam(session, sport, "Vancouver Canucks", "VAN");
+            createTeam(session, sport, "Vegas Golden Knights", "VGK");
+            createTeam(session, sport, "Washington Capitals", "WSH");
+            createTeam(session, sport, "Winnipeg Jets", "WPG");
         }
     }
 
