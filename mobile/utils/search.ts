@@ -51,6 +51,13 @@ export const getRuleByFullReference = (fullReference: string): SearchableRule | 
     return cachedFlattened.find(r => r.fullReference === fullReference);
 };
 
+export const getRuleByReference = (ruleNumber: number, sectionNumber: number, articleNumber: number): SearchableRule | undefined => {
+    if (!cachedFlattened) {
+        cachedFlattened = flattenRulebook();
+    }
+    return cachedFlattened.find(r => r.ruleNumber === ruleNumber && r.sectionNumber === sectionNumber && r.articleNumber === articleNumber);
+};
+
 // Exported for testing purposes
 export const __setCachedFlattened = (rules: SearchableRule[]) => {
     cachedFlattened = rules;
