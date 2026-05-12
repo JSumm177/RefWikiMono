@@ -29,9 +29,6 @@ public class CorsFilter implements Filter {
             if (isAllowed) {
                 res.setHeader("Access-Control-Allow-Origin", origin);
             }
-        } else {
-            // Default for development
-            res.setHeader("Access-Control-Allow-Origin", origin != null ? origin : "*");
         }
 
         res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS");
