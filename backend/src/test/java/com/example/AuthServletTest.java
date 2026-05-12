@@ -122,8 +122,9 @@ public class AuthServletTest {
         mockRequestBody(authReq);
         authServlet.doPost(request, response);
 
-        verify(response).setStatus(HttpServletResponse.SC_CONFLICT);
-        assertTrue(w2.toString().contains("User already exists"));
+        // Should return 201 Created and generic success even for duplicate
+        verify(response).setStatus(HttpServletResponse.SC_CREATED);
+        assertTrue(w2.toString().contains("User registered successfully"));
     }
 
     @Test
