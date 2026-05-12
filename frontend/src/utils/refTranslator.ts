@@ -8,14 +8,17 @@ export const REF_TO_RULE_DICT: Record<string, string> = {
   "opi": "pass interference",
 };
 
+const PRECOMPILED_RULES = Object.entries(REF_TO_RULE_DICT).map(([tvTerm, ruleTerm]) => ({
+  regex: new RegExp(`\\b${tvTerm}\\b`, 'gi'),
+  ruleTerm,
+}));
+
 export const translateQuery = (query: string): string => {
   if (!query) return query;
 
   let translatedQuery = query.toLowerCase();
 
-  for (const [tvTerm, ruleTerm] of Object.entries(REF_TO_RULE_DICT)) {
-    // Replace whole words only, case-insensitive
-    const regex = new RegExp(`\\b${tvTerm}\\b`, 'gi');
+  for (const { regex, ruleTerm } of PRECOMPILED_RULES) {
     translatedQuery = translatedQuery.replace(regex, ruleTerm);
   }
 
