@@ -25,6 +25,10 @@ docs/_book
 
 # IntelliJ configuration
 .idea/workspace.xml
+
+# Turborepo
+.turbo/
+**/.turbo/
 .idea/dataSources.local.xml
 .idea/dataSources/data_sources_history.xml
 .idea/dataSources/*.xml

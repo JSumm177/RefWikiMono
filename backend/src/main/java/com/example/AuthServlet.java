@@ -174,41 +174,46 @@ public class AuthServlet extends HttpServlet {
                         .uniqueResult();
                 transaction.commit();
 
-                if (user != null) {
-                    String storedHash = user.getPasswordHash();
-                    if (BCrypt.checkpw(authReq.password, storedHash)) {
-                        // Password matches, generate JWT
-                        String token = JwtUtil.generateToken(authReq.email);
+                // Mitigation for Timing Attack (User Enumeration)
+                // Always check BCrypt even if user doesn't exist to normalize response time
+                String dummyHash = "$2a$10$vI8tp.NBDU.6Ff5854lP6e61p0u3jC7uI1.F7eK1C.G2.G.F7eK1C"; // A valid-looking dummy hash
+                String storedHash = (user != null) ? user.getPasswordHash() : dummyHash;
+                boolean passwordMatches = BCrypt.checkpw(authReq.password, storedHash);
 
-                        // Check platform header
-                        String platform = req.getHeader("X-Client-Platform");
-                        if ("web".equalsIgnoreCase(platform)) {
-                            Cookie cookie = new Cookie("jwt", token);
-                            cookie.setHttpOnly(true);
-                            
-                            // Security Hardening: Only allow insecure cookies in local dev
-                            boolean isProd = "production".equalsIgnoreCase(System.getenv("APP_ENV"));
-                            cookie.setSecure(isProd);
+                if (user != null && passwordMatches) {
+                    // Password matches, generate JWT
+                    String token = JwtUtil.generateToken(authReq.email);
 
-                            cookie.setPath("/");
-                            cookie.setMaxAge(24 * 60 * 60); // 24 hours
-                            resp.addCookie(cookie);
-                            responseJson.message = "Login successful";
-                        } else {
-                            // Default to returning token in body for mobile or if not specified
-                            responseJson.message = "Login successful";
-                            responseJson.token = token;
-                        }
+                    // Check platform header
+                    String platform = req.getHeader("X-Client-Platform");
+                    if ("web".equalsIgnoreCase(platform)) {
+                        Cookie cookie = new Cookie("jwt", token);
+                        cookie.setHttpOnly(true);
+                        
+                        // Security Hardening: Only allow insecure cookies in local dev
+                        boolean isProd = "production".equalsIgnoreCase(System.getenv("APP_ENV"));
+                        cookie.setSecure(isProd);
 
-                        logger.info("Login successful: {}", authReq.email);
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
-                        return;
+                        cookie.setPath("/");
+                        cookie.setMaxAge(24 * 60 * 60); // 24 hours
+                        resp.addCookie(cookie);
+                        responseJson.message = "Login successful";
+                    } else {
+                        // Default to returning token in body for mobile or if not specified
+                        responseJson.message = "Login successful";
+                        responseJson.token = token;
+                    }
+
+                    logger.info("Login successful: {}", authReq.email);
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                    return;
+                } else {
+                    if (user == null) {
+                        logger.warn("Login failed: User not found for {}", authReq.email);
                     } else {
                         logger.warn("Login failed: Invalid password for {}", authReq.email);
                     }
-                } else {
-                    logger.warn("Login failed: User not found for {}", authReq.email);
                 }
             }
 

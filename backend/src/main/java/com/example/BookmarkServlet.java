@@ -35,7 +35,9 @@ public class BookmarkServlet extends HttpServlet {
         }
 
         try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
-            List<Bookmark> bookmarks = session.createQuery("FROM Bookmark WHERE user.id = :userId", Bookmark.class)
+            List<BookmarkDto> bookmarks = session.createQuery(
+                "SELECT new com.example.BookmarkDto(b.sport, b.fullReference, b.articleId) " +
+                "FROM Bookmark b WHERE b.user.id = :userId", BookmarkDto.class)
                     .setParameter("userId", user.getId())
                     .list();
 

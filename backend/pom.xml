@@ -198,6 +198,7 @@
                         <class>com.example.CommentDto</class>
                         <class>com.example.CommentRequest</class>
                         <class>com.example.ProfileDto</class>
+                        <class>com.example.BookmarkDto</class>
                     </classes>
                     <outputKind>module</outputKind>
                     <outputFile>../frontend/src/api-types.d.ts</outputFile>
