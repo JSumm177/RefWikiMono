@@ -2,7 +2,6 @@
 > mobile@0.0.1 test
 > jest
 
-PASS __tests__/search.test.ts
 PASS __tests__/RegisterScreen.test.tsx
   ● Console
 
@@ -42,11 +41,12 @@ PASS __tests__/RegisterScreen.test.tsx
       at asyncGeneratorStep (../node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
       at _throw (../node_modules/@babel/runtime/helpers/asyncToGenerator.js:20:9)
 
+PASS __tests__/search.test.ts
 PASS __tests__/AuthContext.test.tsx
 PASS __tests__/App.test.tsx
 
 Test Suites: 4 passed, 4 total
-Tests:       13 passed, 13 total
+Tests:       19 passed, 19 total
 Snapshots:   0 total
-Time:        2.436 s
+Time:        1.815 s, estimated 2 s
 Ran all test suites.
