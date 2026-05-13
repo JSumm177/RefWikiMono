@@ -148,4 +148,67 @@ public class BookmarkServletTest {
         assertEquals("Rule 1", results.get(0).fullReference);
         assertEquals(10L, results.get(0).articleId);
     }
+
+    @Test
+    public void testDeleteBookmark() throws Exception {
+        mockAuth();
+        
+        // Add a bookmark first
+        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            User user = session.createQuery("FROM User WHERE email = 'user@example.com'", User.class).uniqueResult();
+            Bookmark b = new Bookmark();
+            b.setUser(user);
+            b.setSport("NFL");
+            b.setFullReference("Rule 1");
+            session.persist(b);
+            tx.commit();
+        }
+
+        BookmarkRequest bReq = new BookmarkRequest();
+        bReq.sport = "NFL";
+        bReq.fullReference = "Rule 1";
+        
+        String json = mapper.writeValueAsString(bReq);
+        when(request.getInputStream()).thenReturn(new MockServletInputStream(new ByteArrayInputStream(json.getBytes())));
+
+        bookmarkServlet.doDelete(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_NO_CONTENT);
+
+        // Verify it's gone
+        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+            Long count = session.createQuery("SELECT COUNT(b) FROM Bookmark b", Long.class).uniqueResult();
+            assertEquals(0, count);
+        }
+    }
+
+    @Test
+    public void testDeleteNonExistentBookmark() throws Exception {
+        mockAuth();
+
+        BookmarkRequest bReq = new BookmarkRequest();
+        bReq.sport = "NFL";
+        bReq.fullReference = "Non Existent";
+        
+        String json = mapper.writeValueAsString(bReq);
+        when(request.getInputStream()).thenReturn(new MockServletInputStream(new ByteArrayInputStream(json.getBytes())));
+
+        bookmarkServlet.doDelete(request, response);
+
+        // Even if not found, usually DELETE returns 204 or similar. 
+        // Current code returns SC_NO_CONTENT.
+        verify(response).setStatus(HttpServletResponse.SC_NO_CONTENT);
+    }
+
+    @Test
+    public void testDeleteBookmarkEmptyBody() throws Exception {
+        mockAuth();
+        when(request.getInputStream()).thenReturn(new MockServletInputStream(new ByteArrayInputStream("".getBytes())));
+
+        bookmarkServlet.doDelete(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertTrue(responseWriter.toString().contains("Invalid request body"));
+    }
 }

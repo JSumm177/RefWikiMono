@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import { Alert } from 'react-native';
 import { AuthContext } from './AuthContext';
 import { API_BASE_URL } from './utils/api';
 
@@ -52,9 +53,12 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
                 } else {
                     setBookmarks([]);
                 }
+            } else {
+                Alert.alert('Error', 'Failed to fetch bookmarks from server.');
             }
         } catch (error) {
             console.error('Failed to fetch bookmarks', error);
+            Alert.alert('Network Error', 'Could not reach the server.');
         }
     };
 
@@ -78,9 +82,12 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
 
             if (response.ok) {
                 setBookmarks(prev => [...prev, { sport, fullReference, articleId }]);
+            } else {
+                Alert.alert('Error', `Failed to add bookmark: ${response.status}`);
             }
         } catch (error) {
             console.error('Failed to add bookmark', error);
+            Alert.alert('Network Error', 'Could not add bookmark.');
         } finally {
             setPendingReferences(prev => prev.filter(ref => ref !== fullReference));
         }
@@ -102,9 +109,12 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
 
             if (response.ok || response.status === 204) {
                 setBookmarks(prev => prev.filter(b => b.fullReference !== fullReference || b.sport !== sport));
+            } else {
+                Alert.alert('Error', `Failed to remove bookmark: ${response.status}`);
             }
         } catch (error) {
             console.error('Failed to remove bookmark', error);
+            Alert.alert('Network Error', 'Could not remove bookmark.');
         } finally {
             setPendingReferences(prev => prev.filter(ref => ref !== fullReference));
         }

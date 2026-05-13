@@ -4,13 +4,15 @@ import { AuthContext, AuthProvider } from '../AuthContext';
 import { useContext } from 'react';
 
 const TestComponent = () => {
-    const { isAuthenticated, login, logout } = useContext(AuthContext);
+    const { isAuthenticated, login, logout, authError, clearAuthError } = useContext(AuthContext);
 
     return (
         <div>
             <div data-testid="auth-status">{isAuthenticated ? 'Authenticated' : 'Not Authenticated'}</div>
+            {authError && <div data-testid="auth-error">{authError}</div>}
             <button onClick={login}>Login</button>
             <button onClick={logout}>Logout</button>
+            <button onClick={clearAuthError}>Clear Error</button>
         </div>
     );
 };
@@ -107,6 +109,7 @@ describe('AuthContext', () => {
                 }
             });
             expect(screen.getByTestId('auth-status').textContent).toBe('Not Authenticated');
+            expect(screen.queryByTestId('auth-error')).toBeNull();
         });
     });
 
@@ -131,6 +134,7 @@ describe('AuthContext', () => {
         await waitFor(() => {
             expect(fetchMock).toHaveBeenCalledWith('/api/auth/logout', expect.any(Object));
             expect(consoleErrorMock).toHaveBeenCalledWith("Logout request failed:", error);
+            expect(screen.getByTestId('auth-error').textContent).toBe("Network error during logout.");
             expect(screen.getByTestId('auth-status').textContent).toBe('Not Authenticated');
         });
     });

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import { Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 interface AuthContextType {
@@ -43,6 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUserToken(token);
         } catch (e) {
             console.error("Failed to save token", e);
+            Alert.alert('Error', 'Failed to save login session.');
         }
     };
 
@@ -52,6 +54,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUserToken(null);
         } catch (e) {
             console.error("Failed to delete token", e);
+            Alert.alert('Error', 'Failed to delete login session.');
+            setUserToken(null); // Clear local state anyway
         }
     };
 

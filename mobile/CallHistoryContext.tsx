@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import { Alert } from 'react-native';
 import { AuthContext } from './AuthContext';
 import { API_BASE_URL } from './utils/api';
 
@@ -51,9 +52,12 @@ export const CallHistoryProvider = ({ children }: { children: ReactNode }) => {
         } else {
           setCalls([]);
         }
+      } else {
+        Alert.alert('Error', 'Failed to fetch call history from server.');
       }
     } catch (e) {
       console.error('Failed to load call history', e);
+      Alert.alert('Network Error', 'Could not reach the server.');
     } finally {
       setIsLoading(false);
     }
@@ -82,9 +86,12 @@ export const CallHistoryProvider = ({ children }: { children: ReactNode }) => {
             const savedCall = JSON.parse(text);
             setCalls(prev => [savedCall, ...prev]);
           }
+      } else {
+        Alert.alert('Error', `Failed to save call: ${response.status}`);
       }
     } catch (e) {
       console.error('Failed to save call', e);
+      Alert.alert('Network Error', 'Could not save the call.');
     }
   };
 

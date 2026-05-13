@@ -5,17 +5,24 @@ interface AuthContextType {
     isAuthenticated: boolean;
     login: () => void;
     logout: () => void;
+    authError: string | null;
+    clearAuthError: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
     login: () => {},
     logout: () => {},
+    authError: null,
+    clearAuthError: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [authError, setAuthError] = useState<string | null>(null);
+
+    const clearAuthError = () => setAuthError(null);
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -37,15 +44,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = async () => {
         try {
-            await fetch('/api/auth/logout', {
+            const response = await fetch('/api/auth/logout', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Client-Platform': 'web'
                 }
             });
+            if (!response.ok) {
+                setAuthError("Failed to log out cleanly from server.");
+            }
         } catch (error) {
             console.error("Logout request failed:", error);
+            setAuthError("Network error during logout.");
         } finally {
             setIsAuthenticated(false);
         }
@@ -56,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, authError, clearAuthError }}>
             {children}
         </AuthContext.Provider>
     );

@@ -15,6 +15,8 @@ interface BookmarkContextType {
     isBookmarked: (sport: string, fullReference: string) => boolean;
     isPending: (fullReference: string) => boolean;
     refreshBookmarks: () => Promise<void>;
+    error: string | null;
+    clearError: () => void;
 }
 
 export const BookmarkContext = createContext<BookmarkContextType>({
@@ -25,12 +27,17 @@ export const BookmarkContext = createContext<BookmarkContextType>({
     isBookmarked: () => false,
     isPending: () => false,
     refreshBookmarks: async () => {},
+    error: null,
+    clearError: () => {},
 });
 
 export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
     const [pendingReferences, setPendingReferences] = useState<string[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const { isAuthenticated } = useContext(AuthContext);
+
+    const clearError = () => setError(null);
 
     const refreshBookmarks = async () => {
         if (!isAuthenticated) {
@@ -49,9 +56,12 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
                 } else {
                     setBookmarks([]);
                 }
+            } else {
+                setError('Failed to fetch bookmarks from server.');
             }
         } catch (error) {
             console.error('Failed to fetch bookmarks', error);
+            setError('Network error: Could not reach the server.');
         }
     };
 
@@ -75,9 +85,12 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
 
             if (response.ok) {
                 setBookmarks(prev => [...prev, { sport, fullReference, articleId }]);
+            } else {
+                setError(`Failed to add bookmark: ${response.statusText}`);
             }
         } catch (error) {
             console.error('Failed to add bookmark', error);
+            setError('Network error: Could not add bookmark.');
         } finally {
             setPendingReferences(prev => prev.filter(ref => ref !== fullReference));
         }
@@ -99,9 +112,12 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
 
             if (response.ok || response.status === 204) {
                 setBookmarks(prev => prev.filter(b => b.fullReference !== fullReference || b.sport !== sport));
+            } else {
+                setError(`Failed to remove bookmark: ${response.statusText}`);
             }
         } catch (error) {
             console.error('Failed to remove bookmark', error);
+            setError('Network error: Could not remove bookmark.');
         } finally {
             setPendingReferences(prev => prev.filter(ref => ref !== fullReference));
         }
@@ -123,7 +139,9 @@ export const BookmarkProvider = ({ children }: { children: ReactNode }) => {
             removeBookmark,
             isBookmarked,
             isPending,
-            refreshBookmarks
+            refreshBookmarks,
+            error,
+            clearError
         }}>
             {children}
         </BookmarkContext.Provider>

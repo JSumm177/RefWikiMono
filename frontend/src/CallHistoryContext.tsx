@@ -18,6 +18,8 @@ interface CallHistoryContextType {
   addCall: (call: Omit<Call, 'id' | 'timestamp'>) => Promise<void>;
   refreshCalls: () => Promise<void>;
   isLoading: boolean;
+  callError: string | null;
+  clearCallError: () => void;
 }
 
 export const CallHistoryContext = createContext<CallHistoryContextType>({
@@ -25,12 +27,17 @@ export const CallHistoryContext = createContext<CallHistoryContextType>({
   addCall: async () => {},
   refreshCalls: async () => {},
   isLoading: true,
+  callError: null,
+  clearCallError: () => {},
 });
 
 export const CallHistoryProvider = ({ children }: { children: ReactNode }) => {
   const [calls, setCalls] = useState<Call[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [callError, setCallError] = useState<string | null>(null);
   const { isAuthenticated } = useContext(AuthContext);
+
+  const clearCallError = () => setCallError(null);
 
   const refreshCalls = async () => {
     if (!isAuthenticated) {
@@ -49,9 +56,12 @@ export const CallHistoryProvider = ({ children }: { children: ReactNode }) => {
         } else {
           setCalls([]);
         }
+      } else {
+        setCallError('Failed to fetch call history from server.');
       }
     } catch (e) {
       console.error('Failed to load call history', e);
+      setCallError('Network error: Could not reach the server.');
     } finally {
       setIsLoading(false);
     }
@@ -80,14 +90,17 @@ export const CallHistoryProvider = ({ children }: { children: ReactNode }) => {
             const savedCall = JSON.parse(text);
             setCalls(prev => [savedCall, ...prev]);
           }
+      } else {
+        setCallError(`Failed to save call: ${response.statusText}`);
       }
     } catch (e) {
       console.error('Failed to save call', e);
+      setCallError('Network error: Could not save the call.');
     }
   };
 
   return (
-    <CallHistoryContext.Provider value={{ calls, addCall, refreshCalls, isLoading }}>
+    <CallHistoryContext.Provider value={{ calls, addCall, refreshCalls, isLoading, callError, clearCallError }}>
       {children}
     </CallHistoryContext.Provider>
   );
