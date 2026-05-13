@@ -14,7 +14,7 @@ import CallDetailScreen from './CallDetailScreen.tsx'
 import RuleDetailScreen from './RuleDetailScreen.tsx'
 import Header from './Header.tsx'
 import { AuthProvider, AuthContext } from './AuthContext.tsx'
-import { CallHistoryProvider } from './CallHistoryContext.tsx'
+import { CallHistoryProvider, CallHistoryContext } from './CallHistoryContext.tsx'
 import { BookmarkProvider, BookmarkContext } from './BookmarkContext.tsx'
 
 // A wrapper component to protect routes that require authentication

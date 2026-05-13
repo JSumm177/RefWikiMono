@@ -83,3 +83,11 @@ export interface BookmarkDto {
     fullReference: string;
     articleId: number;
 }
+
+export interface UserAccuracyDto {
+    userId: number;
+    userName: string;
+    roleType: string;
+    accuracyRate: number;
+    totalActions: number;
+}

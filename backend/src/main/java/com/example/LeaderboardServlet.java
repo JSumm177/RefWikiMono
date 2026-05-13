@@ -31,8 +31,72 @@ public class LeaderboardServlet extends HttpServlet {
             handleGetMostControversial(req, resp);
         } else if ("/teams".equals(pathInfo)) {
             handleGetTeamLeaderboard(req, resp);
+        } else if ("/accuracy".equals(pathInfo)) {
+            handleGetAccuracyLeaderboard(req, resp);
         } else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void handleGetAccuracyLeaderboard(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try (Session session = DatabaseConfig.getSessionFactory().openSession()) {
+            // Native SQL to calculate consensus and then user accuracy
+            // Consensus includes original log rating + votes
+            String sql = 
+                "WITH Consensus AS (" +
+                "  SELECT c.id as call_id, " +
+                "         (c.controversy_level + COALESCE(SUM(v.rating), 0)) / (1.0 + COUNT(v.id)) as avg_rating, " +
+                "         (1 + COUNT(v.id)) as total_votes " +
+                "  FROM calls c " +
+                "  LEFT JOIN call_votes v ON v.call_id = c.id " +
+                "  WHERE c.is_public = true " +
+                "  GROUP BY c.id " +
+                "  HAVING (1 + COUNT(v.id)) >= 3" + // Minimum 3 opinions for consensus
+                "), " +
+                "UserActions AS (" +
+                "  /* Logger actions */ " +
+                "  SELECT c.user_id, c.id as call_id, c.controversy_level as rating " +
+                "  FROM calls c " +
+                "  WHERE c.is_public = true " +
+                "  UNION ALL " +
+                "  /* Voter actions */ " +
+                "  SELECT v.user_id, v.call_id, v.rating " +
+                "  FROM call_votes v " +
+                "  JOIN calls c ON c.id = v.call_id " +
+                "  WHERE c.is_public = true " +
+                ") " +
+                "SELECT p.user_id, " +
+                "       COALESCE(p.display_name, u.email) as name, " +
+                "       p.role_type, " +
+                "       AVG(100.0 * (1.0 - ABS(ua.rating - con.avg_rating) / 4.0)) as accuracy, " +
+                "       COUNT(*) as actions " +
+                "FROM UserActions ua " +
+                "JOIN Consensus con ON con.call_id = ua.call_id " +
+                "JOIN users u ON u.id = ua.user_id " +
+                "JOIN user_profiles p ON p.user_id = ua.user_id " +
+                "GROUP BY p.user_id, name, p.role_type " +
+                "HAVING COUNT(*) >= 2 " + // Minimum 2 actions to be on leaderboard
+                "ORDER BY accuracy DESC " +
+                "LIMIT 20";
+
+            List<Object[]> results = session.createNativeQuery(sql, Object[].class).list();
+            List<UserAccuracyDto> dtos = new ArrayList<>();
+            for (Object[] row : results) {
+                dtos.add(new UserAccuracyDto(
+                    ((Number)row[0]).longValue(),
+                    (String)row[1],
+                    (String)row[2],
+                    ((Number)row[3]).doubleValue(),
+                    ((Number)row[4]).longValue()
+                ));
+            }
+
+            resp.setContentType("application/json");
+            resp.getWriter().print(objectMapper.writeValueAsString(dtos));
+        } catch (Exception e) {
+            logger.error("Failed to fetch accuracy leaderboard", e);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().print("{\"error\": \"Failed to calculate accuracy\"}");
         }
     }
 
