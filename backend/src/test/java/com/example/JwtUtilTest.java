@@ -38,4 +38,17 @@ public class JwtUtilTest {
         assertNull(JwtUtil.validateTokenAndGetSubject(""));
         assertNull(JwtUtil.validateTokenAndGetSubject("   "));
     }
+
+    @Test
+    public void testWeakSecretThrowsException() {
+        String originalSecret = "supersecretkey123456789012345678901234567890";
+        JwtUtil.setSecretForTesting("too-short");
+        
+        assertThrows(IllegalStateException.class, () -> {
+            JwtUtil.generateToken("test@example.com");
+        });
+        
+        // Restore secret for other tests
+        JwtUtil.setSecretForTesting(originalSecret);
+    }
 }

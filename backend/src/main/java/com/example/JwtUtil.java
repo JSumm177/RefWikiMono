@@ -14,7 +14,10 @@ public class JwtUtil {
 
     private static Key getSigningKey() {
         if (SECRET_KEY_ENV == null || SECRET_KEY_ENV.isEmpty()) {
-            throw new RuntimeException("JWT_SECRET environment variable is not set.");
+            throw new IllegalStateException("JWT_SECRET environment variable is not set.");
+        }
+        if (SECRET_KEY_ENV.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("JWT_SECRET must be at least 256 bits (32 characters) for secure HS256 signing.");
         }
         return Keys.hmacShaKeyFor(SECRET_KEY_ENV.getBytes(StandardCharsets.UTF_8));
     }

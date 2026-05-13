@@ -6,12 +6,13 @@ import { CallHistoryProvider, CallHistoryContext } from '../CallHistoryContext';
 import { AuthContext } from '../AuthContext';
 
 const TestComponent = () => {
-    const { calls, addCall, isLoading } = useContext(CallHistoryContext);
+    const { calls, addCall, isLoading, callError, clearCallError } = useContext(CallHistoryContext);
 
     return (
         <div>
             <div data-testid="loading-status">{isLoading ? 'Loading' : 'Ready'}</div>
             <div data-testid="calls-count">{calls.length}</div>
+            {callError && <div data-testid="call-error">{callError}</div>}
             {calls.map(call => (
                 <div key={call.id} data-testid={`call-${call.penaltyName}`}>
                     {call.penaltyName} - {call.ruleReference}
@@ -29,6 +30,7 @@ const TestComponent = () => {
             >
                 Add Call
             </button>
+            <button onClick={clearCallError}>Clear Error</button>
         </div>
     );
 };
@@ -50,6 +52,8 @@ describe('CallHistoryContext', () => {
         isAuthenticated: true,
         login: () => {},
         logout: () => {},
+        authError: null,
+        clearAuthError: () => {},
     };
 
     it('loads empty state if API returns empty array', async () => {
@@ -149,5 +153,50 @@ describe('CallHistoryContext', () => {
             method: 'POST',
             body: expect.stringContaining('"penaltyName":"Holding"')
         }));
+    });
+
+    it('handles fetch error and sets callError', async () => {
+        (fetch as any).mockRejectedValueOnce(new Error('Network error'));
+
+        render(
+            <AuthContext.Provider value={mockAuthContext}>
+                <CallHistoryProvider>
+                    <TestComponent />
+                </CallHistoryProvider>
+            </AuthContext.Provider>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('call-error')).toHaveTextContent('Network error: Could not reach the server.');
+        });
+        expect(consoleErrorSpy).toHaveBeenCalled();
+    });
+
+    it('handles addCall error and sets callError', async () => {
+        (fetch as any).mockResolvedValueOnce({
+            ok: true,
+            text: async () => "[]"
+        });
+
+        render(
+            <AuthContext.Provider value={mockAuthContext}>
+                <CallHistoryProvider>
+                    <TestComponent />
+                </CallHistoryProvider>
+            </AuthContext.Provider>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByTestId('loading-status')).toHaveTextContent('Ready');
+        });
+
+        (fetch as any).mockRejectedValueOnce(new Error('Save error'));
+
+        const user = userEvent.setup();
+        await user.click(screen.getByRole('button', { name: 'Add Call' }));
+
+        await waitFor(() => {
+            expect(screen.getByTestId('call-error')).toHaveTextContent('Network error: Could not save the call.');
+        });
     });
 });

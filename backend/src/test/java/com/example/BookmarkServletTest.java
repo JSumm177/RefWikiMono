@@ -121,6 +121,32 @@ public class BookmarkServletTest {
     }
 
     @Test
+    public void testAddBookmarkAlreadyExists() throws Exception {
+        mockAuth();
+        
+        // Add it once
+        BookmarkRequest bReq = new BookmarkRequest();
+        bReq.sport = "NFL";
+        bReq.fullReference = "Rule 8";
+        
+        String json = mapper.writeValueAsString(bReq);
+        when(request.getInputStream()).thenReturn(new MockServletInputStream(new ByteArrayInputStream(json.getBytes())));
+        bookmarkServlet.doPost(request, response);
+        verify(response).setStatus(HttpServletResponse.SC_CREATED);
+
+        // Reset response for second call
+        reset(response);
+        when(response.getWriter()).thenReturn(new PrintWriter(new StringWriter()));
+        when(request.getInputStream()).thenReturn(new MockServletInputStream(new ByteArrayInputStream(json.getBytes())));
+
+        // Add it again
+        bookmarkServlet.doPost(request, response);
+
+        // Should return 200 OK for already existing
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Test
     public void testGetBookmarks() throws Exception {
         mockAuth();
         
@@ -147,6 +173,31 @@ public class BookmarkServletTest {
         assertEquals("NFL", results.get(0).sport);
         assertEquals("Rule 1", results.get(0).fullReference);
         assertEquals(10L, results.get(0).articleId);
+    }
+
+    @Test
+    public void testGetBookmarksEmpty() throws Exception {
+        mockAuth();
+
+        bookmarkServlet.doGet(request, response);
+        verify(response).setContentType("application/json");
+        
+        List<BookmarkDto> results = mapper.readValue(responseWriter.toString(), 
+            mapper.getTypeFactory().constructCollectionType(List.class, BookmarkDto.class));
+        
+        assertTrue(results.isEmpty());
+    }
+
+    @Test
+    public void testGetBookmarksUnauthorized() throws Exception {
+        // No mockAuth()
+        when(request.getCookies()).thenReturn(null);
+        when(request.getHeader("Authorization")).thenReturn(null);
+
+        bookmarkServlet.doGet(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        assertTrue(responseWriter.toString().contains("Unauthorized"));
     }
 
     @Test
