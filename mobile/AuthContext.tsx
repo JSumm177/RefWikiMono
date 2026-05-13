@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             } catch (e) {
                 // Restoring token failed
                 console.error("Failed to restore token", e);
+                Alert.alert('Error', 'Failed to restore login session.');
             }
 
             setUserToken(token || null);

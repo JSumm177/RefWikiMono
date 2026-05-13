@@ -1,8 +1,11 @@
 import React, { useContext } from 'react';
 import { render, act, waitFor, fireEvent } from '@testing-library/react-native';
-import { Text, View, Button } from 'react-native';
+import { Text, View, Button, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { AuthProvider, AuthContext } from '../AuthContext';
+
+// Mock Alert
+jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
 // Create a test component that consumes the context
 const TestComponent = () => {
@@ -57,6 +60,27 @@ describe('AuthContext', () => {
 
         expect(getByTestId('userToken').props.children).toBe('null');
         expect(SecureStore.getItemAsync).toHaveBeenCalledWith('userToken');
+    });
+
+    it('shows alert when SecureStore.getItemAsync fails during bootstrap', async () => {
+        const error = new Error('SecureStore error');
+        (SecureStore.getItemAsync as jest.Mock).mockRejectedValueOnce(error);
+        const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        const { getByTestId } = render(
+            <AuthProvider>
+                <TestComponent />
+            </AuthProvider>
+        );
+
+        await waitFor(() => {
+            expect(getByTestId('isLoading').props.children).toBe('false');
+        });
+
+        expect(Alert.alert).toHaveBeenCalledWith('Error', 'Failed to restore login session.');
+        expect(consoleErrorMock).toHaveBeenCalledWith("Failed to restore token", error);
+
+        consoleErrorMock.mockRestore();
     });
 
     it('signIn saves the token and updates the state', async () => {
