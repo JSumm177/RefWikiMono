@@ -15,7 +15,7 @@ public class CorsFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
 
         String origin = req.getHeader("Origin");
-        String allowedOriginsEnv = System.getenv("ALLOWED_ORIGINS");
+        String allowedOriginsEnv = getAllowedOrigins();
         
         if (origin != null && allowedOriginsEnv != null && !allowedOriginsEnv.isEmpty()) {
             String[] origins = allowedOriginsEnv.split(",");
@@ -42,6 +42,10 @@ public class CorsFilter implements Filter {
         } else {
             chain.doFilter(request, response);
         }
+    }
+
+    protected String getAllowedOrigins() {
+        return System.getenv("ALLOWED_ORIGINS");
     }
 
     @Override
