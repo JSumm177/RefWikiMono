@@ -103,6 +103,20 @@ public class AuthServletTest {
     }
 
     @Test
+    public void testRegisterEmptyBody() throws Exception {
+        when(request.getPathInfo()).thenReturn("/register");
+
+        // Provide an empty body
+        ByteArrayInputStream is = new ByteArrayInputStream("".getBytes());
+        when(request.getInputStream()).thenReturn(new MockServletInputStream(is));
+
+        authServlet.doPost(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertTrue(responseWriter.toString().contains("Invalid request body"));
+    }
+
+    @Test
     public void testRegisterDuplicateUser() throws Exception {
         when(request.getPathInfo()).thenReturn("/register");
 
@@ -202,6 +216,20 @@ public class AuthServletTest {
 
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         assertTrue(responseWriter.toString().contains("Invalid credentials"));
+    }
+
+    @Test
+    public void testLoginEmptyBody() throws Exception {
+        when(request.getPathInfo()).thenReturn("/login");
+        
+        // Provide an empty body
+        ByteArrayInputStream is = new ByteArrayInputStream("".getBytes());
+        when(request.getInputStream()).thenReturn(new MockServletInputStream(is));
+
+        authServlet.doPost(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        assertTrue(responseWriter.toString().contains("Invalid request body"));
     }
 
     @Test

@@ -81,6 +81,46 @@ public class BookmarkServletTest {
     }
 
     @Test
+    public void testAddBookmarkMissingReference() throws Exception {
+        mockAuth();
+        BookmarkRequest bReq = new BookmarkRequest();
+        bReq.sport = "NFL";
+        // fullReference is null
+
+        String json = mapper.writeValueAsString(bReq);
+        when(request.getInputStream()).thenReturn(new MockServletInputStream(new ByteArrayInputStream(json.getBytes())));
+
+        bookmarkServlet.doPost(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
+    public void testAddBookmarkEmptyReference() throws Exception {
+        mockAuth();
+        BookmarkRequest bReq = new BookmarkRequest();
+        bReq.sport = "NFL";
+        bReq.fullReference = "";
+
+        String json = mapper.writeValueAsString(bReq);
+        when(request.getInputStream()).thenReturn(new MockServletInputStream(new ByteArrayInputStream(json.getBytes())));
+
+        bookmarkServlet.doPost(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
+    public void testAddBookmarkEmptyBody() throws Exception {
+        mockAuth();
+        when(request.getInputStream()).thenReturn(new MockServletInputStream(new ByteArrayInputStream("".getBytes())));
+
+        bookmarkServlet.doPost(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
     public void testGetBookmarks() throws Exception {
         mockAuth();
         

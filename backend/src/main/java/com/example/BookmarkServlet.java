@@ -61,7 +61,16 @@ public class BookmarkServlet extends HttpServlet {
         }
 
         try {
-            BookmarkRequest bookmarkReq = objectMapper.readValue(req.getInputStream(), BookmarkRequest.class);
+            BookmarkRequest bookmarkReq;
+            try {
+                bookmarkReq = objectMapper.readValue(req.getInputStream(), BookmarkRequest.class);
+            } catch (Exception e) {
+                logger.warn("Invalid bookmark request: malformed JSON body");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().print("{\"error\": \"Invalid request body\"}");
+                return;
+            }
+
             if (bookmarkReq == null || bookmarkReq.fullReference == null || bookmarkReq.fullReference.isEmpty()) {
                 logger.warn("Invalid bookmark request: empty reference");
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

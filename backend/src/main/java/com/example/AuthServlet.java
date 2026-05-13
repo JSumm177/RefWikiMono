@@ -96,7 +96,17 @@ public class AuthServlet extends HttpServlet {
         AuthResponse responseJson = new AuthResponse();
 
         try {
-            AuthRequest authReq = objectMapper.readValue(req.getInputStream(), AuthRequest.class);
+            AuthRequest authReq;
+            try {
+                authReq = objectMapper.readValue(req.getInputStream(), AuthRequest.class);
+            } catch (Exception e) {
+                logger.warn("Registration failed: Invalid JSON body");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                responseJson.error = "Invalid request body";
+                resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                return;
+            }
+
             if (authReq.email == null || authReq.password == null) {
                 logger.warn("Registration failed: Missing email or password");
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -158,7 +168,17 @@ public class AuthServlet extends HttpServlet {
         AuthResponse responseJson = new AuthResponse();
 
         try {
-            AuthRequest authReq = objectMapper.readValue(req.getInputStream(), AuthRequest.class);
+            AuthRequest authReq;
+            try {
+                authReq = objectMapper.readValue(req.getInputStream(), AuthRequest.class);
+            } catch (Exception e) {
+                logger.warn("Login failed: Invalid JSON body");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                responseJson.error = "Invalid request body";
+                resp.getWriter().print(objectMapper.writeValueAsString(responseJson));
+                return;
+            }
+
             if (authReq.email == null || authReq.password == null) {
                 logger.warn("Login failed: Missing email or password");
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
