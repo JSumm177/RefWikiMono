@@ -18,6 +18,11 @@ mobile/.expo/
 backend/target/
 .DS_Store
 
+# Logs
+*.log
+turbo-test.log
+**/turbo-test.log
+
 
 # Documentation
 docs/_book
