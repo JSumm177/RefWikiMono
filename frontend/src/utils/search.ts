@@ -27,3 +27,21 @@ export const getRuleById = async (id: number): Promise<SearchableRule | undefine
     }
     return undefined;
 };
+
+let cachedFlattened: SearchableRule[] | null = null;
+
+const flattenRulebook = (): SearchableRule[] => {
+    return []; // Stub for now
+};
+
+export const getRuleByFullReference = (fullReference: string): SearchableRule | undefined => {
+    if (!cachedFlattened) {
+        cachedFlattened = flattenRulebook();
+    }
+    return cachedFlattened.find(r => r.fullReference === fullReference);
+};
+
+// Exported for testing purposes
+export const __setCachedFlattened = (rules: SearchableRule[]) => {
+    cachedFlattened = rules;
+};

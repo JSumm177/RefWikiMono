@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { searchRules } from './search';
+import { searchRules, getRuleByFullReference, __setCachedFlattened } from './search';
 
 describe('searchRules utility', () => {
   beforeEach(() => {
@@ -43,4 +43,30 @@ describe('searchRules utility', () => {
     const results = await searchRules('NFL', 'Holding');
     expect(results).toEqual([]);
   });
+});
+
+describe('getRuleByFullReference utility', () => {
+    const mockRules = [
+        { id: 1, fullReference: 'Rule 1, Section 1', articleText: 'Text 1' } as any,
+        { id: 2, fullReference: 'Rule 2, Section 1', articleText: 'Text 2' } as any,
+    ];
+
+    beforeEach(() => {
+        __setCachedFlattened(mockRules);
+    });
+
+    it('should return the rule when fullReference matches exactly', () => {
+        const result = getRuleByFullReference('Rule 1, Section 1');
+        expect(result).toEqual(mockRules[0]);
+    });
+
+    it('should return undefined when no match is found', () => {
+        const result = getRuleByFullReference('Rule 3, Section 1');
+        expect(result).toBeUndefined();
+    });
+
+    it('should return undefined for an empty string', () => {
+        const result = getRuleByFullReference('');
+        expect(result).toBeUndefined();
+    });
 });
