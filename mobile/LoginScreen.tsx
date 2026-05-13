@@ -6,9 +6,11 @@ import { API_BASE_URL } from './utils/api';
 const LoginScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
     const { signIn } = useContext(AuthContext);
 
     const handleLogin = async () => {
+        setError(null);
         try {
             const API_URL = `${API_BASE_URL}/api/auth/login`;
             console.log('Attempting login to:', API_URL);
@@ -27,10 +29,12 @@ const LoginScreen = ({ navigation }: any) => {
             if (response.ok && data.token) {
                 signIn(data.token);
             } else {
+                setError(data.error || 'Invalid credentials');
                 Alert.alert('Login Failed', data.error || 'Invalid credentials');
             }
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            console.error(err);
+            setError('Network request failed. Is the server running?');
             Alert.alert('Error', 'Network request failed. Is the server running?');
         }
     };
@@ -38,6 +42,7 @@ const LoginScreen = ({ navigation }: any) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Login</Text>
+            {error && <Text style={styles.errorText}>{error}</Text>}
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -70,6 +75,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         marginBottom: 20,
+        textAlign: 'center',
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 10,
         textAlign: 'center',
     },
     input: {
