@@ -20,6 +20,7 @@ backend/target/
 
 # Logs
 *.log
+npm_dev_out.txt
 turbo-test.log
 **/turbo-test.log
 
