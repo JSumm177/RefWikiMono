@@ -23,7 +23,7 @@
             "kotlinVersion": "2.1.10"
           },
           "ios": {
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "26.4"
           }
         }
       ],

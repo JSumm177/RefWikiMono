@@ -39,6 +39,7 @@ const withStabilization = (config) => {
         else
           config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++20'
         end
+        config.build_settings['SDKROOT'] = 'iphonesimulator'
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_CONSTEVAL=0'
       end
