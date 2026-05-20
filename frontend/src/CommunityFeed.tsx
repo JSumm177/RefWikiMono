@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { CommunityCallDto } from './api-types';
 
-const getControversyColor = (level: number) => {
+const getControversyVariable = (level: number) => {
     switch (Math.round(level)) {
-        case 1: return '#4CAF50';
-        case 2: return '#8BC34A';
-        case 3: return '#FFC107';
-        case 4: return '#FF9800';
-        case 5: return '#F44336';
-        default: return '#ccc';
+        case 1: return 'var(--c1)';
+        case 2: return 'var(--c2)';
+        case 3: return 'var(--c3)';
+        case 4: return 'var(--c4)';
+        case 5: return 'var(--c5)';
+        default: return 'var(--text-muted)';
     }
 };
 
@@ -44,94 +44,88 @@ const CommunityFeed: React.FC = () => {
                 credentials: 'include'
             });
             if (response.ok) {
-                fetchCommunity(); // Refresh to show new averages
+                fetchCommunity();
             }
         } catch (error) {
             console.error('Failed to vote', error);
         }
     };
 
-    if (isLoading) return <div style={{ padding: '20px', textAlign: 'center' }}>Loading Community Feed...</div>;
+    if (isLoading) {
+        return (
+            <div className="spinner-container">
+                <div className="spinner" />
+            </div>
+        );
+    }
 
     return (
-        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            <h2 style={{ marginBottom: '20px' }}>Community Consensus</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                {calls.map(call => (
-                    <div key={call.id} style={{
-                        backgroundColor: 'var(--bg)',
-                        padding: '20px',
-                        borderRadius: '12px',
-                        border: '1px solid var(--border)',
-                        borderLeft: `8px solid ${getControversyColor(call.averageRating!)}`,
-                        textAlign: 'left'
-                    }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div
-                                style={{ flex: 1, cursor: 'pointer' }}
-                                onClick={() => navigate(`/call/${call.id}`)}
-                            >
-                                <h3 style={{ margin: '0 0 5px 0' }}>{call.penaltyName}</h3>
-                                <div style={{ color: 'var(--text)', fontSize: '0.9em' }}>
-                                    {call.sport} • {call.team} • {call.ruleReference}
+        <div className="feed-container">
+            <h2 className="feed-title">Community Consensus</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {calls.map(call => {
+                    const roundedRating = Math.round(call.averageRating || 1);
+                    const colorVar = getControversyVariable(call.averageRating || 1);
+                    
+                    return (
+                        <div
+                            key={call.id}
+                            className={`community-card c-border-${roundedRating}`}
+                        >
+                            <div className="community-card-header">
+                                <div
+                                    className="community-card-info"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => navigate(`/call/${call.id}`)}
+                                >
+                                    <h3>{call.penaltyName}</h3>
+                                    <div className="community-card-meta">
+                                        {call.sport} • {call.team} • {call.ruleReference}
+                                    </div>
                                 </div>
-                            </div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontWeight: 'bold', fontSize: '1.2em', color: getControversyColor(call.averageRating!) }}>
-                                    {call.averageRating?.toFixed(1)}
-                                </div>
-                                <div style={{ fontSize: '0.8em', color: '#666' }}>{call.voteCount} votes</div>
-                            </div>
-                        </div>
-
-                        <div style={{ margin: '15px 0', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '4px', fontStyle: 'italic' }}>
-                            "{call.notes}" — <strong>{call.userName}</strong>
-                            <span style={{
-                                marginLeft: '10px',
-                                fontSize: '0.7em',
-                                padding: '2px 8px',
-                                backgroundColor: 'var(--accent)',
-                                color: '#fff',
-                                borderRadius: '10px',
-                                verticalAlign: 'middle',
-                                fontWeight: 'bold'
-                            }}>
-                                {call.userRole}
-                            </span>
-                        </div>
-
-                        <div style={{ borderTop: '1px solid #eee', paddingTop: '15px' }}>
-                            <div style={{ fontSize: '0.9em', fontWeight: 'bold', marginBottom: '10px' }}>How would you rate this call?</div>
-                            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                                {[1, 2, 3, 4, 5].map(lvl => (
-                                    <button
-                                        key={lvl}
-                                        onClick={() => handleVote(call.id!, lvl)}
+                                <div className="community-card-score-container">
+                                    <div
+                                        className="community-card-score"
                                         style={{
-                                            padding: '8px 12px',
-                                            borderRadius: '20px',
-                                            border: `1px solid ${getControversyColor(lvl)}`,
-                                            backgroundColor: 'transparent',
-                                            color: getControversyColor(lvl),
-                                            cursor: 'pointer',
-                                            fontSize: '12px'
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.backgroundColor = getControversyColor(lvl);
-                                            e.currentTarget.style.color = '#fff';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.backgroundColor = 'transparent';
-                                            e.currentTarget.style.color = getControversyColor(lvl);
+                                            backgroundColor: `oklch(from ${colorVar} l c h / 0.1)`,
+                                            color: colorVar,
+                                            border: `1px solid oklch(from ${colorVar} l c h / 0.25)`
                                         }}
                                     >
-                                        {lvl}
-                                    </button>
-                                ))}
+                                        {call.averageRating?.toFixed(1) || '1.0'}
+                                    </div>
+                                    <span className="community-card-votes">
+                                        {call.voteCount} {call.voteCount === 1 ? 'vote' : 'votes'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="community-quote">
+                                "{call.notes}" —
+                                <strong className="community-quote-author">{call.userName}</strong>
+                                <span className={`user-role-badge ${call.userRole === 'OFFICIAL' ? 'official' : ''}`}>
+                                    {call.userRole}
+                                </span>
+                            </div>
+
+                            <div className="vote-section">
+                                <div className="vote-section-title">How would you rate this call?</div>
+                                <div className="vote-pill-container">
+                                    {[1, 2, 3, 4, 5].map(lvl => (
+                                        <button
+                                            key={lvl}
+                                            onClick={() => handleVote(call.id!, lvl)}
+                                            className={`vote-pill pill-${lvl}`}
+                                            aria-label={`Rate controversy ${lvl}`}
+                                        >
+                                            {lvl}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );

@@ -11,6 +11,7 @@ export interface Call {
   notes: string;
   sport: string;
   team: string;
+  isPublic?: boolean;
 }
 
 interface CallHistoryContextType {

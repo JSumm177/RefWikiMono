@@ -12,34 +12,21 @@ const Header: React.FC = () => {
     };
 
     return (
-        <header style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '10px 20px',
-            backgroundColor: '#333',
-            color: '#fff'
-        }}>
-            <div>
-                <h2 style={{ margin: 0 }}>RefWiki</h2>
+        <header className="main-header">
+            <div className="header-logo-container">
+                <h2 className="header-logo">RefWiki</h2>
+                <span className="header-logo-badge">Beta</span>
             </div>
-            <nav style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                <Link to="/" style={{ color: '#fff', textDecoration: 'none' }}>Live Log</Link>
-                <Link to="/search" style={{ color: '#fff', textDecoration: 'none' }}>Search</Link>
-                <Link to="/community" style={{ color: '#fff', textDecoration: 'none' }}>Community</Link>
-                <Link to="/leaderboard" style={{ color: '#fff', textDecoration: 'none' }}>Leaderboard</Link>
-                <Link to="/profile" style={{ color: '#fff', textDecoration: 'none' }}>Profile</Link>
-                <Link to="/log-call" style={{ color: '#fff', textDecoration: 'none' }}>Log Call</Link>
+            <nav className="header-nav">
+                <Link to="/" className="nav-link">Live Log</Link>
+                <Link to="/search" className="nav-link">Search</Link>
+                <Link to="/community" className="nav-link">Community</Link>
+                <Link to="/leaderboard" className="nav-link">Leaderboard</Link>
+                <Link to="/profile" className="nav-link">Profile</Link>
+                <Link to="/log-call" className="nav-link">Log Call</Link>
                 <button
                     onClick={handleLogout}
-                    style={{
-                        padding: '5px 10px',
-                        background: '#dc3545',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                    }}>
+                    className="btn-logout">
                     Logout
                 </button>
             </nav>

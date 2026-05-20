@@ -5,11 +5,11 @@ import { searchRules } from './utils/search';
 import type { SearchableRule } from './utils/search';
 
 const CONTROVERSY_LEVELS = [
-  { level: 1, label: 'Textbook', description: 'Clear-cut, no debate', color: '#4CAF50' },
-  { level: 2, label: 'Technically Correct', description: 'Letter of the Law vs. Spirit', color: '#8BC34A' },
-  { level: 3, label: 'Let \'em Play', description: 'Ticky-tack call', color: '#FFC107' },
-  { level: 4, label: 'Game Changer', description: 'Massive penalty', color: '#FF9800' },
-  { level: 5, label: 'Total Robbery', description: 'Refs absolutely blew it', color: '#F44336' },
+  { level: 1, label: 'Textbook', description: 'Clear-cut, no debate', color: 'var(--c1)' },
+  { level: 2, label: 'Technically Correct', description: 'Letter of the Law vs. Spirit', color: 'var(--c2)' },
+  { level: 3, label: 'Let \'em Play', description: 'Ticky-tack call', color: 'var(--c3)' },
+  { level: 4, label: 'Game Changer', description: 'Massive penalty', color: 'var(--c4)' },
+  { level: 5, label: 'Total Robbery', description: 'Refs absolutely blew it', color: 'var(--c5)' },
 ];
 
 const LogCallScreen: React.FC = () => {
@@ -66,194 +66,151 @@ const LogCallScreen: React.FC = () => {
     navigate('/');
   };
 
-  const inputStyle = {
-    width: '100%',
-    padding: '12px',
-    border: '1px solid var(--border)',
-    borderRadius: '8px',
-    fontSize: '16px',
-    backgroundColor: 'var(--bg)',
-    color: 'var(--text-h)',
-    marginBottom: '15px',
-    boxSizing: 'border-box' as const
-  };
-
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', textAlign: 'left' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Log a Recent Call</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ display: 'flex', gap: '15px' }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Sport</label>
-            <select
-              value={sport}
-              onChange={(e) => setSport(e.target.value)}
-              style={inputStyle}
-            >
-              <option value="NFL">NFL</option>
-              <option value="NCAA">College Football</option>
-              <option value="NBA">NBA</option>
-              <option value="MLB">MLB</option>
-              <option value="NHL">NHL</option>
-              <option value="MLS">MLS (Soccer)</option>
-            </select>
+    <div className="form-container">
+      <h2 className="form-title">Log a Recent Call</h2>
+      <div className="form-card">
+        <form onSubmit={handleSubmit}>
+          <div className="form-row">
+            <div style={{ flex: 1 }}>
+              <label className="form-label">Sport</label>
+              <select
+                value={sport}
+                onChange={(e) => setSport(e.target.value)}
+                className="form-input-field"
+              >
+                <option value="NFL">NFL</option>
+                <option value="NCAA">College Football</option>
+                <option value="NBA">NBA</option>
+                <option value="MLB">MLB</option>
+                <option value="NHL">NHL</option>
+                <option value="MLS">MLS (Soccer)</option>
+              </select>
+            </div>
+            <div style={{ flex: 2 }}>
+              <label className="form-label">Team</label>
+              <input
+                type="text"
+                placeholder="e.g. Chiefs"
+                value={team}
+                onChange={(e) => setTeam(e.target.value)}
+                className="form-input-field"
+              />
+            </div>
           </div>
-          <div style={{ flex: 2 }}>
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Team</label>
+
+          <div className="form-group">
+            <label className="form-label">Penalty Name</label>
             <input
               type="text"
-              placeholder="e.g. Chiefs"
-              value={team}
-              onChange={(e) => setTeam(e.target.value)}
-              style={inputStyle}
+              placeholder="e.g. Defensive Pass Interference"
+              value={penaltyName}
+              onChange={(e) => setPenaltyName(e.target.value)}
+              className="form-input-field"
             />
           </div>
-        </div>
 
-        <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Penalty Name</label>
-        <input
-          type="text"
-          placeholder="e.g. Defensive Pass Interference"
-          value={penaltyName}
-          onChange={(e) => setPenaltyName(e.target.value)}
-          style={inputStyle}
-        />
-
-        <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Rule Reference</label>
-        <div style={{ position: 'relative' }} ref={dropdownRef}>
-          <input
-            type="text"
-            placeholder="e.g. Rule 8, Section 5"
-            value={ruleReference}
-            onChange={async (e) => {
-              const val = e.target.value;
-              setRuleReference(val);
-              if (val.trim() !== '') {
-                const results = await searchRules(sport, val);
-                setSearchResults(results);
-                setShowDropdown(true);
-              } else {
-                setSearchResults([]);
-                setShowDropdown(false);
-              }
-            }}
-            onFocus={async () => {
-              if (ruleReference.trim() !== '') {
-                const results = await searchRules(sport, ruleReference);
-                setSearchResults(results);
-                setShowDropdown(true);
-              }
-            }}
-            style={{ ...inputStyle, marginBottom: showDropdown ? '0' : '15px' }}
-          />
-          {showDropdown && searchResults.length > 0 && (
-            <ul style={{
-              position: 'absolute',
-              top: '100%',
-              left: 0,
-              right: 0,
-              backgroundColor: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderTop: 'none',
-              borderBottomLeftRadius: '8px',
-              borderBottomRightRadius: '8px',
-              maxHeight: '200px',
-              overflowY: 'auto',
-              listStyle: 'none',
-              padding: 0,
-              margin: 0,
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-              zIndex: 10
-            }}>
-              {searchResults.slice(0, 10).map((rule, idx) => (
-                <li
-                  key={`${rule.ruleId}-${rule.sectionId}-${rule.articleId}-${idx}`}
-                  style={{
-                    padding: '10px 12px',
-                    borderBottom: idx === Math.min(searchResults.length, 10) - 1 ? 'none' : '1px solid #eee',
-                    cursor: 'pointer',
-                    fontSize: '14px'
-                  }}
-                  onClick={() => {
-                    setRuleReference(rule.fullReference);
-                    setShowDropdown(false);
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--border)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                >
-                  <strong>{rule.fullReference}</strong>: {rule.ruleTitle} - {rule.sectionTitle}
-                  <div style={{ fontSize: '12px', color: 'var(--text)', marginTop: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {rule.articleText}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        {/* Spacer to maintain gap if dropdown is active but not pushing content down as it's absolute */}
-        {showDropdown && <div style={{ marginBottom: '15px' }}></div>}
-
-        <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Controversy Level</label>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '15px' }}>
-          {CONTROVERSY_LEVELS.map((item) => (
-            <button
-              type="button"
-              key={item.level}
-              onClick={() => setControversyLevel(item.level)}
-              style={{
-                padding: '12px',
-                border: `1px solid ${controversyLevel === item.level ? item.color : 'var(--border)'}`,
-                borderRadius: '8px',
-                backgroundColor: controversyLevel === item.level ? item.color : 'var(--bg)',
-                color: controversyLevel === item.level ? '#fff' : 'var(--text-h)',
-                cursor: 'pointer',
-                textAlign: 'left'
+          <div className="form-group" style={{ position: 'relative' }} ref={dropdownRef}>
+            <label className="form-label">Rule Reference</label>
+            <input
+              type="text"
+              placeholder="e.g. Rule 8, Section 5"
+              value={ruleReference}
+              onChange={async (e) => {
+                const val = e.target.value;
+                setRuleReference(val);
+                if (val.trim() !== '') {
+                  const results = await searchRules(sport, val);
+                  setSearchResults(results);
+                  setShowDropdown(true);
+                } else {
+                  setSearchResults([]);
+                  setShowDropdown(false);
+                }
               }}
-            >
-              <div style={{ fontWeight: 'bold', fontSize: '16px' }}>{item.level}. {item.label}</div>
-              {controversyLevel === item.level && (
-                <div style={{ fontSize: '14px', marginTop: '4px' }}>{item.description}</div>
-              )}
-            </button>
-          ))}
-        </div>
+              onFocus={async () => {
+                if (ruleReference.trim() !== '') {
+                  const results = await searchRules(sport, ruleReference);
+                  setSearchResults(results);
+                  setShowDropdown(true);
+                }
+              }}
+              className="form-input-field"
+            />
+            {showDropdown && searchResults.length > 0 && (
+              <ul className="autocomplete-menu" style={{ zIndex: 100 }}>
+                {searchResults.slice(0, 10).map((rule, idx) => (
+                  <li
+                    key={`${rule.id}-${idx}`}
+                    className="autocomplete-item"
+                    onClick={() => {
+                      setRuleReference(rule.fullReference);
+                      setShowDropdown(false);
+                    }}
+                  >
+                    <strong>{rule.fullReference}</strong>: {rule.ruleTitle} - {rule.sectionTitle}
+                    <div className="autocomplete-item-desc">
+                      {rule.articleText}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
-        <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Notes</label>
-        <textarea
-          placeholder="Looked like a clean break on the ball..."
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          style={{ ...inputStyle, minHeight: '100px', resize: 'vertical' }}
-        />
+          <div className="form-group">
+            <label className="form-label">Controversy Level</label>
+            <div className="controversy-list">
+              {CONTROVERSY_LEVELS.map((item) => {
+                const isActive = controversyLevel === item.level;
+                return (
+                  <button
+                    type="button"
+                    key={item.level}
+                    onClick={() => setControversyLevel(item.level)}
+                    className={`controversy-option-card ${isActive ? `active-${item.level}` : ''}`}
+                  >
+                    <div className="option-card-title">
+                      {item.level}. {item.label}
+                    </div>
+                    {isActive && (
+                      <div className="option-card-desc">{item.description}</div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-          <input
-            type="checkbox"
-            id="isPublic"
-            checked={isPublic}
-            onChange={(e) => setIsPublic(e.target.checked)}
-            style={{ width: '20px', height: '20px', cursor: 'pointer' }}
-          />
-          <label htmlFor="isPublic" style={{ fontWeight: 'bold', cursor: 'pointer' }}>
-            Publish to Community Feed
-          </label>
-        </div>
+          <div className="form-group">
+            <label className="form-label">Notes</label>
+            <textarea
+              placeholder="Looked like a clean break on the ball..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="form-input-field"
+              style={{ minHeight: '110px', resize: 'vertical' }}
+            />
+          </div>
 
-        <button type="submit" style={{
-          width: '100%',
-          backgroundColor: '#007BFF',
-          color: '#fff',
-          padding: '15px',
-          borderRadius: '8px',
-          border: 'none',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          marginTop: '10px'
-        }}>
-          Log Call
-        </button>
-      </form>
+          <div className="form-group">
+            <label htmlFor="isPublic" className="form-checkbox-container">
+              <input
+                type="checkbox"
+                id="isPublic"
+                checked={isPublic}
+                onChange={(e) => setIsPublic(e.target.checked)}
+                className="form-checkbox"
+              />
+              <span className="form-checkbox-label">Publish to Community Feed</span>
+            </label>
+          </div>
+
+          <button type="submit" className="btn-primary">
+            Log Call
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

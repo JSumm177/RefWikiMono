@@ -2,17 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { CommunityCallDto, CommentDto } from './api-types';
 
-const getControversyColor = (level: number) => {
-    switch (Math.round(level)) {
-        case 1: return '#4CAF50';
-        case 2: return '#8BC34A';
-        case 3: return '#FFC107';
-        case 4: return '#FF9800';
-        case 5: return '#F44336';
-        default: return '#ccc';
-    }
-};
-
 const CallDetailScreen: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -94,154 +83,152 @@ const CallDetailScreen: React.FC = () => {
         }
     };
 
-    if (isLoading) return <div style={{ padding: '20px', textAlign: 'center' }}>Loading call details...</div>;
-    if (!call) return <div style={{ padding: '20px', textAlign: 'center' }}>Call not found.</div>;
+    if (isLoading) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', gap: '16px' }}>
+                <div className="spinner" />
+                <div style={{ color: 'var(--text-muted)', fontSize: '1rem', fontWeight: 500 }}>Loading call details...</div>
+            </div>
+        );
+    }
+
+    if (!call) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', gap: '16px' }}>
+                <div style={{ fontSize: '3rem' }}>⚠️</div>
+                <div style={{ color: 'var(--text-h)', fontSize: '1.2rem', fontWeight: 700 }}>Call details not found</div>
+                <button className="btn-back" onClick={() => navigate(-1)}>
+                    ← Go Back
+                </button>
+            </div>
+        );
+    }
+
+    const roundedRating = Math.min(5, Math.max(1, Math.round(call.averageRating || 3)));
 
     return (
-        <div style={{ padding: '40px 20px', maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
-            <button
-                onClick={() => navigate(-1)}
-                style={{
-                    marginBottom: '30px',
-                    background: 'var(--accent-bg)',
-                    border: '1px solid var(--accent-border)',
-                    color: 'var(--accent)',
-                    padding: '10px 20px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold'
-                }}
-            >
+        <div className="form-container" style={{ maxWidth: '800px', padding: '32px 20px', textAlign: 'left' }}>
+            <button className="btn-back" onClick={() => navigate(-1)} style={{ marginBottom: '24px' }}>
                 ← Back
             </button>
 
-            <div style={{
-                backgroundColor: 'var(--bg)',
-                padding: '30px',
-                borderRadius: '16px',
-                border: '1px solid var(--border)',
-                borderLeft: `12px solid ${getControversyColor(call.averageRating!)}`,
-                boxShadow: 'var(--shadow)'
-            }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className={`glass-card c-border-${roundedRating}`} style={{ padding: '32px', marginBottom: '32px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '20px' }}>
                     <div>
-                        <h1 style={{ margin: '0 0 10px 0', fontSize: '32px' }}>{call.penaltyName}</h1>
-                        <h3 style={{ margin: 0, color: 'var(--accent)' }}>{call.team} ({call.sport})</h3>
+                        <h1 style={{ margin: '0 0 8px 0', fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-h)', lineHeight: '1.2' }}>
+                            {call.penaltyName}
+                        </h1>
+                        <h3 style={{ margin: 0, color: 'var(--accent)', fontSize: '1.2rem', fontWeight: 600 }}>
+                            {call.team} <span style={{ color: 'var(--text-muted)', fontWeight: 'normal', fontSize: '1rem' }}>({call.sport})</span>
+                        </h3>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '48px', fontWeight: 'bold', color: getControversyColor(call.averageRating!) }}>
+                    <div style={{ textAlign: 'right', minWidth: '80px' }}>
+                        <div style={{ fontSize: '2.8rem', fontWeight: 800, color: `var(--c${roundedRating})`, lineHeight: '1' }}>
                             {call.averageRating?.toFixed(1)}
                         </div>
-                        <div style={{ fontSize: '0.8em', color: '#999' }}>COMMUNITY RATING</div>
+                        <div style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em', marginTop: '4px' }}>
+                            COMMUNITY RATING
+                        </div>
                     </div>
                 </div>
 
-                <div style={{ margin: '30px 0', padding: '20px', backgroundColor: 'var(--code-bg)', borderRadius: '8px', fontSize: '1.2em' }}>
-                    <strong>Reference:</strong> {call.ruleReference}
-                    <div style={{ marginTop: '15px', fontStyle: 'italic' }}>
+                <div style={{
+                    margin: '28px 0',
+                    padding: '20px',
+                    backgroundColor: 'var(--bg-input)',
+                    borderRadius: 'var(--radius)',
+                    border: '1px solid var(--border)',
+                    fontSize: '1.1rem',
+                    lineHeight: '1.6'
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            Rule Reference
+                        </span>
+                        <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-h)' }}>
+                            {call.ruleReference}
+                        </span>
+                    </div>
+                    <div style={{ fontStyle: 'italic', color: 'var(--text-h)', marginTop: '8px', whiteSpace: 'pre-wrap' }}>
                         "{call.notes}"
                     </div>
-                    <div style={{ marginTop: '10px', fontSize: '0.8em', color: '#666', textAlign: 'right' }}>
-                        — Shared by <strong>{call.userName}</strong>
+                    <div style={{ marginTop: '16px', fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'right' }}>
+                        — Shared by <strong style={{ color: 'var(--text)' }}>{call.userName}</strong>
                     </div>
                 </div>
 
-                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-                    <h4 style={{ marginBottom: '15px' }}>Cast your vote on the controversy level:</h4>
-                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
+                    <h4 style={{ marginBottom: '16px', fontSize: '1rem', fontWeight: 700, color: 'var(--text-h)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                        Cast your vote on controversy level:
+                    </h4>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                         {[1, 2, 3, 4, 5].map(lvl => (
                             <button
                                 key={lvl}
                                 onClick={() => handleVote(lvl)}
-                                style={{
-                                    flex: 1,
-                                    padding: '15px',
-                                    borderRadius: '8px',
-                                    border: `2px solid ${getControversyColor(lvl)}`,
-                                    backgroundColor: 'transparent',
-                                    color: getControversyColor(lvl),
-                                    cursor: 'pointer',
-                                    fontWeight: 'bold',
-                                    fontSize: '18px',
-                                    transition: 'all 0.2s'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = getControversyColor(lvl);
-                                    e.currentTarget.style.color = '#fff';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'transparent';
-                                    e.currentTarget.style.color = getControversyColor(lvl);
-                                }}
+                                className={`vote-pill pill-${lvl}`}
+                                style={{ width: '48px', height: '48px', fontSize: '1.1rem' }}
                             >
                                 {lvl}
                             </button>
                         ))}
                     </div>
-                    <p style={{ marginTop: '15px', fontSize: '0.8em', color: '#999' }}>
-                        Total votes: {call.voteCount}
-                    </p>
+                    <div style={{ marginTop: '16px', fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span>🗳️</span>
+                        <span>Total community votes: <strong>{call.voteCount}</strong></span>
+                    </div>
                 </div>
             </div>
 
             <div style={{ marginTop: '40px' }}>
-                <h2>Discussion ({call.commentCount})</h2>
+                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-h)', marginBottom: '24px' }}>
+                    Discussion <span style={{ color: 'var(--accent)', fontSize: '1.3rem', fontWeight: 'bold' }}>({call.commentCount})</span>
+                </h2>
 
-                <form onSubmit={handleSubmitComment} style={{ marginBottom: '30px' }}>
+                <form onSubmit={handleSubmitComment} style={{ marginBottom: '32px' }}>
                     <textarea
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
-                        placeholder="Add to the discussion..."
+                        placeholder="Add to the consensus discussion..."
+                        className="form-input-field"
                         style={{
-                            width: '100%',
-                            padding: '15px',
-                            borderRadius: '12px',
-                            border: '1px solid var(--border)',
-                            backgroundColor: 'var(--bg)',
-                            color: 'var(--text-h)',
-                            minHeight: '100px',
-                            marginBottom: '10px',
-                            fontSize: '16px',
-                            boxSizing: 'border-box'
+                            minHeight: '120px',
+                            marginBottom: '14px',
+                            fontSize: '1rem',
+                            resize: 'vertical',
+                            lineHeight: '1.5'
                         }}
                     />
                     <button
                         type="submit"
                         disabled={isCommenting || !newComment.trim()}
+                        className="btn-primary"
                         style={{
-                            padding: '10px 20px',
-                            backgroundColor: '#007BFF',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                            opacity: isCommenting || !newComment.trim() ? 0.6 : 1
+                            width: 'auto',
+                            padding: '10px 24px',
+                            fontSize: '0.95rem'
                         }}
                     >
-                        {isCommenting ? 'Posting...' : 'Post Comment'}
+                        {isCommenting ? 'Posting comment...' : 'Post Comment'}
                     </button>
                 </form>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {comments.map(comment => (
-                        <div key={comment.id} style={{
-                            padding: '20px',
-                            backgroundColor: 'var(--social-bg)',
-                            borderRadius: '12px',
-                            border: '1px solid var(--border)'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                                <span style={{ fontWeight: 'bold', color: 'var(--accent)' }}>{comment.userName}</span>
-                                <span style={{ fontSize: '0.8em', color: '#999' }}>{new Date(comment.createdAt!).toLocaleString()}</span>
+                        <div key={comment.id} className="glass-card" style={{ padding: '20px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                <span style={{ fontWeight: '700', color: 'var(--accent)', fontSize: '0.95rem' }}>{comment.userName}</span>
+                                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                    {new Date(comment.createdAt!).toLocaleString()}
+                                </span>
                             </div>
-                            <div style={{ lineHeight: '1.5', color: 'var(--text-h)' }}>{comment.text}</div>
+                            <div style={{ lineHeight: '1.6', color: 'var(--text-h)', fontSize: '0.95rem', whiteSpace: 'pre-wrap' }}>{comment.text}</div>
                         </div>
                     ))}
                     {comments.length === 0 && (
-                        <p style={{ textAlign: 'center', color: '#999', fontStyle: 'italic' }}>
+                        <div style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)', fontStyle: 'italic', border: '1px dashed var(--border)', borderRadius: 'var(--radius)' }}>
                             No comments yet. Start the conversation!
-                        </p>
+                        </div>
                     )}
                 </div>
             </div>

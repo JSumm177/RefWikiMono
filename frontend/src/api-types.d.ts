@@ -78,6 +78,14 @@ export interface ProfileDto {
     bio: string;
 }
 
+export interface TeamDto {
+    id: number;
+    name: string;
+    location: string;
+    abbreviation: string;
+    sportName: string;
+}
+
 export interface BookmarkDto {
     sport: string;
     fullReference: string;

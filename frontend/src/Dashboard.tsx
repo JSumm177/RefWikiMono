@@ -3,17 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { CallHistoryContext } from './CallHistoryContext';
 import { BookmarkContext } from './BookmarkContext';
 
-const getControversyColor = (level: number) => {
-    switch (level) {
-        case 1: return '#4CAF50';
-        case 2: return '#8BC34A';
-        case 3: return '#FFC107';
-        case 4: return '#FF9800';
-        case 5: return '#F44336';
-        default: return '#ccc';
-    }
-};
-
 const Dashboard: React.FC = () => {
     const { calls } = useContext(CallHistoryContext);
     const { bookmarks, removeBookmark, isPending } = useContext(BookmarkContext);
@@ -23,57 +12,42 @@ const Dashboard: React.FC = () => {
         if (b.articleId) {
             navigate(`/rule/${b.articleId}`);
         } else {
-            // Fallback for older bookmarks: navigate to search with the reference
             navigate(`/search?q=${encodeURIComponent(b.fullReference)}&sport=${b.sport}`);
         }
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            <div style={{ marginBottom: '40px' }}>
-                <h2>Starred Rules</h2>
+        <div className="dashboard-container">
+            <div className="dashboard-section">
+                <h2>★ Starred Rules</h2>
                 {bookmarks.length === 0 ? (
-                    <p style={{ color: '#666' }}>You haven't starred any rules yet. Search and click the ★ icon to save them here!</p>
+                    <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                        You haven't starred any rules yet. Search and click the ★ icon to save them here!
+                    </p>
                 ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div className="starred-rules-list">
                         {bookmarks.map(b => {
                             const pending = isPending(b.fullReference);
                             return (
-                                <div key={`${b.sport}-${b.fullReference}`} style={{
-                                    backgroundColor: '#fff8e1',
-                                    padding: '12px 15px',
-                                    borderRadius: '8px',
-                                    border: '1px solid #ffe082',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center'
-                                }}>
-                                    <span
-                                        style={{ flex: 1, cursor: 'pointer', textAlign: 'left' }}
+                                <div key={`${b.sport}-${b.fullReference}`} className="starred-card">
+                                    <div
+                                        className="starred-card-content"
                                         onClick={() => handleNavigateToRule(b)}
                                     >
-                                        <strong>{b.sport.toUpperCase()}</strong>: {b.fullReference}
-                                    </span>
+                                        <span className="sport-badge">{b.sport}</span>
+                                        <span className="starred-card-reference">{b.fullReference}</span>
+                                    </div>
                                     <button
                                         onClick={() => removeBookmark(b.sport, b.fullReference)}
                                         disabled={pending}
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            cursor: pending ? 'not-allowed' : 'pointer',
-                                            fontSize: '24px',
-                                            color: '#FFC107',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            minWidth: '40px'
-                                        }}
+                                        className="unstar-button"
+                                        aria-label="Remove star"
                                     >
                                         {pending ? (
                                             <div className="spinner-small" style={{
                                                 width: '18px',
                                                 height: '18px',
-                                                border: '2px solid #ccc',
+                                                border: '2px solid var(--border)',
                                                 borderTop: '2px solid #FFC107',
                                                 borderRadius: '50%',
                                                 animation: 'spin 1s linear infinite'
@@ -89,56 +63,53 @@ const Dashboard: React.FC = () => {
                 )}
             </div>
 
-            <hr style={{ border: '0', borderTop: '1px solid #eee', marginBottom: '30px' }} />
-
-            <h2>Live Call Log</h2>
-            {calls.length === 0 ? (
-                <p>No calls logged yet. Head to Log Call!</p>
-            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    {calls.map(item => (
-                        <div key={item.id} style={{
-                            backgroundColor: '#f9f9f9',
-                            padding: '15px',
-                            borderRadius: '8px',
-                            borderLeft: `6px solid ${getControversyColor(item.controversyLevel)}`,
-                            borderTop: '1px solid #eee',
-                            borderRight: '1px solid #eee',
-                            borderBottom: '1px solid #eee',
-                            textAlign: 'left',
-                            cursor: item.isPublic ? 'pointer' : 'default'
-                        }}
-                        onClick={() => {
-                            if (item.isPublic) navigate(`/call/${item.id}`);
-                        }}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                <h3 style={{ margin: 0 }}>{item.penaltyName} {item.isPublic && <span style={{ fontSize: '0.6em', verticalAlign: 'middle', color: '#007BFF' }}>(PUBLIC)</span>}</h3>
-                                <span style={{
-                                    backgroundColor: '#eee',
-                                    padding: '2px 8px',
-                                    borderRadius: '4px',
-                                    fontSize: '12px',
-                                    fontWeight: 'bold'
-                                }}>
-                                    {item.sport} {item.team ? `• ${item.team}` : ''}
-                                </span>
+            <div className="dashboard-section">
+                <h2>📣 Live Call Log</h2>
+                {calls.length === 0 ? (
+                    <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                        No calls logged yet. Head to "Log Call" to publish a live call!
+                    </p>
+                ) : (
+                    <div className="call-list">
+                        {calls.map(item => (
+                            <div
+                                key={item.id}
+                                className={`call-card c-border-${item.controversyLevel} ${item.isPublic ? 'interactive' : ''}`}
+                                onClick={() => {
+                                    if (item.isPublic) navigate(`/call/${item.id}`);
+                                }}
+                            >
+                                <div className="call-card-header">
+                                    <h3 className="call-card-title">
+                                        {item.penaltyName}
+                                        {item.isPublic && (
+                                            <span className="header-logo-badge" style={{ fontSize: '0.65rem' }}>
+                                                Public
+                                            </span>
+                                        )}
+                                    </h3>
+                                    <span className="call-card-badge">
+                                        {item.sport} {item.team ? `• ${item.team}` : ''}
+                                    </span>
+                                </div>
+                                <div className="call-card-reference">{item.ruleReference}</div>
+                                <div className="call-card-notes">{item.notes}</div>
+                                <div className="call-card-footer">
+                                    <div className="consensus-tag">
+                                        <span className="consensus-tag-label">Controversy:</span>
+                                        <span className={`c-badge c-badge-${item.controversyLevel}`}>
+                                            Level {item.controversyLevel}
+                                        </span>
+                                    </div>
+                                    <span>
+                                        {item.timestamp ? new Date(item.timestamp).toLocaleString() : ''}
+                                    </span>
+                                </div>
                             </div>
-                            <div style={{ color: '#555', marginBottom: '5px' }}>{item.ruleReference}</div>
-                            <div style={{ color: '#333', marginBottom: '10px' }}>{item.notes}</div>
-                            <div style={{ fontSize: '0.8em', color: '#999', textAlign: 'right' }}>
-                                {item.timestamp ? new Date(item.timestamp).toLocaleString() : ''}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-            <style>{`
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `}</style>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
