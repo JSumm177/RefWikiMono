@@ -6,13 +6,13 @@ export const getBaseUrl = () => {
     // Otherwise fall back to simulator defaults.
     if (__DEV__) {
         if (LOCAL_IP && LOCAL_IP !== 'localhost') {
-            return `http://${LOCAL_IP}:8080`;
+            return `http://${LOCAL_IP}:8089`;
         }
         if (Platform.OS === 'android') {
-            return 'http://10.0.2.2:8080';
+            return 'http://10.0.2.2:8089';
         }
     }
-    return 'http://localhost:8080';
+    return 'http://localhost:8089';
 };
 
 export const API_BASE_URL = getBaseUrl();

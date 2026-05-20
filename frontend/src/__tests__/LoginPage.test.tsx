@@ -19,6 +19,9 @@ describe('LoginPage', () => {
             isAuthenticated: false,
             login: vi.fn(),
             logout: vi.fn(),
+            loginWithProvider: vi.fn(),
+            authError: null as string | null,
+            clearAuthError: vi.fn()
         };
 
         render(
@@ -28,6 +31,10 @@ describe('LoginPage', () => {
                 </MemoryRouter>
             </AuthContext.Provider>
         );
+
+        // Click the Credentials tab to reveal the standard login form
+        const credentialsTab = screen.getByRole('button', { name: /credentials/i });
+        fireEvent.click(credentialsTab);
 
         // Find the submit button and click it
         const loginButton = screen.getByRole('button', { name: /login/i });

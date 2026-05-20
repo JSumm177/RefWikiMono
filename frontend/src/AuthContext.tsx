@@ -5,6 +5,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     login: () => void;
     logout: () => void;
+    loginWithProvider: (provider: 'google' | 'apple') => Promise<void>;
     authError: string | null;
     clearAuthError: () => void;
 }
@@ -13,6 +14,7 @@ export const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
     login: () => {},
     logout: () => {},
+    loginWithProvider: async () => {},
     authError: null,
     clearAuthError: () => {},
 });
@@ -42,6 +44,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(true);
     };
 
+    const loginWithProvider = async (provider: 'google' | 'apple') => {
+        setAuthError(null);
+        try {
+            // High-fidelity sandbox delay simulating identity provider OAuth round-trip
+            await new Promise((resolve) => setTimeout(resolve, 1200));
+
+            // Production Hooks:
+            // For Clerk/Firebase/OAuth, you'd trigger the OAuth flow here. E.g.:
+            // await signInWithPopup(auth, googleProvider);
+            // OR redirect to Java Servlet OAuth callback:
+            // window.location.href = `/api/auth/oauth/${provider}`;
+
+            setIsAuthenticated(true);
+        } catch (error) {
+            console.error(`${provider} login failed:`, error);
+            setAuthError(`Failed to authenticate using ${provider}.`);
+            setIsAuthenticated(false);
+            throw error;
+        }
+    };
+
     const logout = async () => {
         try {
             const response = await fetch('/api/auth/logout', {
@@ -67,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, authError, clearAuthError }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, loginWithProvider, authError, clearAuthError }}>
             {children}
         </AuthContext.Provider>
     );
