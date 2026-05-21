@@ -11,7 +11,7 @@ public class TestDatabaseUtil {
     private static boolean isInitialized = false;
 
     public static void startDatabase() {
-        if (!isInitialized) {
+        if (!isInitialized || DatabaseConfig.getDataSource() == null || ((com.zaxxer.hikari.HikariDataSource) DatabaseConfig.getDataSource()).isClosed()) {
             // Because testcontainers doesn't work correctly in this restricted environment without a valid Docker setup
             // (despite properties), we fall back to an H2 in-memory database configured for MySQL compatibility.
 
