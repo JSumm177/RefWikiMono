@@ -21,6 +21,13 @@ function getLocalIpAddress() {
 const withStabilization = (config) => {
   const ip = getLocalIpAddress();
 
+  // 0. Update ip.js immediately on every prebuild call (cross-platform & independent of OS)
+  // We use __dirname to ensure we find the right path relative to this plugin
+  const ipJsPath = path.join(__dirname, '..', 'utils', 'ip.js');
+  if (fs.existsSync(ipJsPath)) {
+    fs.writeFileSync(ipJsPath, `export const LOCAL_IP = '${ip}';\n`);
+  }
+
   // 1. iOS Podfile and AppDelegate Fix
   config = withDangerousMod(config, [
     'ios',
@@ -55,9 +62,10 @@ const withStabilization = (config) => {
         const bundleUrlLine = `return URL(string: "http://${ip}:8081/.expo/.virtual-metro-entry.bundle?platform=ios&dev=true")`;
 
         if (appDelegate.includes('bundleURL()')) {
+            // Precise regex supporting both a clean Expo prebuild state and already-modified IP states
             appDelegate = appDelegate.replace(
-                /override func bundleURL\(\) -> URL\? \{[\s\S]*?#if DEBUG([\s\S]*?)#else/,
-                "override func bundleURL() -> URL? {\n#if DEBUG\n    " + bundleUrlLine + "\n#else"
+                /(override func bundleURL\(\) -> URL\? \{[\s\S]*?#if DEBUG\s*?)return (?:URL\(string: "http:\/\/.*?:8081\/.*?"\)|RCTBundleURLProvider\.sharedSettings\(\)\.jsBundleURL\(forBundleRoot: "[^"]+"\))([\s\S]*?#else)/s,
+                "$1" + bundleUrlLine + "$2"
             );
             fs.writeFileSync(appDelegatePath, appDelegate);
         }
@@ -73,7 +81,7 @@ const withStabilization = (config) => {
     async (config) => {
         const androidRoot = path.join(config.modRequest.projectRoot, 'android');
 
-        // Force Gradle Wrapper to 8.13 to avoid Java 21 compatibility issues (Major version 70)
+        // Force Gradle Wrapper to 8.13 to avoid Java 21 compatibility issues
         const gradleWrapperPath = path.join(androidRoot, 'gradle', 'wrapper', 'gradle-wrapper.properties');
         if (fs.existsSync(gradleWrapperPath)) {
             let gradleProps = fs.readFileSync(gradleWrapperPath, 'utf8');
@@ -86,25 +94,60 @@ const withStabilization = (config) => {
         if (fs.existsSync(gradlePropertiesPath)) {
             let gradleProps = fs.readFileSync(gradlePropertiesPath, 'utf8');
 
-            // Set java.home to ensure it uses Java 21 even if Java 26 is on the machine
-            const javaHome = process.env.JAVA_HOME || `/Users/${os.userInfo().username}/Library/Java/JavaVirtualMachines/openjdk-21.0.2/Contents/Home`;
+            // Set java.home to ensure it uses Java 21
+            let javaHome = process.env.JAVA_HOME;
+            if (!javaHome) {
+                if (os.platform() === 'darwin') {
+                    javaHome = `/Users/${os.userInfo().username}/Library/Java/JavaVirtualMachines/openjdk-21.0.2/Contents/Home`;
+                } else {
+                    // Robust check for linux default java 21 path
+                    const linuxPath = '/usr/lib/jvm/java-21-openjdk-amd64';
+                    if (fs.existsSync(linuxPath)) {
+                        javaHome = linuxPath;
+                    } else {
+                        // Fallback if not found
+                        javaHome = '/usr/lib/jvm/java-21-openjdk';
+                    }
+                }
+            }
 
-            if (!gradleProps.includes('org.gradle.java.home')) {
+            if (gradleProps.includes('org.gradle.java.home')) {
+                gradleProps = gradleProps.replace(/^org\.gradle\.java\.home=.*$/m, `org.gradle.java.home=${javaHome}`);
+            } else {
                 gradleProps += `\norg.gradle.java.home=${javaHome}\n`;
             }
 
             fs.writeFileSync(gradlePropertiesPath, gradleProps);
         }
 
-        // Force local.properties to have sdk.dir
+        // Force local.properties to have sdk.dir non-destructively
         const localPropsPath = path.join(androidRoot, 'local.properties');
-        let sdkDir = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || `/Users/${os.userInfo().username}/Library/Android/sdk`;
-        fs.writeFileSync(localPropsPath, `sdk.dir=${sdkDir}\n`);
+        let sdkDir = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
+        if (!sdkDir) {
+            if (os.platform() === 'darwin') {
+                sdkDir = `/Users/${os.userInfo().username}/Library/Android/sdk`;
+            } else {
+                sdkDir = '/opt/android-sdk';
+            }
+        }
+
+        let localProps = '';
+        if (fs.existsSync(localPropsPath)) {
+            localProps = fs.readFileSync(localPropsPath, 'utf8');
+        }
+
+        if (localProps.includes('sdk.dir')) {
+            localProps = localProps.replace(/^sdk\.dir=.*$/m, `sdk.dir=${sdkDir}`);
+        } else {
+            localProps += `\nsdk.dir=${sdkDir}\n`;
+        }
+        fs.writeFileSync(localPropsPath, localProps.trim() + '\n');
 
         return config;
     }
   ]);
 
+  // Handle Android strings.xml via withStringsXml
   config = withStringsXml(config, (config) => {
     config.modResults.resources.string = (config.modResults.resources.string || []).filter(
         s => s.$.name !== 'react_native_dev_server_ip'
